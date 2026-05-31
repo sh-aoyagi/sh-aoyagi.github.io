@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>メルカリワークスペース | 電脳会社</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:     #0a0a0a;
+  --bg2:    #141414;
+  --bg3:    #1a1a1a;
+  --border: #2a2a2a;
+  --text:   #e8e0d0;
+  --muted:  #888;
+  --gold:   #d4a017;
+  --green:  #22c55e;
+  --red:    #ef4444;
+  --orange: #f97316;
+  --bar-h:  52px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+/* ── TOP BAR ── */
+.top-bar {
+  height: var(--bar-h);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.ham-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: var(--gold);
+  font-size: 17px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ham-btn:hover { background: var(--bg3); }
+.bar-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--gold);
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+.bar-title span { font-size: 11px; color: var(--muted); font-weight: normal; margin-left: 8px; }
+.conn-badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.conn-badge.ok  { color: var(--green); border-color: #1a4a2a; background: #0d2a19; }
+.conn-badge.err { color: var(--red);   border-color: #4a1a1a; background: #2a0d0d; }
+
+/* ── NAV ── */
+.nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 200; }
+.nav-overlay.open { display: block; }
+.nav-sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); z-index: 201; transition: left .22s ease; padding: 20px 0; }
+.nav-sidebar.open { left: 0; }
+.nav-x { position: absolute; top: 14px; right: 14px; cursor: pointer; color: var(--muted); font-size: 18px; }
+.nav-head { padding: 0 18px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: bold; color: var(--gold); letter-spacing: 2px; }
+.nav-item { display: block; padding: 14px 18px; color: var(--text); text-decoration: none; border-bottom: 1px solid #1c1c1c; transition: background .15s; font-size: 14px; }
+.nav-item:hover { background: var(--bg3); }
+.nav-item.active { color: var(--gold); }
+
+/* ── WORKSPACE ── */
+.workspace { flex: 1; display: flex; overflow: hidden; }
+
+/* ── LEFT PANE ── */
+.left-pane { width: 40%; overflow-y: auto; border-right: 1px solid var(--border); padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ── MODE SELECTOR ── */
+.mode-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 12px 14px;
+}
+.mode-label { font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.mode-btns { display: flex; gap: 8px; }
+.mode-btn {
+  flex: 1;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg3);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all .15s;
+  text-align: center;
+}
+.mode-btn:hover { background: #252525; color: var(--text); }
+.mode-btn.active-a { border-color: var(--orange); background: #2a1500; color: var(--orange); }
+.mode-btn.active-b { border-color: var(--green); background: #0d2a1a; color: var(--green); }
+
+/* ── PROMPT CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+.card-label { font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; flex: 1; }
+.copy-btn {
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 20px;
+  padding: 4px 13px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.copy-btn:hover { background: #e8b420; }
+.copy-btn.done { background: var(--green); }
+.card-body {
+  padding: 10px 12px;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 280px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+/* ── MIGRATION BANNER ── */
+.migration-banner {
+  background: #1a1200;
+  border: 1px solid #4a3500;
+  border-radius: 7px;
+  padding: 12px 14px;
+  font-size: 12px;
+}
+.migration-banner .mb-title { color: var(--orange); font-weight: bold; margin-bottom: 6px; }
+.migration-banner .mb-body { color: #a08040; line-height: 1.8; }
+.migration-banner .mb-sql { margin-top: 10px; background: #0a0a00; border: 1px solid #3a2a00; border-radius: 5px; padding: 8px 10px; font-family: monospace; font-size: 11px; color: #c0a050; white-space: pre-wrap; }
+.migration-banner .mb-copy-btn {
+  margin-top: 8px;
+  background: #4a3000;
+  color: var(--orange);
+  border: 1px solid #6a4500;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.migration-banner .mb-copy-btn:hover { background: #5a3a00; }
+.migration-banner .mb-copy-btn.done { background: #1a4a2a; color: var(--green); border-color: #2a6a3a; }
+
+/* ── PRICE TABLE ── */
+.table-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+.table-head-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+.table-head-label { font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+thead th {
+  padding: 7px 8px;
+  background: #111;
+  color: var(--muted);
+  text-align: right;
+  font-weight: bold;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+thead th:first-child { text-align: left; }
+tbody tr { border-bottom: 1px solid #1c1c1c; }
+tbody tr:hover { background: var(--bg3); }
+tbody td {
+  padding: 7px 8px;
+  color: var(--text);
+  text-align: right;
+  white-space: nowrap;
+}
+tbody td:first-child { text-align: left; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+.td-profit.pos { color: var(--green); }
+.td-profit.neg { color: var(--red); }
+.td-na { color: #555; font-style: italic; }
+.table-empty { padding: 20px; text-align: center; color: var(--muted); }
+
+/* ── RIGHT PANE ── */
+.right-pane { width: 60%; display: flex; flex-direction: column; overflow: hidden; }
+.right-bar { padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.r-label { font-size: 12px; color: var(--muted); }
+.site-btn { background: #111; color: var(--text); border: 1px solid var(--border); border-radius: 20px; padding: 6px 18px; font-size: 12px; font-weight: bold; text-decoration: none; transition: background .15s; white-space: nowrap; }
+.site-btn:hover { background: #222; }
+.site-btn.primary { background: #e51b0c; border-color: #e51b0c; color: #fff; }
+.site-btn.primary:hover { background: #c01509; }
+.right-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 60px; }
+.big-icon { font-size: 56px; margin-bottom: 20px; }
+.big-title { font-size: 18px; font-weight: bold; color: var(--text); margin-bottom: 10px; }
+.sub-text { font-size: 13px; line-height: 1.9; text-align: center; color: var(--muted); margin-bottom: 28px; }
+.flow-steps { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; width: 100%; max-width: 460px; line-height: 2.2; font-size: 13px; }
+.flow-steps .fs-title { font-weight: bold; color: var(--gold); margin-bottom: 6px; }
+.flow-steps div { color: var(--muted); }
+.flow-steps div strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+<div class="nav-sidebar" id="navSidebar">
+  <div class="nav-x" onclick="closeNav()">✕</div>
+  <div class="nav-head">☰ メニュー</div>
+  <a class="nav-item" href="/00_ダッシュボード/dashboard.html">📊 ダッシュボード</a>
+  <a class="nav-item" href="/note-workspace/">📝 note作成</a>
+  <a class="nav-item active" href="/mercari-workspace/">🛍️ メルカリ出品</a>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <button class="ham-btn" onclick="toggleNav()">☰</button>
+  <span class="bar-title">🛍️ メルカリワークスペース <span>プロンプト生成 → コピー → メルカリ操作</span></span>
+  <span class="conn-badge" id="connBadge">接続中...</span>
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+  <!-- ===== LEFT PANE ===== -->
+  <div class="left-pane">
+
+    <!-- 時間帯セレクター -->
+    <div class="mode-card">
+      <div class="mode-label">時間帯セレクター — モード選択</div>
+      <div class="mode-btns">
+        <button class="mode-btn" id="btnModeA" onclick="setMode('A')">
+          🔥 モードA<br>
+          <span style="font-size:10px;font-weight:normal">ゲリラセール（日曜夜〜月曜朝）</span>
+        </button>
+        <button class="mode-btn" id="btnModeB" onclick="setMode('B')">
+          ✅ モードB<br>
+          <span style="font-size:10px;font-weight:normal">通常価格に戻す（月曜昼）</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- プロンプト -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label" id="promptLabel">プロンプト — モードを選択してください</span>
+        <button class="copy-btn" onclick="copyPrompt(this)">コピー</button>
+      </div>
+      <div class="card-body" id="promptBody">← 上のモードを選択するとプロンプトが表示されます</div>
+    </div>
+
+    <!-- マイグレーション案内 -->
+    <div class="migration-banner" id="migrationBanner">
+      <div class="mb-title">⚠️ Supabase マイグレーション — 要CEOの確認後に実行</div>
+      <div class="mb-body">
+        推奨価格・ゲリラ価格カラムを追加することで、プロンプトに正確な価格が自動挿入されます。<br>
+        現在は <strong>現在値（price）</strong> のみ表示しています。
+      </div>
+      <div class="mb-sql" id="migSql">ALTER TABLE mercari_items
+ADD COLUMN recommended_price INTEGER,
+ADD COLUMN guerrilla_price    INTEGER,
+ADD COLUMN profit_estimate    INTEGER;</div>
+      <button class="mb-copy-btn" onclick="copySql(this)">SQLをコピー</button>
+    </div>
+
+    <!-- 商品価格テーブル -->
+    <div class="table-wrap">
+      <div class="table-head-bar">
+        <span class="table-head-label">商品価格テーブル（listed のみ）</span>
+        <span id="itemCount" style="font-size:11px;color:var(--muted)">読込中...</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left">商品名</th>
+              <th>No.</th>
+              <th>現在値</th>
+              <th>仕入れ値</th>
+              <th>概算利益</th>
+              <th>推奨価格</th>
+              <th>ゲリラ価格</th>
+            </tr>
+          </thead>
+          <tbody id="itemTableBody">
+            <tr><td colspan="7" class="table-empty">データ読み込み中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== RIGHT PANE ===== -->
+  <div class="right-pane">
+    <div class="right-bar">
+      <span class="r-label">mercari.com</span>
+      <a class="site-btn primary" href="https://www.mercari.com/jp/sell/" target="_blank">🛍️ 新規出品 →</a>
+      <a class="site-btn" href="https://www.mercari.com/jp/" target="_blank">トップを開く ↗</a>
+      <a class="site-btn" href="https://www.mercari.com/jp/mypage/" target="_blank">マイページ ↗</a>
+    </div>
+    <div class="right-body">
+      <div class="big-icon">🛍️</div>
+      <div class="big-title">mercari.com</div>
+      <div class="sub-text">
+        mercari.com はiframeの埋め込みに対応していません。<br>
+        上のボタンから別タブで開いてください。
+      </div>
+      <div class="flow-steps">
+        <div class="fs-title">▼ 作業フロー（左ペイン → 右タブ）</div>
+        <div>① <strong>モードA（ゲリラ）</strong> or <strong>モードB（通常）</strong> を選択</div>
+        <div>② <strong>プロンプトをコピー</strong> → Claude/ChatGPT に貼付</div>
+        <div>③ AIの指示に従ってメルカリの各商品を操作</div>
+        <div>④ セール終了後は <strong>モードB</strong> で通常価格に戻す</div>
+        <div style="margin-top:8px;font-size:11px;color:#555">
+          ※ ゲリラ価格・推奨価格の自動挿入にはSQLマイグレーションが必要です
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../config.js" onerror="onConfigMissing()"></script>
+<script>
+let sb = null;
+let items = [];
+let currentMode = null;
+
+function onConfigMissing() {
+  setBadge('⚠️ config.js が見つかりません', 'err');
+}
+
+function toggleNav() {
+  document.getElementById('navOverlay').classList.toggle('open');
+  document.getElementById('navSidebar').classList.toggle('open');
+}
+function closeNav() {
+  document.getElementById('navOverlay').classList.remove('open');
+  document.getElementById('navSidebar').classList.remove('open');
+}
+
+function setBadge(text, type) {
+  const el = document.getElementById('connBadge');
+  el.textContent = text;
+  el.className = 'conn-badge' + (type ? ' ' + type : '');
+}
+
+async function init() {
+  if (typeof SUPABASE_URL === 'undefined') return;
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data, error } = await sb
+      .from('mercari_items')
+      .select('item_no, name, price, cost, shipping, likes_count, views, status')
+      .eq('status', 'listed')
+      .order('item_no', { ascending: true });
+
+    if (error) throw error;
+
+    items = data || [];
+    renderTable();
+    setBadge(`✓ listed ${items.length}件`, 'ok');
+    document.getElementById('itemCount').textContent = `${items.length} 件`;
+  } catch(e) {
+    setBadge(`接続エラー: ${e.message.slice(0,40)}`, 'err');
+    document.getElementById('itemTableBody').innerHTML = `<tr><td colspan="7" class="table-empty">接続エラー: ${e.message}</td></tr>`;
+    document.getElementById('itemCount').textContent = 'エラー';
+  }
+}
+
+function renderTable() {
+  const tbody = document.getElementById('itemTableBody');
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="table-empty">listed商品がありません</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(it => {
+    const fee = Math.round(it.price * 0.1);
+    const profit = it.price - fee - (it.cost || 0) - (it.shipping || 0);
+    const pClass = profit >= 0 ? 'pos' : 'neg';
+    return `<tr>
+      <td title="${it.name}">${it.name}</td>
+      <td>${it.item_no}</td>
+      <td>¥${it.price.toLocaleString()}</td>
+      <td>¥${(it.cost || 0).toLocaleString()}</td>
+      <td class="td-profit ${pClass}">¥${profit.toLocaleString()}</td>
+      <td class="td-na">未設定</td>
+      <td class="td-na">未設定</td>
+    </tr>`;
+  }).join('');
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btnModeA').className = 'mode-btn' + (mode === 'A' ? ' active-a' : '');
+  document.getElementById('btnModeB').className = 'mode-btn' + (mode === 'B' ? ' active-b' : '');
+  updatePrompt();
+}
+
+function buildItemList(includeGuerrilla) {
+  if (!items.length) return '（商品データなし — Supabase接続を確認してください）';
+  return items.map((it, i) => {
+    const fee = Math.round(it.price * 0.1);
+    const profit = it.price - fee - (it.cost || 0) - (it.shipping || 0);
+    const guerrillaPrice = Math.round(it.price * 0.88);
+    if (includeGuerrilla) {
+      return `${i+1}. No.${it.item_no} | ${it.name}\n   現在値: ¥${it.price.toLocaleString()} → ゲリラ価格: ¥${guerrillaPrice.toLocaleString()}（目安12%OFF / 要確認）`;
+    } else {
+      return `${i+1}. No.${it.item_no} | ${it.name}\n   現在値: ¥${it.price.toLocaleString()}`;
+    }
+  }).join('\n');
+}
+
+function updatePrompt() {
+  const labelEl = document.getElementById('promptLabel');
+  const bodyEl  = document.getElementById('promptBody');
+
+  if (currentMode === 'A') {
+    labelEl.textContent = 'プロンプト — モードA：ゲリラセール（コピーしてClaudeに渡す）';
+    bodyEl.textContent = `【インクへの指示】
+以下の全商品にコメントを追加し、価格をゲリラセール価格に変更してください。
+
+コメントテンプレート：
+「🔥 本日深夜限定セール中！通常価格より◯◯円OFF。お早めにどうぞ。」
+
+価格変更：各商品の「ゲリラ価格」列の金額に変更してください。
+対象商品リスト（No. | 商品名 | 現在値 → ゲリラ価格）：
+
+${buildItemList(true)}
+
+---
+注：ゲリラ価格はSQLマイグレーション（recommended_price / guerrilla_price カラム追加）後に
+Supabaseから自動挿入されます。現在は現在値の約12%引き目安で表示しています。
+実際の値引き額はCEOが確認・調整してください。`;
+
+  } else if (currentMode === 'B') {
+    labelEl.textContent = 'プロンプト — モードB：通常価格に戻す（コピーしてClaudeに渡す）';
+    bodyEl.textContent = `【インクへの指示】
+セール終了です。以下の全商品のコメントを削除し、価格を通常価格に戻してください。
+
+推奨価格の根拠：メルカリ市場価格調査済み（全体利益率5%確保ライン）
+対象商品リスト（No. | 商品名 | 現在値）：
+
+${buildItemList(false)}
+
+---
+注：推奨通常価格は recommended_price カラム（SQLマイグレーション後に有効）を参照します。
+現在は現在値を維持してください。`;
+  }
+}
+
+function copyPrompt(btn) {
+  const text = document.getElementById('promptBody').textContent;
+  if (!text || !currentMode) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済み';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1800);
+  });
+}
+
+function copySql(btn) {
+  const text = document.getElementById('migSql').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済み';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1800);
+  });
+}
+
+init();
+</script>
+</body>
+</html>

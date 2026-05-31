@@ -1,0 +1,180 @@
+================================================================
+庵野よろ 実行報告
+2026-05-30（土）ダービー前日版
+================================================================
+
+【タスク1】メルカリスナップショット
+━━━━━━━━━━━━━━━━━━━━
+在庫：listed 18件 / 総登録 39件
+
+▼ いいね数TOP3
+  1位 HUF × NEWERA 59FIFTY CAP (No.21)   いいね12 / 閲覧227 / ¥5,999
+  2位 Supreme Denim Short 34 (No.37)      いいね4  / 閲覧119 / ¥39,999
+  3位 NEIGHBORHOOD × AKVS Tシャツ (No.15) いいね4  / 閲覧346 / ¥5,999
+
+▼ 閲覧数TOP3
+  1位 Esenes x RPD Tabi Boots (No.1)       いいね0  / 閲覧391 / ¥34,999
+  2位 NEIGHBORHOOD × AKVS Tシャツ (No.15) いいね4  / 閲覧346 / ¥5,999
+  3位 HUF × NEWERA 59FIFTY CAP (No.21)   いいね12 / 閲覧227 / ¥5,999
+
+▼ 再出品候補
+  last_relisted_at = NULL の商品が全件（18件全て再出品履歴なし）
+  → created_at で経過日数を確認して2日超なら全件対象の可能性あり
+  → 庵野から平次への引き継ぎ：「週次横断で経過日数ランキング出して」
+
+▼ 緊急シュプ報告
+  HUF × NEWERAキャップ（いいね12）は閲覧も伸びてる。
+  コメント値引きのタイミング（いいね3件以上・7日以上）条件はすでに満たしている。
+  → ネイバーに「価格¥5,499か¥5,799で出してみる」判断を依頼推奨。
+
+
+━━━━━━━━━━━━━━━━━━━━
+【タスク2】ダービーTOP画像プロンプト（マックイーン担当：庵野代行）
+━━━━━━━━━━━━━━━━━━━━
+
+▼ note TOP画像プロンプト（Gemini/Imagen向け）
+
+---
+Photorealistic wide banner image, 1280x670px.
+Dark navy blue sky at golden hour, Tokyo racecourse in the background, dramatic light rays.
+Center: a powerful thoroughbred horse in full gallop silhouette, mane flowing, facing right.
+Bottom left: subtle blood-red and gold Japan Derby laurel wreath motif.
+Text overlay (top): "日本ダービー2026" in bold gold Japanese serif font, elegant stroke.
+Text overlay (bottom): "血は、嘘をつかない。" in white, thin elegant font.
+Cinematic film grain, 16:9 ratio, no watermarks, high contrast.
+---
+
+▼ 代替（白黒・シンプル版）
+
+---
+Monochrome ink-wash style banner, 1280x670px.
+Minimalist Japanese horse racing scene: single horse and jockey in motion, brush stroke silhouette.
+Background: Tokyo skyline faint outline in white ink.
+Bold Japanese text left side: "日本ダービー2026"
+Subtitle: "ディープ→コントレイル→その先へ"
+Traditional Japanese woodblock print aesthetic, black and off-white palette only.
+---
+
+
+━━━━━━━━━━━━━━━━━━━━
+【タスク3】決算城 記事5本生成
+━━━━━━━━━━━━━━━━━━━━
+
+⚠️ 保留：Supabaseのcastle_articlesと企業×城主対応リスト.txtで城主アサインが不一致。
+
+具体的な不一致例：
+  Supabase: NTT → 本多忠勝/大多喜城
+  TXTリスト: NTT(No.55) → 北条氏康/小田原城（全盛）
+
+  Supabase: 三菱UFJ → 毛利元就/吉田郡山城
+  TXTリスト: 三菱UFJ(No.53) → 徳川慶喜/二条城
+
+  Supabase: KDDI → 前田利家/金沢城
+  TXTリスト: KDDI(No.54) → 佐々成政/富山城
+
+今日はダービー前日のため、決算城の記事生成はCEOの一言待ち。
+「Supabase優先」か「TXTリスト優先」かを教えていただければ即実行します。
+
+
+━━━━━━━━━━━━━━━━━━━━
+【タスク4】メルカリ仕入れ候補（ベイプ担当：庵野代行）
+━━━━━━━━━━━━━━━━━━━━
+
+▼ 仕入れ根拠情報
+  Supreme × Jordan Brand SS2026 コレクション（5/14 Supreme発売済み）
+  ・Track Jacket: 定価$198（約¥30,700）
+  ・Track Pants:  定価$178（約¥27,600）
+  ・Full-Zip Fleece Hoodie: $178（約¥27,600）
+  ・Jersey: $148（約¥22,900）
+  ・Shorts: $138（約¥21,400）
+  ・Leather Jacket: $698（約¥108,200）
+  カラー：Black/University Red / Summit White/Celestine Blue / Fire Pink/University Red
+
+─────────────────────────────
+候補①【注目高】
+  Supreme × Jordan Brand Track Jacket SS2026
+  仕入れ想定：ヤフオク/ラクマ ¥20,000〜¥25,000
+  売値想定：メルカリ ¥35,000〜¥45,000（定価超え需要あり）
+  根拠：定価¥30,700の即完売モデル。Black/UNI REDが最強カラー。
+  検索URL：https://www.mercari.com/jp/search/?keyword=Supreme+Jordan+Track+Jacket+2026
+
+候補②【手堅い】
+  Supreme × Jordan Brand Shorts SS2026
+  仕入れ想定：¥12,000〜¥16,000
+  売値想定：¥20,000〜¥25,000
+  根拠：定価¥21,400。サイズ関係なく回転しやすいカテゴリ。
+  検索URL：https://www.mercari.com/jp/search/?keyword=Supreme+Jordan+Shorts+2026
+
+候補③【プレミア狙い】
+  HUF × NEWERA 59FIFTY CAP（古着/デッドストック）
+  ※自社在庫(No.21)のいいね12が証明する需要あり
+  同型の未使用品があれば仕入れる価値あり。
+  仕入れ想定：¥3,000〜¥5,000
+  売値想定：¥7,000〜¥9,000
+  検索URL：https://www.mercari.com/jp/search/?keyword=HUF+NEWERA+59FIFTY+コラボ
+
+候補④【リスク小】
+  Nike Air Jordan 1 Retro High OG 定番カラー（Black Toe / Bred Toe）
+  仕入れ想定：¥15,000〜¥20,000（ヤフオク）
+  売値想定：¥25,000〜¥32,000
+  根拠：Jordan系は季節問わず回転。Bred/Black Toeは常需要。
+  検索URL：https://www.mercari.com/jp/search/?keyword=Air+Jordan+1+Black+Toe+sold
+
+▼ 最終判断（ネイバー・仕入れ計算）
+  候補①②は仕入れ×1.5倍以上が見込める。①優先推奨。
+  候補③は少額で自社既存商品の需要検証にもなる。
+  候補④は安全牌だが差別化なし。在庫に余裕があれば検討。
+
+
+━━━━━━━━━━━━━━━━━━━━
+【タスク5】競馬重点イベント進捗（ダービー前日）
+━━━━━━━━━━━━━━━━━━━━
+
+▼ 確認済み事実（WebSearch取得・2026-05-30）
+  開催：2026年5月31日（日）東京競馬場 芝2400m 発走15:40
+  第93回 東京優駿（日本ダービー）GⅠ
+
+  枠順確定済み（5/28）：
+  ロブチェン    8枠17番 松山弘平騎手（皐月賞馬・2冠目）
+  リアライズシリウス 6枠11番
+  コンジェスタス 3枠6番 西村淳也騎手（コントレイル産駒・無敗3連勝）
+  ゴーイントゥスカイ 7枠14番 武豊騎手（青葉賞完勝・コントレイル産駒）
+
+▼ 記事状況
+  ✅ 予想記事完成版：【noteコピペ用】ダービー2026_完全版_20260527.txt 保存済み
+  ✅ 血統系記事：20260529_ダービー記事_コンジェスタス.txt 保存済み
+  ✅ 完成版：20260529_ダービー記事_完成版.txt 保存済み
+
+▼ 今日やること（5/30 土曜）
+  🔴 最優先：note予想記事に「枠順」と「最終追い切り速報」を追記
+     → 当該ファイルを開いて、枠順確定データを本文に追記してください
+     → 「ロブチェン 8枠17番 松山弘平」「ゴーイントゥスカイ 7枠14番 武豊」
+
+  🟡 X投稿（手動・凍結中のため原稿のみ）
+     platform_posts に以下2件がpending:
+     ① 本日12:00 JST：「ダービー最終調整版」→ 今すぐ手動コピペ投稿
+     ② 明日 08:00 JST：「ダービー当日」→ 明朝投稿
+
+  🟢 楽天競馬アフィリリンク：affiliate_links テーブルに1件のみ（会社名なし）
+     → ダービー記事のCTAに楽天競馬リンクが入っているか確認推奨
+
+▼ FIREスコア更新要否
+  コンジェスタス・ゴーイントゥスカイの枠順が確定。
+  東京2400m・8枠のコース適性データは更新推奨。
+
+▼ 楽天競馬アフィリLP
+  未着手（affiliate_linksテーブル確認）。ダービー後に着手可。
+
+
+━━━━━━━━━━━━━━━━━━━━
+庵野よろ 完了サマリー
+━━━━━━━━━━━━━━━━━━━━
+✅ タスク1 メルカリスナップショット：完了
+✅ タスク2 ダービー画像プロンプト：完了（Gemini/Imagen用2パターン）
+⚠️ タスク3 決算城5本：保留（Supabase vs TXTリスト不一致・CEO確認待ち）
+✅ タスク4 仕入れ候補4件：完了（Supreme×Jordan SS2026中心）
+✅ タスク5 競馬重点進捗：完了（ダービー前日版）
+
+次の計測：5/31（日）ダービー終了後（夕方）
+
+================================================================

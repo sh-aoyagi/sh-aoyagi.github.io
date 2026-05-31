@@ -1,0 +1,62 @@
+=============================
+📋 TOP画像指示書 #002 & #003
+=============================
+
+━━━━━━━━━━━━━━━━━━━
+【002】既読が、つかない夜に
+━━━━━━━━━━━━━━━━━━━
+保存ファイル名：002_既読.png
+保存先：novel_team/output/images/
+
+【ChatGPTにそのままコピペ】
+A horizontal 4-panel manga illustration in clean modern anime style.
+Panel 1: A young woman lying on a couch at night, her phone placed
+face-down on the table, a digital clock reads 22:43, soft lamp light,
+quiet atmosphere.
+Panel 2: A bright office meeting room, a man reading documents across
+the table from a woman, visible emotional distance between them.
+Panel 3: Close-up of a woman's hand holding a smartphone, the screen
+shows a message bubble, her fingers are motionless and tense.
+Panel 4: The same woman pressing her phone to her chest, eyes closed,
+a soft smile, city lights through the window at night.
+Soft color palette, contemporary Japanese setting, no text overlays.
+
+━━━━━━━━━━━━━━━━━━━
+【003】伝言板の、君へ
+━━━━━━━━━━━━━━━━━━━
+保存ファイル名：003_伝言板.png
+保存先：novel_team/output/images/
+
+【ChatGPTにそのままコピペ】
+A horizontal 4-panel manga illustration in vintage 1980s Japanese
+shoujo anime style with soft warm tones.
+Panel 1: A girl in a 1980s Japanese school uniform writing small text
+on a train station chalkboard message board with chalk, morning light,
+slight diagonal composition.
+Panel 2: Same message board the next day with a new handwritten reply,
+the girl looks shocked with wide sparkling eyes, speed lines radiating
+outward.
+Panel 3: The message board wiped completely clean, only chalk dust
+remains, the girl stands alone before it in stillness, tall empty
+space above her.
+Panel 4: A male student writing boldly in the center of the chalkboard,
+cherry blossoms visible through a station window, the girl watches
+from behind with a sharp intake of breath.
+Nostalgic pastel color palette, no text overlays.
+
+=============================
+【2本まとめての作業手順】
+
+① ChatGPTで002の画像生成 → 002_既読.png で保存
+② ChatGPTで003の画像生成 → 003_伝言板.png で保存
+③ 画像を novel_team/output/images/ に格納
+
+④ 002_既読がつかない夜に_原稿.txt をnoteに投稿
+   → 無料設定 → TOP画像に002_既読.png → 公開
+   → URLをクロコに「002のURL：https://note.com/...」と送る
+
+⑤ 003_伝言板の君へ_原稿.txt をnoteに投稿
+   → 無料設定 → TOP画像に003_伝言板.png → 公開
+   → URLをクロコに「003のURL：https://note.com/...」と送る
+
+=============================

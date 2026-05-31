@@ -1,0 +1,47 @@
+【TOP画像指示書】
+作品：ポケベルが、鳴った
+用途：note TOP画像 ＋ 4コマ漫画
+生成ツール：ChatGPT（DALL-E 3）
+保存ファイル名：001_pokeberu.png
+保存先：novel_team/output/images/
+=============================
+
+【ChatGPTに貼るプロンプト（そのままコピペ）】
+
+A horizontal 4-panel manga illustration in soft retro anime style (late 1990s Japan aesthetic). Panel 1: A high school boy in uniform secretly checking a pager under his desk in a sunlit classroom, summer light through windows. Panel 2: The same boy running through school grounds at dusk toward a payphone, orange sunset sky wide behind him. Panel 3: A high school girl in uniform standing beside a public telephone, her expression a fragile half-smile, slightly tearful. Panel 4: Two students standing side by side under a twilight sky with one star, each holding a pager displaying the same number: 14106. Warm nostalgic colors, clean line art, Japanese school setting, no text overlays.
+
+=============================
+
+【4コマの内容メモ（日本語）】
+
+コマ1：
+　平成の教室。窓際の席。男子生徒が膝の下でポケベルを見ている。
+　黒板と夏の光。横長構図で奥行きを強調。
+
+コマ2：
+　夕暮れの校内。男子が公衆電話に駆け込もうとする後ろ姿。
+　空が橙。人物は小さく、空を大きく。
+
+コマ3：
+　正門前。制服の女子が公衆電話の横に立っている。
+　少し泣きそうな笑顔。男子が画面外から近づく。
+
+コマ4：
+　二人並んで立っている。夕空・星一つ。
+　それぞれの手のポケベルに「14106」。手はまだ触れていない。
+
+=============================
+
+【サイズ・仕様】
+　横長（16:9推奨）
+　note TOP画像サイズ：1280×670px
+　色調：暖かみのあるレトロ・夕暮れオレンジ系
+　テキスト入れ：不要（ChatGPTへの指示に no text overlays と入れ済み）
+
+=============================
+
+【生成後の作業】
+1. 画像を novel_team/output/images/001_pokeberu.png に保存
+2. noteに原稿（001_ポケベルが鳴った_原稿.txt）を貼り付け
+3. この画像をTOP画像に設定して投稿
+4. 取得したURLをクロコに「ポケベルが、鳴ったのURL：https://note.com/...」と送る

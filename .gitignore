@@ -1,0 +1,13 @@
+# 非公開フォルダ
+04_手順書/
+05_宿題/
+03_メルカリ/未処理画像/
+
+# Supabase接続設定（実値 — リポジトリに含めない）
+config.js
+
+# システムファイル
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp

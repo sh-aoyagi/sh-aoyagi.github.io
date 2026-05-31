@@ -1,0 +1,158 @@
+【X・note アカウントリニューアル案 ＋ TOPバナープロンプト】
+作成：庵野（マックイーン・小五郎代行） ／ 2026-05-26
+対象：@FIRE1173Go（X）・青柳さんのnoteアカウント
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ コンセプト
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+「会社員が仕事終わりにAIを使って事業を作っている、リアルな記録」
+
+伝えたいこと：
+・競馬・Web サービス・転売・コンテンツを全部同時に動かしている
+・Claude（AI）に全部丸投げしながら自分は指示だけ出している
+・売上0からスタートしている → 読者と同じ目線
+・うまくいくかわからないが、全部公開する
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ X（@FIRE1173Go）プロフィール案
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【表示名（案）】
+A案：青柳 | AI副業実験中
+B案：青柳 FIRE | AIで事業を作る人
+C案：青柳 | 0→1 実験アカ
+
+─────────────────────────────
+【バイオ（160字以内）】
+
+▼ 案A（コンパクト・万人向け）
+AIで副業を動かす実験中｜🐎競馬予想 / 🎵ボカロ探索 / 🍺はしご酒ルーレット / 🏯決算城｜Claude全力活用・売上¥0からのリアル記録
+
+▼ 案B（熱量重視・刺さる人に刺さる）
+仕事終わりにAIで5つの事業を同時に動かしてる｜競馬予想×Web サービス×メルカリ×コンテンツ｜失敗も全部晒す
+
+▼ 案C（シンプル・広い層）
+AIと副業と夜の街。｜競馬🐎 / ボカロ🎵 / 居酒屋🍺 / 決算城🏯｜0→1 をぜんぶ公開する
+
+【推奨】案A（事業内容が一目でわかる・フォロー判断されやすい）
+
+─────────────────────────────
+【固定ツイート（バイオと連動）】
+「AIと組んで副業を全自動化する実験を始めました。
+
+競馬予想・ボカロサービス・はしご酒アプリ・メルカリ転売・金融コンテンツ——
+5事業を同時に動かして、売上ゼロから記録します。
+
+全部ここに晒すので、見てていてください。」
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ note プロフィール案
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【名前】
+青柳 | AI×副業実験
+
+【自己紹介（200〜300字）】
+
+▼ 案A（実験アカウント軸）
+仕事の傍ら、AIを使って5つの副業を同時に動かしています。
+
+競馬予想（FIREスコア）・ボカロ曲探索サービス（MIKULINK）・はしご酒先を選ぶアプリ・メルカリ転売・金融解説コンテンツ（風雲！決算城）。
+
+すべてClaude（AI）に設計・執筆・分析を丸投げして、私は指示だけ出しています。うまくいくかはわかりません。でもその記録を全部公開します。
+
+▼ 案B（読者に語りかける軸）
+「AIで副業って実際どこまでできるの？」
+
+その答えを自分で実験しています。競馬予想・Webサービス・転売・金融コンテンツを同時に動かして、売上ゼロからどこまで行けるか試してます。失敗も全部ここに書きます。
+
+【推奨】案A（事業の具体性が高く、信頼感につながる）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ X TOPバナー プロンプト（1500×500px）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【イメージコンセプト】
+深夜の東京・ネオン街 × 複数の事業アイコンが浮かぶ
+「仕事終わりに、ひとりで事業を作っている」雰囲気
+
+─────────────────────────────
+【Gemini（Imagen）用プロンプト（英語）】
+
+A wide cinematic banner for a Japanese social media profile, 1500x500px landscape.
+Dark Tokyo night cityscape background: narrow alley, wet pavement reflecting neon lights, deep navy and black tones.
+Floating above the city, five glowing icon elements arranged horizontally:
+  - A golden horse silhouette (horse racing)
+  - A pink neon microphone with pixel sparkles (Vocaloid music)
+  - A neon roulette wheel in cyan (bar roulette app)
+  - A Japanese castle silhouette in gold with samurai vibes (financial media)
+  - A glowing circuit board / AI node pattern in white (AI automation)
+Center-right area has empty dark space for text overlay.
+Color palette: deep navy black, neon pink (#ff4fd8), cyan (#54d7ff), gold (#ffcf6e).
+Mood: late night, creative, independent, cinematic.
+No people. No text. Ultra-wide 3:1 ratio. High detail, editorial quality.
+
+─────────────────────────────
+【ChatGPT（DALL-E 3）用プロンプト（日本語でも可）】
+
+横長バナー画像、1500×500px。
+背景：深夜の東京の路地裏。濡れたアスファルトにネオンが反射している。濃紺と黒のグラデーション。
+画面の横に均等に並ぶ5つの光るアイコン：
+  - 黄金色の競走馬シルエット
+  - ピンクのネオンマイク（ボカロ）
+  - シアンブルーのルーレットホイール
+  - 金色の日本の城シルエット（武将感）
+  - 白い回路パターン（AI）
+右側中央は暗めの余白（文字を後からのせる想定）。
+色調：ネオンピンク・シアン・ゴールドをアクセントに深夜感を演出。
+人物なし。テキストなし。シネマティック。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ note TOPバナー プロンプト（1280×670px）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【イメージコンセプト】
+Xより少し落ち着いた、エディトリアル感のあるバナー
+「記録を公開している人」という信頼感を出す
+
+─────────────────────────────
+【Gemini（Imagen）用プロンプト（英語）】
+
+A horizontal editorial banner for a Japanese note blog profile, 1280x670px.
+Dark background with subtle deep blue and black gradient.
+Left side: a softly glowing desk scene from above — a laptop emitting warm light, a racing program / notebook, a glass of whisky, street fashion items (cap, tote bag), scattered coins.
+Right side: clean dark space for future text overlay.
+Floating above the scene, very subtle icon motifs in soft neon: horse, castle, musical note, roulette wheel.
+Overall mood: late-night creative work, personal experiment, honest and grounded.
+Color palette: dark navy, warm amber glow from laptop, soft neon accents (pink, cyan, gold).
+No people. No text. 16:9 aspect ratio. Atmospheric, high quality.
+
+─────────────────────────────
+【ChatGPT（DALL-E 3）用プロンプト】
+
+横長バナー画像、1280×670px（16:9）。
+上から見た深夜の作業デスク。
+アイテム：光るラップトップ、競馬の新聞、ウイスキーグラス、ストリートブランドのキャップ、小銭。
+デスクの光が温かくにじんでいる。背景は深夜の濃紺〜黒。
+右側に余白（プロフィール名を後でのせる）。
+浮遊感のある小さなネオンアイコン（馬・城・音符・ルーレット）が背景に薄く入っている。
+全体のトーン：深夜の孤独な作業感・リアル・エディトリアル。
+人物なし。テキストなし。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ バナー生成後にやること
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+① Gemini（https://gemini.google.com）または ChatGPT（https://chat.openai.com）を開く
+② 上のプロンプトをそのまま貼り付けて画像生成
+③ 気に入ったものをダウンロード
+④ X：設定 → プロフィール編集 → ヘッダー画像 → アップロード
+   note：設定 → プロフィール → ヘッダー画像 → アップロード
+⑤ バイオを上の案A（推奨）に書き換える
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+■ 補足：プロフ写真について
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+現在のプロフ写真はそのまま使用。
+バナーと合わせてバイオを変更するだけでアカウントの「読まれ方」が変わる。
+バイオは案Aを入れた後、2週間でフォロワー増減を見て調整する。
