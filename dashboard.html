@@ -147,6 +147,74 @@ body { background: #0a0a0a; color: #e8e0d0; font-family: 'Segoe UI','Noto Sans J
 .loading { color: #444; font-size: 12px; }
 @media (max-width: 768px) { .kpi-bar { grid-template-columns: 1fr 1fr; } .action-bar { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .kpi-bar { grid-template-columns: 1fr; } }
+/* ── フローティング クイズボタン ── */
+#quizFloat {
+  position: fixed;
+  bottom: 32px;
+  right: 28px;
+  z-index: 400;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  padding: 13px 22px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 6px 0 #0a4f20, 0 8px 20px rgba(0,0,0,0.5);
+  transition: transform .15s, box-shadow .15s, opacity .3s;
+  user-select: none;
+}
+#quizFloat:hover { transform: translateY(2px); box-shadow: 0 4px 0 #0a4f20, 0 6px 15px rgba(0,0,0,0.5); }
+#quizFloat:active { transform: translateY(5px); box-shadow: 0 1px 0 #0a4f20, 0 3px 8px rgba(0,0,0,0.5); }
+#quizFloat.hide-float { opacity: 0; pointer-events: none; }
+/* ── アコーディオン 宿題 ── */
+.acc-todo { margin-bottom: 20px; }
+.acc-todo-title { font-size: 14px; font-weight: bold; color: #d4a017; margin-bottom: 10px; }
+.acc-item { background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
+.acc-item.done-item { opacity: 0.4; }
+.acc-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; cursor: pointer;
+  transition: background .15s; user-select: none;
+}
+.acc-head:hover { background: #1a1a1a; }
+.acc-badge { font-size: 10px; padding: 2px 8px; border-radius: 3px; flex-shrink: 0; }
+.badge-ceo { background: #7c3aed33; color: #a78bfa; border: 1px solid #7c3aed55; }
+.badge-auto { background: #0e7490aa; color: #67e8f9; border: 1px solid #0e749066; }
+.badge-done { background: #16532488; color: #4ade80; border: 1px solid #16532455; }
+.acc-head-title { flex: 1; font-size: 13px; color: #e8e0d0; line-height: 1.4; }
+.acc-arrow { font-size: 12px; color: #555; transition: transform .2s; flex-shrink: 0; }
+.acc-arrow.open { transform: rotate(180deg); }
+.acc-body { display: none; padding: 0 16px 14px; border-top: 1px solid #1e1e1e; }
+.acc-body.open { display: block; }
+.acc-context { font-size: 12px; color: #b0a898; line-height: 1.8; padding: 12px 0 10px; }
+.acc-manual { font-size: 11px; color: #666; background: #0f0f0f; border-radius: 5px; padding: 6px 10px; margin-bottom: 10px; }
+.acc-actions { display: flex; gap: 8px; }
+.acc-btn-do {
+  flex: 1; background: #0d2a1a; border: 1px solid #22c55e; color: #22c55e;
+  border-radius: 6px; padding: 7px 0; font-size: 12px; font-weight: bold;
+  cursor: pointer; transition: all .15s; text-align: center;
+}
+.acc-btn-do:hover { background: #143a20; }
+.acc-btn-skip {
+  flex: 1; background: #1a1a1a; border: 1px solid #444; color: #888;
+  border-radius: 6px; padding: 7px 0; font-size: 12px;
+  cursor: pointer; transition: all .15s; text-align: center;
+}
+.acc-btn-skip:hover { background: #222; color: #b0a898; }
+/* ── フッター クイズ静的 ── */
+.footer-quiz {
+  display: inline-block; background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #000; border-radius: 50px; padding: 10px 20px;
+  font-size: 13px; font-weight: bold; text-decoration: none;
+  box-shadow: 0 4px 0 #0a4f20, 0 6px 12px rgba(0,0,0,0.4);
+  margin-top: 10px;
+}
 </style>
 </head>
 <body>
@@ -189,6 +257,20 @@ function closeNav(){document.getElementById('navOverlay').classList.remove('open
 <div class="header">
   <h1>電脳会社 ダッシュボード</h1>
   <div class="date" id="dashDate">読み込み中…</div>
+</div>
+
+<!-- ブリーフ（最上部） -->
+<div class="brief-section">
+  <div class="brief-section-header">
+    <span class="label">📡 今日のインテリジェンス</span>
+    <span class="meta" id="briefMeta">接続中…</span>
+  </div>
+  <div class="brief-body" id="briefBody"><div class="brief-empty loading">読み込み中…</div></div>
+  <div class="brief-actions">
+    <a class="brief-action-btn" href="./kyun.html">💕 自キュンを作る →</a>
+    <a class="brief-action-btn" href="./keiba.html">🏇 競馬記事を作る →</a>
+    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn">✓ 読了</button>
+  </div>
 </div>
 
 <!-- 今日のアクション -->
@@ -315,20 +397,20 @@ function closeNav(){document.getElementById('navOverlay').classList.remove('open
   </div>
 </div>
 
-<!-- 宿題 -->
-<div class="todo-section">
-  <div class="todo-header">宿題リスト（青柳さんがやること）</div>
-  <div class="todo-body">
-    <div class="todo-item"><span class="todo-badge badge-ceo">CEO</span><span class="todo-text"><strong>GitHub Personal Access Token 取得</strong></span></div>
-    <div class="todo-item"><span class="todo-badge badge-ceo">CEO</span><span class="todo-text"><strong>A8.net 登録・楽天証券に提携申請</strong></span></div>
-    <div class="todo-item"><span class="todo-badge badge-ceo">CEO</span><span class="todo-text"><strong>決算城 SNSアカウント取得（X / インスタ / スレッズ）</strong></span></div>
-    <div class="todo-item"><span class="todo-badge badge-auto">自動</span><span class="todo-text">決算城 記事002〜100作成（「続きをやって」で再開）</span></div>
-    <div class="todo-item"><span class="todo-badge badge-auto">自動</span><span class="todo-text">Make.com スケジュール設定（競馬チーム）</span></div>
-  </div>
+<!-- アコーディオン宿題 -->
+<div class="acc-todo">
+  <div class="acc-todo-title">📋 宿題リスト（タップで理由と手順を表示）</div>
+  <div id="accTodoList"></div>
 </div>
 
-<div class="footer">電脳会社 ダッシュボード ／ 庵野総監督</div>
+<div class="footer" id="pageFooter" style="padding:24px 0 16px;">
+  電脳会社 ダッシュボード ／ 庵野総監督<br>
+  <a href="./00_ダッシュボード/quiz.html" class="footer-quiz">🎯 今日のクイズをやる</a>
 </div>
+</div>
+
+<!-- フローティング クイズボタン -->
+<a href="./00_ダッシュボード/quiz.html" id="quizFloat">🎯 クイズ</a>
 
 <script>
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -479,6 +561,108 @@ function markBriefRead() {
 
 init();
 setInterval(init, 3*60*1000);
+
+// ── フローティングボタン：スクロールでフッターに消える ──
+window.addEventListener('scroll', () => {
+  const footer = document.getElementById('pageFooter');
+  const btn = document.getElementById('quizFloat');
+  if (!footer || !btn) return;
+  const footerTop = footer.getBoundingClientRect().top;
+  if (footerTop < window.innerHeight + 300) {
+    btn.classList.add('hide-float');
+  } else {
+    btn.classList.remove('hide-float');
+  }
+}, { passive: true });
+
+// ── アコーディオン宿題 ──
+const TODO_DATA = [
+  {
+    id: 'github-token', badge: 'CEO',
+    title: 'GitHub Personal Access Token 取得',
+    context: 'GitHub Pages で電脳会社サイトを全世界に公開するために必要なパスワードのようなもの。これを庵野に渡すと、記事を書くたびにサイトが自動更新される仕組みになる。1回やれば以降は完全自動。',
+    manual: '手順書：04_手順書/01_GitHub_Token取得.txt を開いて操作するだけ（約10分）'
+  },
+  {
+    id: 'a8-rakuten', badge: 'CEO',
+    title: 'A8.net 登録・楽天証券に提携申請',
+    context: '6/15の¥3,500回収目標の最短ルート。楽天証券のアフィリエイトリンク1件のCV（口座開設完了）で約¥3,000入る。A8.netに登録して楽天証券プログラムに申請するだけ。竹中がリンク管理をする。',
+    manual: '手順書：04_手順書/02_A8net登録.txt / 所要時間：15分'
+  },
+  {
+    id: 'kassenjo-sns', badge: 'CEO',
+    title: '決算城 SNSアカウント取得（X / インスタ / スレッズ）',
+    context: '風雲！決算城の4コマをSNSで配信するためのアカウント。今すぐ名前だけ取っておけばOK（無料・各5分）。後から本格運用。名前を取り忘れると他の人に取られる可能性がある。',
+    manual: '手順書：04_手順書/04_SNSアカウント取得_決算城.txt / 3アカウント計15分'
+  },
+  {
+    id: 'kassenjo-articles', badge: '自動',
+    title: '決算城 記事002〜100作成',
+    context: '決算城サイトの企業解説記事を100本揃える作業。庵野が代行するので青柳さんは何もしなくていい。「続きをやって」と言うだけで次の記事が自動生成される。現在001（Alphabet）のみ完成。',
+    manual: '「続きをやって」と言うだけ。庵野が記事を生成してSupabaseに保存する'
+  },
+  {
+    id: 'makecom', badge: '自動',
+    title: 'Make.com スケジュール設定（競馬チーム）',
+    context: '競馬の予想記事・解説記事を毎週水〜土に自動投稿するための設定。現在は手動。設定すると寝ている間に記事が公開される。庵野が設計書を作ってから着手予定。',
+    manual: '庵野が設計書を先出しする。その後CEOがMake.comで設定（約30分）'
+  }
+];
+
+const SKIP_KEY = 'todo_skipped';
+const DO_KEY = 'todo_doing';
+const skipped = JSON.parse(localStorage.getItem(SKIP_KEY) || '[]');
+const doing = JSON.parse(localStorage.getItem(DO_KEY) || '[]');
+
+function renderAccTodos() {
+  const container = document.getElementById('accTodoList');
+  container.innerHTML = TODO_DATA.map(t => {
+    const isDoing = doing.includes(t.id);
+    const isSkipped = skipped.includes(t.id);
+    if (isSkipped) return '';
+    const bc = t.badge === 'CEO' ? 'badge-ceo' : 'badge-auto';
+    return `<div class="acc-item ${isDoing ? 'done-item' : ''}" id="acc-${t.id}">
+      <div class="acc-head" onclick="toggleAcc('${t.id}')">
+        <span class="acc-badge ${bc}">${t.badge}</span>
+        <span class="acc-head-title">${isDoing ? '✓ ' : ''}${t.title}</span>
+        <span class="acc-arrow" id="arr-${t.id}">▼</span>
+      </div>
+      <div class="acc-body" id="body-${t.id}">
+        <div class="acc-context">${t.context}</div>
+        <div class="acc-manual">📌 ${t.manual}</div>
+        <div class="acc-actions">
+          <button class="acc-btn-do" onclick="markDoing('${t.id}')">✓ やった（完了）</button>
+          <button class="acc-btn-skip" onclick="markSkip('${t.id}')">→ 今はやらない</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleAcc(id) {
+  const body = document.getElementById('body-' + id);
+  const arr = document.getElementById('arr-' + id);
+  const isOpen = body.classList.contains('open');
+  // 他を全部閉じる
+  document.querySelectorAll('.acc-body.open').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.acc-arrow.open').forEach(a => a.classList.remove('open'));
+  if (!isOpen) {
+    body.classList.add('open');
+    arr.classList.add('open');
+  }
+}
+
+function markDoing(id) {
+  if (!doing.includes(id)) { doing.push(id); localStorage.setItem(DO_KEY, JSON.stringify(doing)); }
+  renderAccTodos();
+}
+
+function markSkip(id) {
+  if (!skipped.includes(id)) { skipped.push(id); localStorage.setItem(SKIP_KEY, JSON.stringify(skipped)); }
+  renderAccTodos();
+}
+
+renderAccTodos();
 </script>
 </body>
 </html>
