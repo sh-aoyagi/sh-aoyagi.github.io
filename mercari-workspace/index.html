@@ -86,6 +86,17 @@ body {
 .nav-item { display: block; padding: 14px 18px; color: var(--text); text-decoration: none; border-bottom: 1px solid #1c1c1c; transition: background .15s; font-size: 14px; }
 .nav-item:hover { background: var(--bg3); }
 .nav-item.active { color: var(--gold); }
+/* GLOBAL NAV */
+.gnav { background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 2px; padding: 0 16px; height: 44px; flex-shrink: 0; z-index: 300; }
+.gnav-logo { font-size: 12px; font-weight: bold; color: var(--gold); letter-spacing: 2px; margin-right: 10px; white-space: nowrap; flex-shrink: 0; }
+.gnav-links { display: flex; gap: 2px; flex: 1; }
+.gnav-links a { color: #666; text-decoration: none; padding: 5px 11px; border-radius: 5px; font-size: 12px; font-weight: bold; transition: all .15s; white-space: nowrap; }
+.gnav-links a:hover { background: var(--bg3); color: var(--text); }
+.gnav-links a.active { color: var(--gold); background: #1a1200; }
+.gnav-ext { color: #444; font-size: 11px; text-decoration: none; padding: 5px 10px; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
+.gnav-ext:hover { color: #888; }
+.gnav-ham { display: none; background: none; border: 1px solid var(--border); border-radius: 5px; padding: 4px 9px; color: var(--gold); font-size: 16px; cursor: pointer; flex-shrink: 0; }
+@media (max-width: 768px) { .gnav-links, .gnav-ext { display: none; } .gnav-ham { display: block; } .top-bar .ham-btn { display: none; } }
 
 /* ── WORKSPACE ── */
 .workspace { flex: 1; display: flex; overflow: hidden; }
@@ -290,6 +301,19 @@ tbody td:first-child { text-align: left; max-width: 140px; overflow: hidden; tex
   <a class="nav-item active" href="./index.html">🛍️ メルカリ出品</a>
   <a class="nav-item" href="../kassenjo-workspace/index.html">🏯 決算城</a>
 </div>
+
+<!-- グローバルナビ -->
+<nav class="gnav">
+  <span class="gnav-logo">電脳会社</span>
+  <div class="gnav-links">
+    <a href="../dashboard.html">📊 ダッシュ</a>
+    <a href="../note.html">📝 note</a>
+    <a href="./index.html" class="active">🛍️ メルカリ</a>
+    <a href="../kassenjo.html">🏯 決算城</a>
+  </div>
+  <a class="gnav-ext" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
+  <button class="gnav-ham" onclick="toggleNav()">☰</button>
+</nav>
 
 <!-- TOP BAR -->
 <div class="top-bar">
