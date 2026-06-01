@@ -13,7 +13,7 @@
   --bg3:    #1a1a1a;
   --border: #2a2a2a;
   --text:   #e8e0d0;
-  --muted:  #888;
+  --muted:  #b0a898;
   --gold:   #d4a017;
   --green:  #22c55e;
   --red:    #ef4444;
@@ -173,7 +173,8 @@ body {
 }
 
 /* ── MIGRATION BANNER ── */
-.migration-banner {
+.migration-banner { display: none !important; } /* 実行済み 2026-06-01 */
+.migration-banner-hidden {
   background: #1a1200;
   border: 1px solid #4a3500;
   border-radius: 7px;
@@ -196,6 +197,75 @@ body {
 }
 .migration-banner .mb-copy-btn:hover { background: #5a3a00; }
 .migration-banner .mb-copy-btn.done { background: #1a4a2a; color: var(--green); border-color: #2a6a3a; }
+
+/* ── ACTION TILES ── */
+.tiles-section {
+  margin-bottom: 12px;
+}
+.tiles-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 2px 8px;
+}
+.tiles-title { font-size: 12px; font-weight: bold; color: var(--gold); letter-spacing: 1px; }
+.tiles-count { font-size: 11px; color: var(--muted); }
+.tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+@media (max-width: 900px) { .tiles-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .tiles-grid { grid-template-columns: 1fr; } }
+.action-tile {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: opacity .3s, transform .3s;
+}
+.action-tile.fading { opacity: 0; transform: scale(0.95); }
+.atile-head {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.atile-no { font-size: 10px; color: var(--muted); font-weight: bold; }
+.atile-name {
+  font-size: 11px; color: #d0c8bc; line-height: 1.4;
+  overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.atile-price {
+  display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: bold;
+}
+.atile-from { color: var(--muted); text-decoration: line-through; }
+.atile-arrow { color: #555; }
+.atile-to.up { color: var(--green); }
+.atile-to.down { color: #f59e0b; }
+.atile-diff { font-size: 10px; }
+.atile-diff.up { color: var(--green); }
+.atile-diff.down { color: #f59e0b; }
+.atile-comment {
+  width: 100%; background: #0f0f0f; border: 1px solid #333;
+  border-radius: 5px; color: #d0c8bc; font-size: 11px;
+  padding: 6px 8px; resize: none; height: 54px; line-height: 1.5;
+  font-family: inherit;
+}
+.atile-comment:focus { outline: none; border-color: var(--gold); }
+.atile-footer { display: flex; gap: 6px; }
+.atile-copy {
+  flex: 1; background: var(--bg3); border: 1px solid #444;
+  color: #d0c8bc; border-radius: 5px; font-size: 11px;
+  font-weight: bold; padding: 5px 0; cursor: pointer; transition: all .15s;
+}
+.atile-copy:hover { border-color: var(--gold); color: var(--gold); }
+.atile-copy.done { border-color: var(--green); color: var(--green); background: #0d2a1a; }
+.atile-done {
+  background: #2a0a0a; border: 1px solid #5a1a1a;
+  color: #f87171; border-radius: 5px; font-size: 11px;
+  font-weight: bold; padding: 5px 10px; cursor: pointer; transition: all .15s;
+  white-space: nowrap;
+}
+.atile-done:hover { background: #3a1010; border-color: var(--red); }
+.tiles-empty { font-size: 13px; color: var(--green); padding: 12px 0; text-align: center; }
 
 /* ── PRICE TABLE ── */
 .table-wrap {
@@ -366,6 +436,17 @@ ADD COLUMN profit_estimate    INTEGER;</div>
       <button class="mb-copy-btn" onclick="copySql(this)">SQLをコピー</button>
     </div>
 
+    <!-- アクションタイル -->
+    <div class="tiles-section">
+      <div class="tiles-header">
+        <span class="tiles-title">🎯 価格変更アクション</span>
+        <span class="tiles-count" id="tilesCount">読み込み中…</span>
+      </div>
+      <div class="tiles-grid" id="tilesGrid">
+        <div class="tiles-empty loading">読み込み中…</div>
+      </div>
+    </div>
+
     <!-- 商品価格テーブル -->
     <div class="table-wrap">
       <div class="table-head-bar">
@@ -400,9 +481,9 @@ ADD COLUMN profit_estimate    INTEGER;</div>
   <div class="right-pane">
     <div class="right-bar">
       <span class="r-label">mercari.com</span>
-      <a class="site-btn primary" href="https://www.mercari.com/jp/sell/" target="_blank">🛍️ 新規出品 →</a>
-      <a class="site-btn" href="https://www.mercari.com/jp/" target="_blank">トップを開く ↗</a>
-      <a class="site-btn" href="https://www.mercari.com/jp/mypage/" target="_blank">マイページ ↗</a>
+      <a class="site-btn primary" href="https://jp.mercari.com/mypage/listings" target="_blank">📋 出品管理 →</a>
+      <a class="site-btn" href="https://www.mercari.com/jp/sell/" target="_blank">＋ 新規出品 ↗</a>
+      <a class="site-btn" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
     </div>
     <div class="right-body">
       <div class="big-icon">🛍️</div>
@@ -462,7 +543,7 @@ async function init() {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data, error } = await sb
       .from('mercari_items')
-      .select('item_no, name, price, cost, shipping, likes_count, views, status, recommended_price, guerrilla_price')
+      .select('item_no, name, price, cost, shipping, likes_count, views, status, recommended_price, guerrilla_price, profit_estimate')
       .eq('status', 'listed')
       .order('item_no', { ascending: true });
 
@@ -470,6 +551,7 @@ async function init() {
 
     items = data || [];
     renderTable();
+    renderTiles(items);
     setBadge(`✓ listed ${items.length}件`, 'ok');
     document.getElementById('itemCount').textContent = `${items.length} 件`;
   } catch(e) {
@@ -524,11 +606,12 @@ function buildItemList(includeGuerrilla) {
   return items.map((it, i) => {
     const fee = Math.round(it.price * 0.1);
     const profit = it.price - fee - (it.cost || 0) - (it.shipping || 0);
-    const guerrillaPrice = Math.round(it.price * 0.88);
+    const guerrillaPrice = it.guerrilla_price || Math.round(it.price * 0.88);
+    const recommendedPrice = it.recommended_price || it.price;
     if (includeGuerrilla) {
-      return `${i+1}. No.${it.item_no} | ${it.name}\n   現在値: ¥${it.price.toLocaleString()} → ゲリラ価格: ¥${guerrillaPrice.toLocaleString()}（目安12%OFF / 要確認）`;
+      return `${i+1}. No.${it.item_no} | ${it.name}\n   現在値: ¥${it.price.toLocaleString()} → 推奨: ¥${recommendedPrice.toLocaleString()} / ゲリラ: ¥${guerrillaPrice.toLocaleString()}`;
     } else {
-      return `${i+1}. No.${it.item_no} | ${it.name}\n   現在値: ¥${it.price.toLocaleString()}`;
+      return `${i+1}. No.${it.item_no} | ${it.name}\n   現在値: ¥${it.price.toLocaleString()} → 推奨: ¥${recommendedPrice.toLocaleString()}`;
     }
   }).join('\n');
 }
@@ -575,6 +658,76 @@ function copyPrompt(btn) {
   const text = document.getElementById('promptBody').textContent;
   if (!text || !currentMode) return;
   navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済み';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1800);
+  });
+}
+
+// ── アクションタイル ──
+const DONE_KEY = 'tiles_done_' + new Date().toISOString().slice(0,10);
+let doneTiles = JSON.parse(localStorage.getItem(DONE_KEY) || '[]');
+
+function renderTiles(itemList) {
+  const grid = document.getElementById('tilesGrid');
+  const pending = itemList.filter(it =>
+    it.recommended_price && it.recommended_price !== it.price && !doneTiles.includes(it.item_no)
+  );
+  document.getElementById('tilesCount').textContent = `残 ${pending.length} 件`;
+  if (!pending.length) {
+    grid.innerHTML = '<div class="tiles-empty">✅ 全件対応済み</div>';
+    return;
+  }
+  grid.innerHTML = pending.map(it => {
+    const diff = it.recommended_price - it.price;
+    const dir = diff > 0 ? 'up' : 'down';
+    const sym = diff > 0 ? '▲' : '▼';
+    const comment = diff < 0
+      ? `【値下げしました】この価格が最終底値です。ご検討中の方はお早めにどうぞ。`
+      : '';
+    return `<div class="action-tile" id="atile-${it.item_no}">
+      <div class="atile-head">
+        <span class="atile-no">No.${it.item_no}</span>
+        <button class="atile-done" onclick="completeTile(${it.item_no})">✓ 完了</button>
+      </div>
+      <div class="atile-name" title="${it.name}">${it.name}</div>
+      <div class="atile-price">
+        <span class="atile-from">¥${it.price.toLocaleString()}</span>
+        <span class="atile-arrow">→</span>
+        <span class="atile-to ${dir}">¥${it.recommended_price.toLocaleString()}</span>
+        <span class="atile-diff ${dir}">${sym}${Math.abs(diff).toLocaleString()}</span>
+      </div>
+      <textarea class="atile-comment" id="atxt-${it.item_no}">${comment}</textarea>
+      <div class="atile-footer">
+        <button class="atile-copy" onclick="copyTile(${it.item_no}, this)">コピー</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function completeTile(no) {
+  const el = document.getElementById('atile-' + no);
+  if (!el) return;
+  el.classList.add('fading');
+  setTimeout(() => {
+    el.remove();
+    doneTiles.push(no);
+    localStorage.setItem(DONE_KEY, JSON.stringify(doneTiles));
+    const pending = items.filter(it =>
+      it.recommended_price && it.recommended_price !== it.price && !doneTiles.includes(it.item_no)
+    );
+    document.getElementById('tilesCount').textContent = `残 ${pending.length} 件`;
+    if (!pending.length) {
+      document.getElementById('tilesGrid').innerHTML = '<div class="tiles-empty">✅ 全件対応済み</div>';
+    }
+  }, 300);
+}
+
+function copyTile(no, btn) {
+  const txt = document.getElementById('atxt-' + no);
+  if (!txt) return;
+  navigator.clipboard.writeText(txt.value).then(() => {
     const orig = btn.textContent;
     btn.textContent = '✓ コピー済み';
     btn.classList.add('done');
