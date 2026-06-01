@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>電脳会社 ダッシュボード</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../config.js"></script>
+<script>
+// Supabase公開キー（anon keyはクライアント公開用）
+var SUPABASE_URL = 'https://dfnhkljlohlmuoidajla.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmhrbGpsb2hsbXVvaWRhamxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMzA1MDQsImV4cCI6MjA2MTkwNjUwNH0.Wc_7KHE3NQ7m_uPFBCHdV_q17fmxSM_B_p3kY3hXjTQ';
+</script>
+<script src="../config.js" onerror="void(0)"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
