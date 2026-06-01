@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自キュンワークスペース | 電脳会社</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../config.js" onerror="void(0)"></script>
+<script>
+if (typeof SUPABASE_URL === 'undefined') var SUPABASE_URL = 'https://dfnhkljlohlmuoidajla.supabase.co';
+if (typeof SUPABASE_ANON_KEY === 'undefined') var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmhrbGpsb2hsbXVvaWRhamxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMzA1MDQsImV4cCI6MjA2MTkwNjUwNH0.Wc_7KHE3NQ7m_uPFBCHdV_q17fmxSM_B_p3kY3hXjTQ';
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a0a; --bg2: #141414; --bg3: #1a1a1a;
+  --border: #2a2a2a; --text: #e8e0d0; --muted: #b0a898;
+  --gold: #d4a017; --green: #22c55e; --purple: #c084fc;
+}
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Noto Sans JP',sans-serif; min-height: 100vh; }
+/* NAV */
+.gnav { background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 2px; padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 500; }
+.gnav-logo { font-size: 13px; font-weight: bold; color: var(--gold); letter-spacing: 2px; margin-right: 10px; white-space: nowrap; flex-shrink: 0; }
+.gnav-links { display: flex; gap: 2px; flex: 1; }
+.gnav-links a { color: #666; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; transition: all .15s; white-space: nowrap; }
+.gnav-links a:hover { background: var(--bg3); color: var(--text); }
+.gnav-links a.active { color: var(--purple); background: #1a0a2a; }
+.gnav-ham { display: none; background: none; border: 1px solid var(--border); border-radius: 5px; padding: 4px 9px; color: var(--gold); font-size: 16px; cursor: pointer; flex-shrink: 0; margin-left: auto; }
+@media (max-width: 768px) { .gnav-links { display: none; } .gnav-ham { display: block; } }
+.nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 600; }
+.nav-overlay.open { display: block; }
+.nav-sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); z-index: 700; transition: left .22s; padding: 20px 0; }
+.nav-sidebar.open { left: 0; }
+.nav-x { position: absolute; top: 14px; right: 14px; cursor: pointer; color: var(--muted); font-size: 18px; }
+.nav-head { padding: 0 18px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: bold; color: var(--gold); letter-spacing: 2px; }
+.nav-item { display: block; padding: 14px 18px; color: var(--text); text-decoration: none; border-bottom: 1px solid #1c1c1c; font-size: 14px; transition: background .15s; }
+.nav-item:hover { background: var(--bg3); }
+.nav-item.active { color: var(--purple); }
+/* PROGRESS BAR */
+.progress-bar-wrap { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; gap: 16px; }
+.prog-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.prog-bar { flex: 1; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #c084fc); border-radius: 3px; transition: width .6s; }
+.prog-count { font-size: 13px; font-weight: bold; color: var(--purple); white-space: nowrap; }
+.prog-today { font-size: 12px; color: var(--green); white-space: nowrap; }
+.conn-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); flex-shrink: 0; }
+.conn-badge.ok { color: var(--green); border-color: #1a4a2a; background: #0d2a19; }
+.conn-badge.err { color: #f87171; border-color: #4a1a1a; background: #2a0d0d; }
+/* MAIN */
+.main { padding: 16px 20px; }
+/* COMPLETED STATE */
+.completed-banner { background: linear-gradient(135deg, #0d2a19, #1a3a0a); border: 1px solid var(--green); border-radius: 12px; padding: 32px; text-align: center; margin-bottom: 20px; }
+.completed-icon { font-size: 48px; margin-bottom: 12px; }
+.completed-title { font-size: 22px; font-weight: bold; color: var(--green); margin-bottom: 6px; }
+.completed-sub { font-size: 13px; color: var(--muted); }
+/* 3-COLUMN CARDS */
+.cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+@media (max-width: 900px) { .cards-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .cards-row { grid-template-columns: 1fr; } }
+.story-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: opacity .3s, transform .3s; }
+.story-card.fading { opacity: 0; transform: scale(0.95); }
+.card-num { font-size: 10px; font-weight: bold; color: var(--purple); background: #1a0a2a; padding: 5px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.card-story-title { font-size: 12px; font-weight: bold; color: var(--text); padding: 10px 12px 6px; line-height: 1.5; }
+.card-meta { padding: 0 12px 8px; display: flex; gap: 5px; flex-wrap: wrap; }
+.meta-chip { font-size: 9px; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 2px 7px; color: var(--muted); }
+/* FIELD BLOCKS */
+.field-block { border-top: 1px solid var(--border); }
+.field-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--bg3); }
+.field-label { font-size: 10px; font-weight: bold; color: var(--muted); letter-spacing: .5px; }
+.field-copy-btn { background: var(--gold); color: #000; border: none; border-radius: 12px; padding: 2px 10px; font-size: 10px; font-weight: bold; cursor: pointer; transition: background .15s; white-space: nowrap; }
+.field-copy-btn:hover { background: #e8b420; }
+.field-copy-btn.done { background: var(--green); }
+.field-body { padding: 6px 10px; font-size: 11px; color: #d0c8bc; line-height: 1.6; max-height: 80px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+.field-body.tall { max-height: 120px; }
+.field-body.empty { color: var(--muted); font-style: italic; }
+textarea.field-body { width: 100%; background: #0f0f0f; border: none; border-top: none; resize: none; font-family: inherit; outline: none; }
+textarea.field-body:focus { background: #111; }
+/* DISMISS BUTTON */
+.dismiss-btn { margin: 10px 12px 12px; background: #0d2a1a; border: 1px solid var(--green); color: var(--green); border-radius: 7px; padding: 8px 0; font-size: 12px; font-weight: bold; cursor: pointer; width: calc(100% - 24px); transition: all .15s; }
+.dismiss-btn:hover { background: #143a20; }
+/* ARCHIVE */
+.archive-toggle { font-size: 12px; color: var(--muted); cursor: pointer; padding: 6px 0; display: flex; align-items: center; gap: 6px; user-select: none; }
+.archive-toggle:hover { color: var(--text); }
+.archive-list { margin-top: 10px; display: none; }
+.archive-list.open { display: block; }
+.archive-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+.archive-title { font-size: 12px; color: var(--muted); }
+.archive-date { font-size: 10px; color: #555; }
+</style>
+</head>
+<body>
+
+<nav class="gnav">
+  <span class="gnav-logo">電脳会社</span>
+  <div class="gnav-links">
+    <a href="../dashboard.html">📊 ダッシュ</a>
+    <a href="./index.html" class="active">💕 自キュン</a>
+    <a href="../keiba-workspace/index.html">🏇 競馬</a>
+    <a href="../mercari.html">🛍️ メルカリ</a>
+    <a href="../kassenjo.html">🏯 決算城</a>
+  </div>
+  <button class="gnav-ham" onclick="toggleNav()">☰</button>
+</nav>
+
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+<div class="nav-sidebar" id="navSidebar">
+  <div class="nav-x" onclick="closeNav()">✕</div>
+  <div class="nav-head">メニュー</div>
+  <a class="nav-item" href="../dashboard.html">📊 ダッシュボード</a>
+  <a class="nav-item active" href="./index.html">💕 自キュン</a>
+  <a class="nav-item" href="../keiba-workspace/index.html">🏇 競馬</a>
+  <a class="nav-item" href="../mercari.html">🛍️ メルカリ</a>
+  <a class="nav-item" href="../kassenjo.html">🏯 決算城</a>
+</div>
+<script>
+function toggleNav(){document.getElementById('navOverlay').classList.toggle('open');document.getElementById('navSidebar').classList.toggle('open');}
+function closeNav(){document.getElementById('navOverlay').classList.remove('open');document.getElementById('navSidebar').classList.remove('open');}
+</script>
+
+<!-- 進捗バー -->
+<div class="progress-bar-wrap">
+  <span class="prog-label">Season00</span>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <span class="prog-count" id="progCount">… / 100本</span>
+  <span class="prog-today" id="progToday">今日 0/3本</span>
+  <span class="conn-badge" id="connBadge">接続中…</span>
+</div>
+
+<div class="main">
+
+  <!-- 本日完了バナー（非表示→3本消込で表示） -->
+  <div id="completedBanner" style="display:none" class="completed-banner">
+    <div class="completed-icon">🎉</div>
+    <div class="completed-title">本日分完了！</div>
+    <div class="completed-sub">3本の作業お疲れさまでした。明日また3本進めましょう。</div>
+  </div>
+
+  <!-- 3枚カード -->
+  <div class="cards-row" id="cardsRow"></div>
+
+  <!-- アーカイブ -->
+  <div class="archive-toggle" onclick="toggleArchive()">
+    <span id="archiveArrow">▶</span> 過去2週間のアーカイブ（<span id="archiveCount">0</span>本）
+  </div>
+  <div class="archive-list" id="archiveList"></div>
+
+</div>
+
+<script>
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const TODAY = new Date().toISOString().slice(0,10);
+const ARCHIVE_KEY = 'kyun_archive';
+const TODAY_DONE_KEY = 'kyun_done_' + TODAY;
+
+let allStories = [];
+let todayDone = JSON.parse(localStorage.getItem(TODAY_DONE_KEY) || '[]');
+
+function getArchive() {
+  const raw = JSON.parse(localStorage.getItem(ARCHIVE_KEY) || '[]');
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 14);
+  return raw.filter(a => new Date(a.date) >= cutoff);
+}
+
+function saveArchive(items) {
+  localStorage.setItem(ARCHIVE_KEY, JSON.stringify(items));
+}
+
+async function init() {
+  try {
+    const { data, error } = await sb
+      .from('novel_stories')
+      .select('id,title,persona,emotion_type,era,free_text,paid_text,hook_line,chatgpt_image_prompt,x_copy,status,note_url')
+      .neq('status', 'published')
+      .order('id', { ascending: true });
+    if (error) throw error;
+
+    allStories = (data || []).filter(s => !todayDone.includes(s.id));
+    const total = (data || []).length + getArchive().filter(a => a.wasPublished).length;
+    const pubCount = (await sb.from('novel_stories').select('id',{count:'exact',head:true}).eq('status','published')).count || 0;
+    const grandTotal = (data||[]).length + pubCount;
+
+    document.getElementById('progCount').textContent = grandTotal + ' / 100本';
+    document.getElementById('progFill').style.width = Math.min(grandTotal, 100) + '%';
+    updateTodayCount();
+    renderCards();
+    renderArchive();
+
+    document.getElementById('connBadge').textContent = '✓ ' + grandTotal + '本';
+    document.getElementById('connBadge').className = 'conn-badge ok';
+  } catch(e) {
+    document.getElementById('connBadge').textContent = 'エラー: ' + e.message.slice(0,25);
+    document.getElementById('connBadge').className = 'conn-badge err';
+  }
+}
+
+function updateTodayCount() {
+  const done = todayDone.length;
+  document.getElementById('progToday').textContent = `今日 ${done}/3本`;
+  if (done >= 3) {
+    document.getElementById('completedBanner').style.display = 'block';
+  }
+}
+
+function renderCards() {
+  const row = document.getElementById('cardsRow');
+  const pending = allStories.slice(0, 3);
+  if (!pending.length && todayDone.length >= 3) {
+    row.innerHTML = '';
+    return;
+  }
+  if (!pending.length) {
+    row.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:13px;">記事がありません。庵野に追加を依頼してください。</div>';
+    return;
+  }
+  row.innerHTML = pending.map((s, i) => cardHTML(s, i)).join('');
+}
+
+function cardHTML(s, i) {
+  const num = todayDone.length + i + 1;
+  const imgP = s.chatgpt_image_prompt || '';
+  const title = s.title || '';
+  const body = (s.free_text || '') + (s.paid_text ? '\n\n---有料---\n' + s.paid_text : '');
+  const tags = [s.persona, s.emotion_type, s.era].filter(Boolean).join(' ');
+  return `<div class="story-card" id="sc-${s.id}">
+    <div class="card-num">
+      <span>本日 ${num}本目</span>
+      <span style="color:var(--muted)">${s.persona||''}</span>
+    </div>
+    <div class="card-story-title">${title || '（タイトルなし）'}</div>
+    <div class="card-meta">
+      ${s.emotion_type?`<span class="meta-chip">💭${s.emotion_type}</span>`:''}
+      ${s.era?`<span class="meta-chip">📅${s.era}</span>`:''}
+    </div>
+    <div class="field-block">
+      <div class="field-head"><span class="field-label">画像プロンプト</span>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <a href="https://gemini.google.com/app" target="_blank" style="font-size:9px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:2px 6px;">Gemini↗</a>
+          <button class="field-copy-btn" onclick="fc('${s.id}','img',this)">コピー</button>
+        </div>
+      </div>
+      <textarea class="field-body ${imgP?'':'empty'}" id="f-img-${s.id}">${imgP||'（なし）'}</textarea>
+    </div>
+    <div class="field-block">
+      <div class="field-head"><span class="field-label">タイトル</span><button class="field-copy-btn" onclick="fc('${s.id}','title',this)">コピー</button></div>
+      <textarea class="field-body ${title?'':'empty'}" id="f-title-${s.id}" rows="2">${title||'（なし）'}</textarea>
+    </div>
+    <div class="field-block">
+      <div class="field-head"><span class="field-label">本文</span><button class="field-copy-btn" onclick="fc('${s.id}','body',this)">コピー</button></div>
+      <textarea class="field-body tall ${body?'':'empty'}" id="f-body-${s.id}">${body||'（なし）'}</textarea>
+    </div>
+    <div class="field-block">
+      <div class="field-head"><span class="field-label">タグ</span><button class="field-copy-btn" onclick="fc('${s.id}','tags',this)">コピー</button></div>
+      <textarea class="field-body ${tags?'':'empty'}" id="f-tags-${s.id}" rows="2">${tags||'自キュン 恋愛小説'}</textarea>
+    </div>
+    <button class="dismiss-btn" onclick="dismiss('${s.id}','${encodeURIComponent(title)}')">✓ note投稿済み（消込）</button>
+  </div>`;
+}
+
+const FIELD_DATA = {};
+function buildFieldData(s) {
+  FIELD_DATA[s.id] = {
+    img: s.chatgpt_image_prompt || '',
+    title: s.title || '',
+    body: (s.free_text||'') + (s.paid_text ? '\n\n---有料---\n'+s.paid_text : ''),
+    tags: [s.persona,s.emotion_type,s.era].filter(Boolean).join(' ') || '自キュン 恋愛小説'
+  };
+}
+
+async function dismiss(id, encodedTitle) {
+  const el = document.getElementById('sc-' + id);
+  if (!el) return;
+  const title = decodeURIComponent(encodedTitle);
+
+  el.classList.add('fading');
+  setTimeout(async () => {
+    // Supabase更新
+    await sb.from('novel_stories').update({ status: 'published' }).eq('id', parseInt(id)).catch(()=>{});
+
+    // localStorage
+    todayDone.push(parseInt(id));
+    localStorage.setItem(TODAY_DONE_KEY, JSON.stringify(todayDone));
+    allStories = allStories.filter(s => s.id !== parseInt(id));
+
+    // アーカイブ
+    const arch = getArchive();
+    arch.push({ id, title, date: TODAY, wasPublished: true });
+    saveArchive(arch);
+
+    updateTodayCount();
+    renderCards();
+    renderArchive();
+  }, 300);
+}
+
+function fc(id, field, btn) {
+  const el = document.getElementById('f-' + field + '-' + id);
+  if (!el || el.classList.contains('empty')) return;
+  const text = el.tagName === 'TEXTAREA' ? el.value : el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1500);
+  });
+}
+
+function renderArchive() {
+  const arch = getArchive();
+  document.getElementById('archiveCount').textContent = arch.length;
+  const list = document.getElementById('archiveList');
+  if (!arch.length) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">アーカイブなし</div>';
+    return;
+  }
+  list.innerHTML = [...arch].reverse().map(a =>
+    `<div class="archive-item">
+      <span class="archive-title">✓ ${a.title}</span>
+      <span class="archive-date">${a.date}</span>
+    </div>`
+  ).join('');
+}
+
+function toggleArchive() {
+  const list = document.getElementById('archiveList');
+  const arrow = document.getElementById('archiveArrow');
+  const isOpen = list.classList.contains('open');
+  list.classList.toggle('open');
+  arrow.textContent = isOpen ? '▶' : '▼';
+}
+
+init();
+</script>
+</body>
+</html>

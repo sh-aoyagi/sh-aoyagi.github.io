@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>競馬ワークスペース | 電脳会社</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../config.js" onerror="void(0)"></script>
+<script>
+if (typeof SUPABASE_URL === 'undefined') var SUPABASE_URL = 'https://dfnhkljlohlmuoidajla.supabase.co';
+if (typeof SUPABASE_ANON_KEY === 'undefined') var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmhrbGpsb2hsbXVvaWRhamxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMzA1MDQsImV4cCI6MjA2MTkwNjUwNH0.Wc_7KHE3NQ7m_uPFBCHdV_q17fmxSM_B_p3kY3hXjTQ';
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a0a; --bg2: #141414; --bg3: #1a1a1a;
+  --border: #2a2a2a; --text: #e8e0d0; --muted: #b0a898;
+  --gold: #d4a017; --green: #22c55e; --keiba: #f97316;
+}
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Noto Sans JP',sans-serif; min-height: 100vh; }
+/* NAV */
+.gnav { background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 2px; padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 500; }
+.gnav-logo { font-size: 13px; font-weight: bold; color: var(--gold); letter-spacing: 2px; margin-right: 10px; white-space: nowrap; flex-shrink: 0; }
+.gnav-links { display: flex; gap: 2px; flex: 1; }
+.gnav-links a { color: #666; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; transition: all .15s; white-space: nowrap; }
+.gnav-links a:hover { background: var(--bg3); color: var(--text); }
+.gnav-links a.active { color: var(--keiba); background: #1a0a00; }
+.gnav-ham { display: none; background: none; border: 1px solid var(--border); border-radius: 5px; padding: 4px 9px; color: var(--gold); font-size: 16px; cursor: pointer; flex-shrink: 0; margin-left: auto; }
+@media (max-width: 768px) { .gnav-links { display: none; } .gnav-ham { display: block; } }
+.nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 600; }
+.nav-overlay.open { display: block; }
+.nav-sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); z-index: 700; transition: left .22s; padding: 20px 0; }
+.nav-sidebar.open { left: 0; }
+.nav-x { position: absolute; top: 14px; right: 14px; cursor: pointer; color: var(--muted); font-size: 18px; }
+.nav-head { padding: 0 18px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: bold; color: var(--gold); letter-spacing: 2px; }
+.nav-item { display: block; padding: 14px 18px; color: var(--text); text-decoration: none; border-bottom: 1px solid #1c1c1c; font-size: 14px; transition: background .15s; }
+.nav-item:hover { background: var(--bg3); }
+.nav-item.active { color: var(--keiba); }
+/* HEADER BAR */
+.top-bar { height: 52px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; padding: 0 20px; flex-shrink: 0; }
+.bar-title { font-size: 14px; font-weight: bold; color: var(--keiba); letter-spacing: 1px; }
+.article-select { flex: 1; max-width: 480px; background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 13px; }
+.conn-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); flex-shrink: 0; margin-left: auto; }
+.conn-badge.ok { color: var(--green); border-color: #1a4a2a; background: #0d2a19; }
+.conn-badge.err { color: #f87171; border-color: #4a1a1a; background: #2a0d0d; }
+/* LAYOUT */
+.workspace { display: flex; overflow: hidden; height: calc(100vh - 100px); }
+/* LEFT */
+.left-pane { width: 42%; overflow-y: auto; border-right: 1px solid var(--border); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+/* RACE HEADER */
+.race-card { background: linear-gradient(135deg, #1a0a00, #0d1a00); border: 1px solid #4a2a00; border-radius: 10px; padding: 16px; }
+.race-grade { font-size: 10px; font-weight: bold; color: var(--keiba); background: #3a1a00; border: 1px solid #6a3a00; border-radius: 10px; padding: 2px 8px; display: inline-block; margin-bottom: 6px; }
+.race-name { font-size: 18px; font-weight: bold; color: var(--text); margin-bottom: 4px; }
+.race-meta { font-size: 11px; color: var(--muted); }
+/* WEEKLY CALENDAR */
+.calendar { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.cal-title { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: bold; color: var(--gold); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.cal-day { padding: 8px 4px; text-align: center; border-right: 1px solid var(--border); }
+.cal-day:last-child { border-right: none; }
+.cal-day-name { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.cal-day.off .cal-day-name { color: #444; }
+.cal-task { font-size: 9px; line-height: 1.4; }
+.cal-task.has-task { color: var(--keiba); font-weight: bold; }
+.cal-task.off { color: #444; }
+.cal-day.today { background: #1a0a00; border-top: 2px solid var(--keiba); }
+/* SECTION CARD */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.card-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--bg3); border-bottom: 1px solid var(--border); }
+.card-label { font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.card-btns { display: flex; gap: 6px; }
+.copy-btn { background: var(--gold); color: #000; border: none; border-radius: 16px; padding: 3px 12px; font-size: 10px; font-weight: bold; cursor: pointer; transition: background .15s; }
+.copy-btn:hover { background: #e8b420; }
+.copy-btn.done { background: var(--green); }
+.card-body { padding: 10px 12px; font-size: 12px; color: var(--text); white-space: pre-wrap; line-height: 1.7; max-height: 200px; overflow-y: auto; }
+.card-body.tall { max-height: 280px; }
+.card-body.empty { color: var(--muted); font-style: italic; }
+/* RIGHT */
+.right-pane { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.right-title { font-size: 12px; font-weight: bold; color: var(--gold); letter-spacing: 1px; margin-bottom: 8px; }
+/* NOTE ARTICLES */
+.note-article { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
+.na-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+.na-status { font-size: 9px; padding: 2px 7px; border-radius: 8px; font-weight: bold; flex-shrink: 0; }
+.s-draft { background: #1a1a2a; color: #7c8cf8; border: 1px solid #3a3a5a; }
+.s-approved { background: #0d2a19; color: var(--green); border: 1px solid #1a4a2a; }
+.s-published { background: #2a1a0a; color: var(--gold); border: 1px solid #4a3a0a; }
+.na-title { font-size: 12px; color: var(--text); font-weight: bold; flex: 1; line-height: 1.4; }
+.na-links { padding: 6px 12px 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.na-link-btn { font-size: 10px; background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 12px; padding: 3px 10px; cursor: pointer; transition: all .15s; text-decoration: none; display: inline-block; }
+.na-link-btn:hover { border-color: var(--gold); color: var(--gold); }
+.na-link-btn.primary { background: var(--gold); color: #000; border-color: var(--gold); font-weight: bold; }
+.na-link-btn.primary:hover { background: #e8b420; }
+/* COMPETITOR */
+.competitor-list { display: flex; flex-direction: column; gap: 6px; }
+.comp-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
+.comp-title { font-size: 11px; color: var(--text); line-height: 1.4; margin-bottom: 3px; }
+.comp-meta { font-size: 10px; color: var(--muted); }
+.empty-state { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav class="gnav">
+  <span class="gnav-logo">電脳会社</span>
+  <div class="gnav-links">
+    <a href="../dashboard.html">📊 ダッシュ</a>
+    <a href="../kyun-workspace/index.html">💕 自キュン</a>
+    <a href="./index.html" class="active">🏇 競馬</a>
+    <a href="../mercari.html">🛍️ メルカリ</a>
+    <a href="../kassenjo.html">🏯 決算城</a>
+  </div>
+  <button class="gnav-ham" onclick="toggleNav()">☰</button>
+</nav>
+
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+<div class="nav-sidebar" id="navSidebar">
+  <div class="nav-x" onclick="closeNav()">✕</div>
+  <div class="nav-head">メニュー</div>
+  <a class="nav-item" href="../dashboard.html">📊 ダッシュボード</a>
+  <a class="nav-item" href="../kyun-workspace/index.html">💕 自キュン</a>
+  <a class="nav-item active" href="./index.html">🏇 競馬</a>
+  <a class="nav-item" href="../mercari.html">🛍️ メルカリ</a>
+  <a class="nav-item" href="../kassenjo.html">🏯 決算城</a>
+</div>
+<script>
+function toggleNav(){document.getElementById('navOverlay').classList.toggle('open');document.getElementById('navSidebar').classList.toggle('open');}
+function closeNav(){document.getElementById('navOverlay').classList.remove('open');document.getElementById('navSidebar').classList.remove('open');}
+</script>
+
+<div class="top-bar">
+  <span class="bar-title">🏇 競馬ワークスペース</span>
+  <select class="article-select" id="articleSelect" onchange="onSelect(this.value)">
+    <option value="">── 記事を選択 ──</option>
+  </select>
+  <span class="conn-badge" id="connBadge">接続中…</span>
+</div>
+
+<div class="workspace">
+
+  <!-- LEFT: レース情報・カレンダー -->
+  <div class="left-pane">
+
+    <!-- 今週のメインレース -->
+    <div class="race-card">
+      <div class="race-grade">GI</div>
+      <div class="race-name">安田記念 2026</div>
+      <div class="race-meta">📅 6/7（日） ／ 東京11R ／ 芝1600m ／ フルゲート18頭</div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.8;">
+        <span style="color:var(--text)">有力馬：</span>アドマイヤズーム・パンジャタワー・ガイアフォース・トロヴァトーレ・ワールズエンド
+      </div>
+    </div>
+
+    <!-- 週次カレンダー -->
+    <div class="calendar">
+      <div class="cal-title">今週のコンテンツ計画</div>
+      <div class="cal-grid">
+        <div class="cal-day off"><div class="cal-day-name">月</div><div class="cal-task off">お休み</div></div>
+        <div class="cal-day off"><div class="cal-day-name">火</div><div class="cal-task off">お休み</div></div>
+        <div class="cal-day today"><div class="cal-day-name">水</div><div class="cal-task has-task">予想記事<br>¥100</div></div>
+        <div class="cal-day"><div class="cal-day-name">木</div><div class="cal-task has-task">本命系<br>無料</div></div>
+        <div class="cal-day"><div class="cal-day-name">金</div><div class="cal-task has-task">血統系<br>無料</div></div>
+        <div class="cal-day"><div class="cal-day-name">土</div><div class="cal-task has-task">追い切り<br>速報追記</div></div>
+        <div class="cal-day"><div class="cal-day-name">日</div><div class="cal-task" style="color:var(--keiba);">レース当日</div></div>
+      </div>
+    </div>
+
+    <!-- 選択記事のフィールド -->
+    <div class="card" id="imgCard" style="display:none">
+      <div class="card-head">
+        <span class="card-label">[1] TOP画像プロンプト</span>
+        <div class="card-btns">
+          <a class="na-link-btn" href="https://gemini.google.com/app" target="_blank" style="font-size:10px;padding:3px 10px;">Gemini ↗</a>
+          <button class="copy-btn" onclick="copyField('fImg',this)">コピー</button>
+        </div>
+      </div>
+      <div class="card-body empty" id="fImg">記事を選択してください</div>
+    </div>
+
+    <div class="card" id="titleCard" style="display:none">
+      <div class="card-head">
+        <span class="card-label">[2] タイトル</span>
+        <button class="copy-btn" onclick="copyField('fTitle',this)">コピー</button>
+      </div>
+      <div class="card-body empty" id="fTitle">記事を選択してください</div>
+    </div>
+
+    <div class="card" id="freeCard" style="display:none">
+      <div class="card-head">
+        <span class="card-label">[3] 無料パート</span>
+        <button class="copy-btn" onclick="copyField('fFree',this)">コピー</button>
+      </div>
+      <div class="card-body tall empty" id="fFree">記事を選択してください</div>
+    </div>
+
+    <div class="card" id="paidCard" style="display:none">
+      <div class="card-head">
+        <span class="card-label">[4] 有料パート</span>
+        <button class="copy-btn" onclick="copyField('fPaid',this)">コピー</button>
+      </div>
+      <div class="card-body tall empty" id="fPaid">記事を選択してください</div>
+    </div>
+
+    <div class="card" id="tagsCard" style="display:none">
+      <div class="card-head">
+        <span class="card-label">[5] タグ</span>
+        <button class="copy-btn" onclick="copyField('fTags',this)">コピー</button>
+      </div>
+      <div class="card-body empty" id="fTags">記事を選択してください</div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: 記事一覧・競合分析 -->
+  <div class="right-pane">
+
+    <div class="right-title">📝 note記事（競馬）</div>
+    <div id="noteArticlesList"><div class="empty-state">読み込み中…</div></div>
+
+    <div class="right-title" style="margin-top:8px;">🔍 競合タイトル分析</div>
+    <div id="competitorList"><div class="empty-state">カテゴリ: racing のデータを読み込み中…</div></div>
+
+  </div>
+
+</div>
+
+<script>
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let articles = [];
+
+async function init() {
+  try {
+    const [artRes, compRes] = await Promise.all([
+      sb.from('note_articles')
+        .select('id, article_no, title, status, free_content, paid_content, tags, cover_image_prompt, price')
+        .eq('category', '競馬')
+        .order('article_no', { ascending: true }),
+      sb.from('note_research_cache')
+        .select('topic, example_titles, run_date')
+        .eq('category', 'racing')
+        .order('run_date', { ascending: false })
+        .limit(5)
+    ]);
+
+    if (artRes.error) throw artRes.error;
+    articles = artRes.data || [];
+
+    // セレクター
+    const sel = document.getElementById('articleSelect');
+    articles.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id;
+      opt.textContent = `#${a.article_no} [${a.status}] ${a.title}`;
+      sel.appendChild(opt);
+    });
+
+    // 記事リスト（右ペイン）
+    const listEl = document.getElementById('noteArticlesList');
+    if (!articles.length) {
+      listEl.innerHTML = '<div class="empty-state">競馬記事がありません。「続きをやって」で生成できます。</div>';
+    } else {
+      listEl.innerHTML = articles.map(a => {
+        const sc = a.status === 'approved' ? 's-approved' : a.status === 'published' ? 's-published' : 's-draft';
+        const st = a.status === 'approved' ? '承認済' : a.status === 'published' ? '公開済' : '下書き';
+        return `<div class="note-article">
+          <div class="na-head">
+            <span class="na-status ${sc}">${st}</span>
+            <span class="na-title">${a.title}</span>
+          </div>
+          <div class="na-links">
+            <span style="font-size:10px;color:var(--muted);">¥${a.price || '--'}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // 競合分析
+    const compEl = document.getElementById('competitorList');
+    const compData = compRes.data || [];
+    if (!compData.length) {
+      compEl.innerHTML = '<div class="empty-state">競合データなし（庵野よろで収集）</div>';
+    } else {
+      const allTitles = [];
+      compData.forEach(d => { if (Array.isArray(d.example_titles)) allTitles.push(...d.example_titles); });
+      const unique = [...new Set(allTitles)].slice(0, 8);
+      compEl.innerHTML = `<div class="competitor-list">${unique.map(t =>
+        `<div class="comp-item"><div class="comp-title">${t}</div></div>`
+      ).join('')}</div>`;
+    }
+
+    document.getElementById('connBadge').textContent = `✓ 競馬${articles.length}本`;
+    document.getElementById('connBadge').className = 'conn-badge ok';
+  } catch(e) {
+    document.getElementById('connBadge').textContent = 'エラー: ' + e.message.slice(0,30);
+    document.getElementById('connBadge').className = 'conn-badge err';
+  }
+}
+
+function onSelect(id) {
+  const cards = ['imgCard','titleCard','freeCard','paidCard','tagsCard'];
+  if (!id) { cards.forEach(c => document.getElementById(c).style.display = 'none'); return; }
+  const a = articles.find(x => x.id === id);
+  if (!a) return;
+  cards.forEach(c => document.getElementById(c).style.display = 'block');
+  setField('fImg', a.cover_image_prompt);
+  setField('fTitle', a.title);
+  setField('fFree', a.free_content, true);
+  setField('fPaid', a.paid_content, true);
+  setField('fTags', Array.isArray(a.tags) ? a.tags.join(' ') : (a.tags || ''));
+}
+
+function setField(id, val, tall) {
+  const el = document.getElementById(id);
+  if (val) { el.textContent = val; el.className = 'card-body' + (tall ? ' tall' : ''); }
+  else { el.textContent = '（データなし）'; el.className = 'card-body' + (tall ? ' tall' : '') + ' empty'; }
+}
+
+function copyField(id, btn) {
+  const el = document.getElementById(id);
+  if (el.classList.contains('empty')) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済み';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1800);
+  });
+}
+
+init();
+</script>
+</body>
+</html>
