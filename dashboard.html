@@ -1,1 +1,482 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=./00_ダッシュボード/dashboard.html"><script>location.href='./00_ダッシュボード/dashboard.html';</script></head></html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電脳会社 ダッシュボード</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var SUPABASE_URL = 'https://dfnhkljlohlmuoidajla.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmhrbGpsb2hsbXVvaWRhamxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMzA1MDQsImV4cCI6MjA2MTkwNjUwNH0.Wc_7KHE3NQ7m_uPFBCHdV_q17fmxSM_B_p3kY3hXjTQ';
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; color: #e8e0d0; font-family: 'Segoe UI','Noto Sans JP',sans-serif; min-height: 100vh; }
+.page-body { padding: 20px; }
+/* NAV */
+.gnav { background: #141414; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 2px; padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 500; }
+.gnav-logo { font-size: 13px; font-weight: bold; color: #d4a017; letter-spacing: 2px; margin-right: 10px; white-space: nowrap; flex-shrink: 0; }
+.gnav-links { display: flex; gap: 2px; flex: 1; }
+.gnav-links a { color: #666; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; transition: all .15s; white-space: nowrap; }
+.gnav-links a:hover { background: #1a1a1a; color: #e8e0d0; }
+.gnav-links a.active { color: #d4a017; background: #1a1200; }
+.gnav-ext { color: #444; font-size: 11px; text-decoration: none; padding: 5px 10px; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
+.gnav-ext:hover { color: #888; }
+.gnav-ham { display: none; background: none; border: 1px solid #2a2a2a; border-radius: 5px; padding: 4px 9px; color: #d4a017; font-size: 16px; cursor: pointer; flex-shrink: 0; }
+@media (max-width: 768px) { .gnav-links, .gnav-ext { display: none; } .gnav-ham { display: block; } }
+/* SIDEBAR */
+.nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 600; }
+.nav-overlay.open { display: block; }
+.nav-sidebar { position: fixed; top: 0; left: -290px; width: 290px; height: 100vh; background: #141414; border-right: 1px solid #2a2a2a; z-index: 700; transition: left .22s ease; padding: 22px 0; }
+.nav-sidebar.open { left: 0; }
+.nav-x { position: absolute; top: 14px; right: 16px; cursor: pointer; color: #666; font-size: 19px; }
+.nav-head { padding: 0 20px 16px; border-bottom: 1px solid #2a2a2a; font-size: 13px; font-weight: bold; color: #d4a017; letter-spacing: 2px; }
+.nav-item { display: block; padding: 15px 20px; color: #e8e0d0; text-decoration: none; font-size: 14px; border-bottom: 1px solid #1c1c1c; transition: background .15s; }
+.nav-item:hover { background: #1a1a1a; }
+.nav-item.active { color: #d4a017; background: #1a1200; }
+.nav-divider { height: 1px; background: #2a2a2a; margin: 6px 0; }
+/* HEADER */
+.header { text-align: center; padding: 20px 0 24px; border-bottom: 1px solid #2a2a2a; margin-bottom: 20px; }
+.header h1 { font-size: 24px; color: #d4a017; letter-spacing: 4px; margin-bottom: 4px; }
+.header .date { color: #666; font-size: 12px; }
+/* ACTION BAR */
+.action-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+.action-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; padding: 14px 16px; }
+.ac-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ac-title { font-size: 12px; font-weight: bold; color: #d4a017; letter-spacing: 1px; }
+.ac-body { font-size: 12px; color: #aaa; line-height: 1.7; min-height: 48px; }
+.action-btn { margin-top: 8px; width: 100%; background: #1a1a1a; border: 1px solid #333; color: #e8e0d0; font-size: 11px; font-weight: bold; padding: 7px 0; border-radius: 6px; cursor: pointer; transition: all .15s; text-align: center; text-decoration: none; display: block; }
+.action-btn:hover { background: #222; border-color: #d4a017; color: #d4a017; }
+.action-btn.gold { background: #1a1200; border-color: #d4a017; color: #d4a017; }
+.action-btn.green { background: #0d2a1a; border-color: #22c55e; color: #22c55e; }
+.price-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 6px; }
+.price-table th { color: #555; font-weight: normal; padding: 2px 4px; text-align: right; border-bottom: 1px solid #222; }
+.price-table th:first-child { text-align: left; }
+.price-table td { padding: 3px 4px; border-bottom: 1px solid #1a1a1a; }
+.price-table td:first-child { color: #aaa; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.price-table td:not(:first-child) { text-align: right; }
+.p-up { color: #22c55e; } .p-down { color: #ef4444; }
+.read-btn { font-size: 10px; padding: 2px 8px; background: none; border: 1px solid #333; border-radius: 3px; color: #444; cursor: pointer; transition: all .15s; flex-shrink: 0; }
+.read-btn.done { border-color: #22c55e; color: #22c55e; background: #0d2a1a; }
+/* BRIEF */
+.brief-section { background: #0d1117; border: 1px solid #2a3a2a; border-left: 3px solid #22c55e; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+.brief-section-header { padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2a1e; }
+.brief-section-header .label { font-size: 13px; color: #22c55e; font-weight: bold; letter-spacing: 2px; }
+.brief-section-header .meta { font-size: 12px; color: #666; }
+.brief-body { padding: 14px 20px; }
+.brief-title-line { font-size: 14px; color: #e8e0d0; font-weight: bold; margin-bottom: 8px; line-height: 1.5; }
+.brief-preview { font-size: 12px; color: #999; line-height: 1.7; max-height: 72px; overflow: hidden; }
+.brief-full { font-size: 12px; color: #ccc; line-height: 1.8; display: none; white-space: pre-wrap; max-height: 480px; overflow-y: auto; border-top: 1px solid #1a2a1a; margin-top: 10px; padding-top: 10px; }
+.brief-toggle { background: #1a2a1a; border: 1px solid #2a4a2a; color: #22c55e; font-size: 11px; padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; }
+.brief-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; padding: 0 20px 14px; }
+.brief-action-btn { background: #111; border: 1px solid #333; color: #aaa; font-size: 11px; padding: 5px 14px; border-radius: 4px; cursor: pointer; text-decoration: none; transition: all .15s; display: inline-block; }
+.brief-action-btn:hover { background: #1a2a1a; border-color: #22c55e; color: #22c55e; }
+.brief-empty { font-size: 13px; color: #555; padding: 6px 0; }
+/* QUICK LINKS */
+.quick-links { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.quick-link { flex: 1; min-width: 100px; background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; text-align: center; text-decoration: none; color: #e8e0d0; transition: background .15s; }
+.quick-link:hover { background: #1a1a1a; }
+.quick-link .ql-icon { font-size: 20px; margin-bottom: 4px; }
+.quick-link .ql-label { font-size: 11px; font-weight: bold; color: #d4a017; }
+/* DEADLINE */
+.deadline { text-align: center; padding: 16px; background: #1a0a0a; border: 1px solid #ef444433; border-radius: 10px; margin-bottom: 20px; }
+.deadline .label { font-size: 11px; color: #888; letter-spacing: 2px; margin-bottom: 6px; }
+.deadline .target { font-size: 22px; font-weight: bold; color: #ef4444; }
+.deadline .sub { font-size: 11px; color: #666; margin-top: 4px; }
+/* KPI */
+.kpi-bar { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+.kpi-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; padding: 16px; text-align: center; }
+.kpi-card .label { font-size: 11px; color: #888; margin-bottom: 6px; }
+.kpi-card .value { font-size: 22px; font-weight: bold; color: #d4a017; }
+.kpi-card .sub { font-size: 10px; color: #555; margin-top: 3px; }
+/* CONTENT MAP */
+.content-map { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+.content-map-header { padding: 12px 20px; border-bottom: 1px solid #1e1e1e; display: flex; align-items: center; justify-content: space-between; }
+.content-map-header .label { font-size: 13px; color: #d4a017; font-weight: bold; }
+.content-map-header .sub { font-size: 11px; color: #555; }
+.content-map-body { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 1px; background: #1e1e1e; }
+.content-type-cell { background: #141414; padding: 12px 14px; }
+.ct-name { font-size: 11px; color: #888; margin-bottom: 3px; }
+.ct-count { font-size: 18px; font-weight: bold; color: #d4a017; }
+.ct-status { font-size: 10px; color: #555; margin-top: 2px; }
+.content-type-cell.active .ct-name { color: #22c55e; }
+.content-type-cell.active .ct-count { color: #22c55e; }
+.content-type-cell.new .ct-name { color: #60a5fa; }
+.content-type-cell.new .ct-count { color: #60a5fa; }
+/* GRID */
+.grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 16px; margin-bottom: 24px; }
+.card { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; }
+.card-header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #1e1e1e; }
+.card-header .team-name { font-size: 14px; font-weight: bold; color: #e8e0d0; }
+.card-header .status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.green { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+.yellow { background: #f59e0b; box-shadow: 0 0 5px #f59e0b; }
+.red { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
+.blue { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; }
+.card-body { padding: 14px 16px; }
+.kpi-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1a1a1a; font-size: 12px; }
+.kpi-row:last-child { border-bottom: none; }
+.kpi-row .key { color: #888; }
+.kpi-row .val { color: #e8e0d0; font-weight: bold; }
+.kpi-row .val.gold { color: #d4a017; }
+.kpi-row .val.green-text { color: #22c55e; }
+.kpi-row .val.red-text { color: #ef4444; }
+.kpi-row .val.blue-text { color: #60a5fa; }
+.progress-bar-wrap { margin: 10px 0 2px; }
+.progress-label { font-size: 10px; color: #666; margin-bottom: 4px; }
+.progress-bar { height: 5px; background: #222; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg,#b8860b,#d4a017); border-radius: 3px; transition: width .8s; }
+.progress-fill.green-fill { background: linear-gradient(90deg,#166534,#22c55e); }
+.progress-fill.blue-fill { background: linear-gradient(90deg,#1d4ed8,#3b82f6); }
+/* TODO */
+.todo-section { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+.todo-header { padding: 12px 16px; border-bottom: 1px solid #1e1e1e; font-size: 14px; font-weight: bold; color: #d4a017; }
+.todo-body { padding: 12px 16px; }
+.todo-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid #1a1a1a; font-size: 12px; }
+.todo-item:last-child { border-bottom: none; }
+.todo-badge { font-size: 10px; padding: 2px 7px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; }
+.badge-ceo { background: #7c3aed33; color: #a78bfa; border: 1px solid #7c3aed55; }
+.badge-auto { background: #0e7490aa; color: #67e8f9; border: 1px solid #0e749066; }
+.todo-text { color: #ccc; line-height: 1.5; }
+/* MEMBER */
+.member-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap: 6px; margin-top: 6px; }
+.member-chip { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 5px; padding: 5px 8px; font-size: 10px; color: #aaa; }
+.member-chip .role { color: #d4a017; font-weight: bold; display: block; margin-bottom: 1px; }
+.footer { text-align: center; padding: 20px 0; color: #333; font-size: 11px; }
+.data-ts { font-size: 10px; color: #333; text-align: right; margin-bottom: 6px; }
+.loading { color: #444; font-size: 12px; }
+@media (max-width: 768px) { .kpi-bar { grid-template-columns: 1fr 1fr; } .action-bar { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .kpi-bar { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="gnav">
+  <span class="gnav-logo">電脳会社</span>
+  <div class="gnav-links">
+    <a href="./dashboard.html" class="active">📊 ダッシュ</a>
+    <a href="./note.html">📝 note</a>
+    <a href="./mercari.html">🛍️ メルカリ</a>
+    <a href="./kassenjo.html">🏯 決算城</a>
+  </div>
+  <a class="gnav-ext" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
+  <button class="gnav-ham" onclick="toggleNav()">☰</button>
+</nav>
+
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+<div class="nav-sidebar" id="navSidebar">
+  <div class="nav-x" onclick="closeNav()">✕</div>
+  <div class="nav-head">メニュー</div>
+  <a class="nav-item active" href="./dashboard.html">📊 ダッシュボード</a>
+  <div class="nav-divider"></div>
+  <a class="nav-item" href="./note.html">📝 note</a>
+  <a class="nav-item" href="./mercari.html">🛍️ メルカリ</a>
+  <a class="nav-item" href="./kassenjo.html">🏯 決算城</a>
+  <div class="nav-divider"></div>
+  <a class="nav-item" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">🔗 出品一覧 ↗</a>
+  <a class="nav-item" href="./00_ダッシュボード/quiz.html">🎯 今日のクイズ</a>
+</div>
+
+<script>
+function toggleNav(){document.getElementById('navOverlay').classList.toggle('open');document.getElementById('navSidebar').classList.toggle('open');}
+function closeNav(){document.getElementById('navOverlay').classList.remove('open');document.getElementById('navSidebar').classList.remove('open');}
+</script>
+
+<div class="page-body">
+
+<div class="header">
+  <h1>電脳会社 ダッシュボード</h1>
+  <div class="date" id="dashDate">読み込み中…</div>
+</div>
+
+<!-- 今日のアクション -->
+<div class="action-bar">
+  <div class="action-card">
+    <div class="ac-head">
+      <span class="ac-title">🛍️ メルカリ価格変更</span>
+      <button class="read-btn" id="rbMercari" onclick="markRead('rbMercari')">確認</button>
+    </div>
+    <div class="ac-body" id="priceActionBody"><span class="loading">読み込み中…</span></div>
+    <button class="action-btn gold" onclick="copyPriceList()" id="copyPriceBtn">📋 全商品リストをコピー</button>
+    <button class="action-btn" onclick="copyComment()" style="margin-top:5px;">💬 底値コメントをコピー</button>
+  </div>
+  <div class="action-card">
+    <div class="ac-head">
+      <span class="ac-title">🏇 競馬 今週</span>
+      <button class="read-btn" id="rbKeiba" onclick="markRead('rbKeiba')">確認</button>
+    </div>
+    <div class="ac-body" id="keibaActionBody">
+      <div>📅 6/7（日）<strong style="color:#d4a017">安田記念 G1</strong></div>
+      <div style="color:#555;font-size:11px;margin-top:3px;">東京11R 芝1600m</div>
+      <div style="margin-top:5px;" id="keibaArticleStatus"><span class="loading">記事状況確認中…</span></div>
+    </div>
+    <a class="action-btn green" href="./note.html">📝 note記事を作る →</a>
+    <a class="action-btn" href="./00_ダッシュボード/quiz.html" style="margin-top:5px;">🎯 今日のクイズ</a>
+  </div>
+  <div class="action-card">
+    <div class="ac-head">
+      <span class="ac-title">💕 自キュン Season00</span>
+      <button class="read-btn" id="rbKyun" onclick="markRead('rbKyun')">確認</button>
+    </div>
+    <div class="ac-body">
+      <div>目標 <strong style="color:#d4a017">100本</strong> ／ <strong>3本</strong>/日ペース</div>
+      <div style="margin-top:5px;">進捗: <strong style="color:#d4a017" id="kyunCount">…</strong> / 100本</div>
+      <div style="background:#1a1a1a;border-radius:4px;height:5px;margin-top:5px;overflow:hidden;">
+        <div id="kyunBar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#c084fc);border-radius:4px;width:0%;transition:width .5s;"></div>
+      </div>
+    </div>
+    <a class="action-btn" href="./note.html">✍️ 自キュン記事を作る →</a>
+  </div>
+</div>
+
+<!-- ブリーフ -->
+<div class="brief-section">
+  <div class="brief-section-header">
+    <span class="label">📡 INTELLIGENCE BRIEF</span>
+    <span class="meta" id="briefMeta">接続中…</span>
+  </div>
+  <div class="brief-body" id="briefBody"><div class="brief-empty loading">データ取得中…</div></div>
+  <div class="brief-actions">
+    <a class="brief-action-btn" href="./note.html">📝 note記事を書く →</a>
+    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn">✓ 読了</button>
+  </div>
+</div>
+
+<!-- クイックリンク -->
+<div class="quick-links">
+  <a href="./note.html" class="quick-link"><div class="ql-icon">📝</div><div class="ql-label">note</div></a>
+  <a href="./mercari.html" class="quick-link"><div class="ql-icon">🛍️</div><div class="ql-label">メルカリ</div></a>
+  <a href="./kassenjo.html" class="quick-link"><div class="ql-icon">🏯</div><div class="ql-label">決算城</div></a>
+  <a href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank" class="quick-link"><div class="ql-icon">🔗</div><div class="ql-label" style="color:#888;">出品一覧 ↗</div></a>
+</div>
+
+<!-- 締め切り -->
+<div class="deadline">
+  <div class="label">直近ゴール</div>
+  <div class="target">6/15 までに ¥3,500 回収</div>
+  <div class="sub">楽天証券アフィリ 1件（約¥3,000）が最短ルート</div>
+</div>
+
+<!-- KPI -->
+<div class="kpi-bar">
+  <div class="kpi-card"><div class="label">決算城 記事</div><div class="value" id="kpiCastle"><span class="loading">…</span></div><div class="sub">目標100本</div></div>
+  <div class="kpi-card"><div class="label">メルカリ 出品中</div><div class="value" id="kpiMercari"><span class="loading">…</span></div><div class="sub">目標20点以上</div></div>
+  <div class="kpi-card"><div class="label">競馬 今月収益</div><div class="value">¥ —</div><div class="sub">目標¥10,000</div></div>
+  <div class="kpi-card"><div class="label">ブリーフ</div><div class="value" id="kpiBrief" style="font-size:13px;"><span class="loading">…</span></div><div class="sub">meeting_notes</div></div>
+</div>
+
+<!-- コンテンツ全体図 -->
+<div class="content-map">
+  <div class="content-map-header">
+    <span class="label">NOTE コンテンツ全体図</span>
+    <span class="sub" id="contentMapTs">読み込み中…</span>
+  </div>
+  <div class="content-map-body" id="contentMapBody"><div class="content-type-cell"><div class="ct-name">読み込み中</div><div class="ct-count">…</div></div></div>
+</div>
+
+<!-- チームカード -->
+<div id="dataTs" class="data-ts"></div>
+<div class="grid">
+  <div class="card">
+    <div class="card-header"><div class="status-dot yellow"></div><div class="team-name">01 決算城チーム</div></div>
+    <div class="card-body">
+      <div class="kpi-row"><span class="key">記事完成</span><span class="val gold" id="castleArticles">…</span></div>
+      <div class="kpi-row"><span class="key">GitHub Pages</span><span class="val red-text">未公開</span></div>
+      <div class="kpi-row"><span class="key">アフィリ設定</span><span class="val red-text">未（来週中）</span></div>
+      <div class="progress-bar-wrap"><div class="progress-label">記事進捗（100本）</div><div class="progress-bar"><div class="progress-fill" id="castleBar" style="width:0%"></div></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="status-dot green"></div><div class="team-name">02 競馬チーム</div></div>
+    <div class="card-body">
+      <div class="kpi-row"><span class="key">ステータス</span><span class="val green-text">稼働中</span></div>
+      <div class="kpi-row"><span class="key">X</span><span class="val gold">@FIRE1173Go（凍結中）</span></div>
+      <div class="kpi-row"><span class="key">FIREスコア</span><span class="val green-text">¥980 完成済み</span></div>
+      <div class="kpi-row"><span class="key">今週メインレース</span><span class="val gold">安田記念 G1</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="status-dot green"></div><div class="team-name">03 メルカリチーム</div></div>
+    <div class="card-body">
+      <div class="kpi-row"><span class="key">出品中</span><span class="val" id="mercariListed">…</span></div>
+      <div class="kpi-row"><span class="key">再出品候補</span><span class="val gold" id="mercariRelist">…</span></div>
+      <div class="kpi-row"><span class="key">月次目標</span><span class="val">¥50,000</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="status-dot blue"></div><div class="team-name">04 民SNS部隊</div></div>
+    <div class="card-body">
+      <div class="kpi-row"><span class="key">ステータス</span><span class="val blue-text">設計中</span></div>
+      <div class="kpi-row"><span class="key">Discord</span><span class="val red-text">未設定</span></div>
+      <div class="kpi-row"><span class="key">目標</span><span class="val">民10人</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 宿題 -->
+<div class="todo-section">
+  <div class="todo-header">宿題リスト（青柳さんがやること）</div>
+  <div class="todo-body">
+    <div class="todo-item"><span class="todo-badge badge-ceo">CEO</span><span class="todo-text"><strong>GitHub Personal Access Token 取得</strong></span></div>
+    <div class="todo-item"><span class="todo-badge badge-ceo">CEO</span><span class="todo-text"><strong>A8.net 登録・楽天証券に提携申請</strong></span></div>
+    <div class="todo-item"><span class="todo-badge badge-ceo">CEO</span><span class="todo-text"><strong>決算城 SNSアカウント取得（X / インスタ / スレッズ）</strong></span></div>
+    <div class="todo-item"><span class="todo-badge badge-auto">自動</span><span class="todo-text">決算城 記事002〜100作成（「続きをやって」で再開）</span></div>
+    <div class="todo-item"><span class="todo-badge badge-auto">自動</span><span class="todo-text">Make.com スケジュール設定（競馬チーム）</span></div>
+  </div>
+</div>
+
+<div class="footer">電脳会社 ダッシュボード ／ 庵野総監督</div>
+</div>
+
+<script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.getElementById('dashDate').textContent =
+  'CEO：青柳 ／ ' + new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}) + ' 取得';
+
+let mercariPriceData = [];
+
+async function init() {
+  const now = new Date().toISOString().slice(0,10);
+  try {
+    const [mercariCount, mercariData, relistRes, castleRes, briefRes, noteRes, novelRes] = await Promise.all([
+      sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed'),
+      sb.from('mercari_items').select('item_no,name,price,recommended_price,cost,shipping').eq('status','listed').order('item_no'),
+      sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed').lt('last_relisted_at', new Date(Date.now()-2*24*60*60*1000).toISOString()),
+      sb.from('castle_articles').select('id',{count:'exact',head:true}).not('body','is',null),
+      sb.from('meeting_notes').select('id,date,title,content').eq('category','daily_intelligence_brief').order('date',{ascending:false}).limit(1).maybeSingle(),
+      sb.from('note_articles').select('category,status'),
+      sb.from('novel_stories').select('status')
+    ]);
+
+    // メルカリ
+    const listed = mercariCount.count ?? 0;
+    document.getElementById('kpiMercari').textContent = listed + ' 点';
+    document.getElementById('mercariListed').textContent = listed + ' 点';
+    document.getElementById('mercariListed').className = 'val ' + (listed >= 20 ? 'green-text' : 'gold');
+    document.getElementById('mercariRelist').textContent = (relistRes.count ?? 0) > 0 ? (relistRes.count) + ' 点（要再出品）' : 'なし';
+    if (mercariData.data) renderPriceAction(mercariData.data);
+
+    // 決算城
+    const cc = castleRes.count ?? 0;
+    document.getElementById('kpiCastle').textContent = cc + ' / 100';
+    document.getElementById('castleArticles').textContent = cc + ' / 100本';
+    document.getElementById('castleBar').style.width = cc + '%';
+
+    // ブリーフ
+    if (briefRes.data) {
+      const b = briefRes.data;
+      const isToday = b.date === now;
+      document.getElementById('kpiBrief').textContent = isToday ? '✓ 収集済' : b.date;
+      document.getElementById('kpiBrief').className = isToday ? 'val green-text' : 'val gold';
+      document.getElementById('briefMeta').textContent = b.date + ' 収集';
+      renderBrief(b);
+    } else {
+      document.getElementById('kpiBrief').textContent = '未収集';
+      document.getElementById('briefBody').innerHTML = '<div class="brief-empty">「更新して」で今日のブリーフを収集できます。</div>';
+    }
+
+    // noteコンテンツ
+    renderContentMap(noteRes.data||[], novelRes.data||[]);
+
+    // 自キュン
+    const kc = (novelRes.data||[]).length;
+    document.getElementById('kyunCount').textContent = kc;
+    document.getElementById('kyunBar').style.width = Math.min(kc,100)+'%';
+
+    // 競馬記事
+    const ka = (noteRes.data||[]).filter(a=>a.category==='競馬');
+    document.getElementById('keibaArticleStatus').innerHTML =
+      'draft: <strong style="color:#f59e0b">'+(ka.filter(a=>a.status==='draft').length)+'本</strong> ／ 公開済: <strong style="color:#22c55e">'+(ka.filter(a=>a.status==='published').length)+'本</strong>';
+
+    document.getElementById('dataTs').textContent = 'データ取得: ' + new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+    restoreReadStates();
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('briefBody').innerHTML = '<div class="brief-empty" style="color:#ef4444">接続エラー: ' + e.message + '</div>';
+  }
+}
+
+function renderBrief(b) {
+  const preview = (b.content||'').substring(0,400).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const full = (b.content||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  document.getElementById('briefBody').innerHTML =
+    '<div class="brief-title-line">'+((b.title||'').replace(/</g,'&lt;'))+'</div>'+
+    '<div class="brief-preview" id="bPreview">'+preview.replace(/\n/g,'<br>')+'…</div>'+
+    '<div class="brief-full" id="bFull">'+full.replace(/\n/g,'<br>')+'</div>'+
+    '<button class="brief-toggle" onclick="toggleBrief(this)">全文を見る ▼</button>';
+}
+
+function toggleBrief(btn) {
+  const p=document.getElementById('bPreview'), f=document.getElementById('bFull');
+  if (!f.style.display||f.style.display==='none'){f.style.display='block';p.style.display='none';btn.textContent='閉じる ▲';}
+  else{f.style.display='none';p.style.display='block';btn.textContent='全文を見る ▼';}
+}
+
+function renderPriceAction(items) {
+  mercariPriceData = items.filter(it=>it.recommended_price && it.recommended_price!==it.price);
+  const el = document.getElementById('priceActionBody');
+  if (!mercariPriceData.length) { el.innerHTML='<span style="color:#22c55e">✓ 全商品 推奨価格と一致</span>'; return; }
+  const rows = mercariPriceData.slice(0,6).map(it=>{
+    const d=it.recommended_price-it.price, cls=d>0?'p-up':'p-down', sym=d>0?'▲':'▼';
+    return `<tr><td title="${it.name}">${it.name.substring(0,14)}…</td><td>¥${it.price.toLocaleString()}</td><td class="${cls}">¥${it.recommended_price.toLocaleString()}</td><td class="${cls}">${sym}${Math.abs(d).toLocaleString()}</td></tr>`;
+  }).join('');
+  el.innerHTML=`<table class="price-table"><tr><th>商品</th><th>現在</th><th>推奨</th><th>差</th></tr>${rows}</table>${mercariPriceData.length>6?`<div style="font-size:10px;color:#555;margin-top:3px;">他${mercariPriceData.length-6}件</div>`:''}`;
+}
+
+function copyPriceList() {
+  const lines=mercariPriceData.map(it=>`No.${it.item_no} ${it.name.substring(0,22)}\n  ¥${it.price.toLocaleString()} → ¥${it.recommended_price.toLocaleString()}`).join('\n');
+  navigator.clipboard.writeText(`■ メルカリ価格変更 ${new Date().toLocaleDateString('ja-JP')}\n\n${lines}`).then(()=>{
+    const b=document.getElementById('copyPriceBtn'); b.textContent='✅ コピー済み'; setTimeout(()=>{b.textContent='📋 全商品リストをコピー';},2000);
+  });
+}
+
+function copyComment() {
+  navigator.clipboard.writeText('【値下げしました】この価格が最終底値です。ご検討中の方はお早めにどうぞ。').then(()=>{
+    alert('コピーしました');
+  });
+}
+
+function markRead(id) {
+  const b=document.getElementById(id); if(!b)return;
+  b.textContent='✓ 確認済み'; b.classList.add('done');
+  localStorage.setItem('read_'+id+'_'+new Date().toISOString().slice(0,10),'1');
+}
+
+function restoreReadStates() {
+  const t=new Date().toISOString().slice(0,10);
+  ['rbMercari','rbKeiba','rbKyun'].forEach(id=>{
+    if(localStorage.getItem('read_'+id+'_'+t)){const b=document.getElementById(id);if(b){b.textContent='✓ 確認済み';b.classList.add('done');}}
+  });
+}
+
+function renderContentMap(noteArticles, novelStories) {
+  const cats=[
+    {key:'競馬',label:'競馬',cls:'active',note:'毎週水曜¥100'},
+    {key:'自キュン',label:'自キュン',cls:'active',note:'novel_stories',isNovel:true},
+    {key:'AI記事',label:'AI記事',cls:'new',note:'ブリーフ連携'},
+    {key:'ビジネス',label:'ビジネス',cls:'new',note:'電脳独立日記'},
+    {key:'自社サービス',label:'自社PR',cls:'new',note:'kassenjo等'},
+  ];
+  const cnt={};
+  noteArticles.forEach(a=>{cnt[a.category]=(cnt[a.category]||0)+1;});
+  const nc=novelStories.length;
+  document.getElementById('contentMapBody').innerHTML=cats.map(c=>{
+    const n=c.isNovel?nc:(cnt[c.key]||0);
+    return `<div class="content-type-cell ${c.cls}"${n>0?'':' style="opacity:.4"'}><div class="ct-name">${c.label}</div><div class="ct-count">${n}</div><div class="ct-status">${c.note}</div></div>`;
+  }).join('');
+  document.getElementById('contentMapTs').textContent=noteArticles.length+'本 + 自キュン'+nc+'本';
+}
+
+function markBriefRead() {
+  const b=document.getElementById('briefReadBtn');
+  b.textContent='✓ 読了済み'; b.style.borderColor='#22c55e'; b.style.color='#22c55e'; b.disabled=true;
+  localStorage.setItem('brief_read_'+new Date().toISOString().slice(0,10),'1');
+}
+
+init();
+setInterval(init, 3*60*1000);
+</script>
+</body>
+</html>
