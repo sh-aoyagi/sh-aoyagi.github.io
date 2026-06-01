@@ -102,7 +102,7 @@ body {
 .workspace { flex: 1; display: flex; overflow: hidden; }
 
 /* ── LEFT PANE ── */
-.left-pane { width: 40%; overflow-y: auto; border-right: 1px solid var(--border); padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.left-pane { width: 100%; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
 
 /* ── MODE SELECTOR ── */
 .mode-card {
@@ -381,7 +381,11 @@ tbody td:first-child { text-align: left; max-width: 140px; overflow: hidden; tex
     <a href="./index.html" class="active">🛍️ メルカリ</a>
     <a href="../kassenjo.html">🏯 決算城</a>
   </div>
-  <a class="gnav-ext" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
+  <div style="display:flex;gap:6px;margin-left:auto;flex-shrink:0;">
+    <a class="gnav-ext" href="https://jp.mercari.com/mypage/listings" target="_blank" style="color:#d4a017;border:1px solid #3a2a00;border-radius:4px;padding:3px 10px;background:#1a1200;">📋 出品管理</a>
+    <a class="gnav-ext" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧</a>
+    <a class="gnav-ext" href="https://www.mercari.com/jp/sell/" target="_blank">＋ 新規出品</a>
+  </div>
   <button class="gnav-ham" onclick="toggleNav()">☰</button>
 </nav>
 
@@ -477,33 +481,6 @@ ADD COLUMN profit_estimate    INTEGER;</div>
 
   </div>
 
-  <!-- ===== RIGHT PANE ===== -->
-  <div class="right-pane">
-    <div class="right-bar">
-      <span class="r-label">mercari.com</span>
-      <a class="site-btn primary" href="https://jp.mercari.com/mypage/listings" target="_blank">📋 出品管理 →</a>
-      <a class="site-btn" href="https://www.mercari.com/jp/sell/" target="_blank">＋ 新規出品 ↗</a>
-      <a class="site-btn" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
-    </div>
-    <div class="right-body">
-      <div class="big-icon">🛍️</div>
-      <div class="big-title">mercari.com</div>
-      <div class="sub-text">
-        mercari.com はiframeの埋め込みに対応していません。<br>
-        上のボタンから別タブで開いてください。
-      </div>
-      <div class="flow-steps">
-        <div class="fs-title">▼ 作業フロー（左ペイン → 右タブ）</div>
-        <div>① <strong>モードA（ゲリラ）</strong> or <strong>モードB（通常）</strong> を選択</div>
-        <div>② <strong>プロンプトをコピー</strong> → Claude/ChatGPT に貼付</div>
-        <div>③ AIの指示に従ってメルカリの各商品を操作</div>
-        <div>④ セール終了後は <strong>モードB</strong> で通常価格に戻す</div>
-        <div style="margin-top:8px;font-size:11px;color:#555">
-          ※ ゲリラ価格・推奨価格の自動挿入にはSQLマイグレーションが必要です
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div>
 
