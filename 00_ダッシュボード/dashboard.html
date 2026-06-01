@@ -307,6 +307,47 @@
   .data-ts { font-size: 11px; color: #333; text-align: right; margin-bottom: 8px; }
   /* ── フッター ── */
   .footer { text-align: center; padding: 24px 0; color: #333; font-size: 12px; letter-spacing: 1px; }
+  /* ── アクションバー ── */
+  .action-bar {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px;
+  }
+  .action-card {
+    background: #141414; border: 1px solid #2a2a2a; border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .action-card .ac-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .action-card .ac-title { font-size: 12px; font-weight: bold; color: #d4a017; letter-spacing: 1px; }
+  .action-card .ac-badge { font-size: 10px; color: #555; }
+  .action-card .ac-body { font-size: 12px; color: #aaa; line-height: 1.7; min-height: 40px; }
+  .action-btn {
+    margin-top: 10px; width: 100%; background: #1a1a1a; border: 1px solid #333;
+    color: #e8e0d0; font-size: 11px; font-weight: bold; padding: 7px 0;
+    border-radius: 6px; cursor: pointer; transition: all .15s; text-align: center;
+    text-decoration: none; display: block;
+  }
+  .action-btn:hover { background: #222; border-color: #d4a017; color: #d4a017; }
+  .action-btn.gold { background: #1a1200; border-color: #d4a017; color: #d4a017; }
+  .action-btn.green { background: #0d2a1a; border-color: #22c55e; color: #22c55e; }
+  /* メルカリ価格テーブル */
+  .price-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+  .price-table th { color: #555; font-weight: normal; padding: 3px 4px; text-align: right; border-bottom: 1px solid #222; }
+  .price-table th:first-child { text-align: left; }
+  .price-table td { padding: 4px 4px; border-bottom: 1px solid #1a1a1a; }
+  .price-table td:first-child { color: #aaa; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .price-table td:not(:first-child) { text-align: right; }
+  .p-up { color: #22c55e; }
+  .p-down { color: #ef4444; }
+  /* 既読ボタン */
+  .read-btn {
+    font-size: 10px; padding: 2px 8px; background: none;
+    border: 1px solid #333; border-radius: 3px; color: #444;
+    cursor: pointer; transition: all .15s; flex-shrink: 0;
+  }
+  .read-btn.done { border-color: #22c55e; color: #22c55e; background: #0d2a1a; }
+  @media (max-width: 768px) { .action-bar { grid-template-columns: 1fr; } }
   /* ── ハンバーガーメニュー ── */
   .ham-btn {
     position: fixed;
@@ -421,6 +462,68 @@ function closeNav() {
   <div class="date" id="dashDate">読み込み中…</div>
 </div>
 
+<!-- 今日のアクション -->
+<div class="action-bar">
+
+  <!-- メルカリ価格変更 -->
+  <div class="action-card">
+    <div class="ac-head">
+      <span class="ac-title">🛍️ メルカリ価格変更</span>
+      <button class="read-btn" id="rbMercari" onclick="markRead('rbMercari')">確認</button>
+    </div>
+    <div class="ac-body" id="priceActionBody">読み込み中…</div>
+    <button class="action-btn gold" onclick="copyPriceList()" id="copyPriceBtn">📋 全商品リストをコピー</button>
+    <button class="action-btn" onclick="copyComment()" style="margin-top:6px;">💬 底値コメントをコピー</button>
+  </div>
+
+  <!-- 競馬 週次 -->
+  <div class="action-card">
+    <div class="ac-head">
+      <span class="ac-title">🏇 競馬 今週</span>
+      <button class="read-btn" id="rbKeiba" onclick="markRead('rbKeiba')">確認</button>
+    </div>
+    <div class="ac-body" id="keibaActionBody">
+      <div>📅 6/7（土）<strong style="color:#d4a017">安田記念 G1</strong></div>
+      <div style="color:#555;font-size:11px;margin-top:4px;">東京11R 芝1600m</div>
+      <div style="margin-top:6px;" id="keibaArticleStatus">記事状況を確認中…</div>
+    </div>
+    <a class="action-btn green" href="../note.html">📝 note記事を作る →</a>
+    <a class="action-btn" href="quiz.html" style="margin-top:6px;">🎯 今日のクイズ</a>
+  </div>
+
+  <!-- 自キュン進捗 -->
+  <div class="action-card">
+    <div class="ac-head">
+      <span class="ac-title">💕 自キュン Season00</span>
+      <button class="read-btn" id="rbKyun" onclick="markRead('rbKyun')">確認</button>
+    </div>
+    <div class="ac-body">
+      <div>目標 <strong style="color:#d4a017">100本</strong> ／ 今日 <strong>3本</strong>/日ペース</div>
+      <div style="margin-top:6px;">進捗: <strong style="color:#d4a017" id="kyunCount">…</strong> / 100本</div>
+      <div style="background:#1a1a1a;border-radius:4px;height:6px;margin-top:6px;overflow:hidden;">
+        <div id="kyunBar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#c084fc);border-radius:4px;width:0%;transition:width .5s;"></div>
+      </div>
+    </div>
+    <a class="action-btn" href="../note.html">✍️ 自キュン記事を作る →</a>
+  </div>
+
+</div>
+
+<!-- デイリーブリーフ（最上位表示） -->
+<div class="brief-section" style="margin-bottom:20px;">
+  <div class="brief-section-header">
+    <span class="label">📡 INTELLIGENCE BRIEF</span>
+    <span class="meta" id="briefMeta">Supabase接続中…</span>
+  </div>
+  <div class="brief-body" id="briefBody">
+    <div class="brief-empty loading">データ取得中…</div>
+  </div>
+  <div class="brief-actions">
+    <a class="brief-action-btn" href="../note.html" target="_blank">📝 note記事を書く →</a>
+    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn">✓ 読了</button>
+  </div>
+</div>
+
 <!-- クイックリンク -->
 <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
   <a href="../note-workspace/index.html" style="flex:1;min-width:120px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:14px;text-align:center;text-decoration:none;color:#e8e0d0;transition:background .15s;" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='#141414'">
@@ -472,20 +575,6 @@ function closeNav() {
   </div>
 </div>
 
-<!-- デイリー・インテリジェンス・ブリーフパネル -->
-<div class="brief-section">
-  <div class="brief-section-header">
-    <span class="label">INTELLIGENCE BRIEF</span>
-    <span class="meta" id="briefMeta">Supabase接続中…</span>
-  </div>
-  <div class="brief-body" id="briefBody">
-    <div class="brief-empty loading">データ取得中…</div>
-  </div>
-  <div class="brief-actions">
-    <a class="brief-action-btn" href="../note-workspace/index.html" target="_blank">📝 note記事を書く →</a>
-    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn">✓ 読了</button>
-  </div>
-</div>
 
 <!-- noteコンテンツ全体図 -->
 <div class="content-map">
@@ -770,6 +859,28 @@ async function init() {
     // noteコンテンツ全体図
     renderContentMap(noteRes.data || [], novelRes.data || []);
 
+    // メルカリ価格変更アクション
+    if (mercariRes.data) renderPriceAction(mercariRes.data);
+
+    // 自キュン進捗
+    const kyunCount = (novelRes.data || []).length;
+    const el = document.getElementById('kyunCount');
+    if (el) el.textContent = kyunCount;
+    const bar = document.getElementById('kyunBar');
+    if (bar) bar.style.width = Math.min(kyunCount, 100) + '%';
+
+    // 競馬記事状況
+    const keibaArticles = (noteRes.data || []).filter(a => a.category === '競馬');
+    const keibaEl = document.getElementById('keibaArticleStatus');
+    if (keibaEl) {
+      const d = keibaArticles.filter(a=>a.status==='draft').length;
+      const p = keibaArticles.filter(a=>a.status==='published').length;
+      keibaEl.innerHTML = `draft: <strong style="color:#f59e0b">${d}本</strong> ／ 公開済: <strong style="color:#22c55e">${p}本</strong>`;
+    }
+
+    // 既読状態復元
+    restoreReadStates();
+
   } catch(e) {
     console.error('Supabase error:', e);
     setStaticFallback();
@@ -798,6 +909,72 @@ function toggleBrief(btn) {
     preview.style.display = 'block';
     btn.textContent = '全文を見る ▼';
   }
+}
+
+// ── メルカリ価格変更アクション ──
+let mercariPriceData = [];
+
+function renderPriceAction(items) {
+  mercariPriceData = items.filter(it => it.recommended_price && it.recommended_price !== it.price);
+  const el = document.getElementById('priceActionBody');
+  if (!mercariPriceData.length) {
+    el.innerHTML = '<span style="color:#22c55e">✓ 全商品 推奨価格と一致</span>';
+    return;
+  }
+  const rows = mercariPriceData.slice(0,5).map(it => {
+    const diff = it.recommended_price - it.price;
+    const cls = diff > 0 ? 'p-up' : 'p-down';
+    const sym = diff > 0 ? '▲' : '▼';
+    return `<tr>
+      <td title="${it.name}">${it.name.substring(0,16)}…</td>
+      <td>¥${it.price.toLocaleString()}</td>
+      <td class="${cls}">¥${it.recommended_price.toLocaleString()}</td>
+      <td class="${cls}">${sym}${Math.abs(diff).toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<table class="price-table">
+    <tr><th>商品</th><th>現在</th><th>推奨</th><th>差</th></tr>
+    ${rows}
+  </table>
+  ${mercariPriceData.length > 5 ? `<div style="font-size:10px;color:#555;margin-top:4px;">他 ${mercariPriceData.length-5}件あり</div>` : ''}`;
+}
+
+function copyPriceList() {
+  const lines = mercariPriceData.map(it =>
+    `No.${it.item_no} ${it.name.substring(0,25)}\n  現在: ¥${it.price.toLocaleString()} → 推奨: ¥${it.recommended_price.toLocaleString()}`
+  ).join('\n');
+  const text = `■ メルカリ価格変更リスト ${new Date().toLocaleDateString('ja-JP')}\n\n${lines}`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyPriceBtn');
+    btn.textContent = '✅ コピー済み';
+    setTimeout(() => { btn.textContent = '📋 全商品リストをコピー'; }, 2000);
+  });
+}
+
+function copyComment() {
+  const text = '【値下げしました】この価格が最終底値です。ご検討中の方はお早めにどうぞ。';
+  navigator.clipboard.writeText(text).then(() => {
+    alert('コピーしました:\n' + text);
+  });
+}
+
+function markRead(id) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.textContent = '✓ 確認済み';
+    btn.classList.add('done');
+    localStorage.setItem('read_' + id + '_' + new Date().toISOString().slice(0,10), '1');
+  }
+}
+
+function restoreReadStates() {
+  const today = new Date().toISOString().slice(0,10);
+  ['rbMercari','rbKeiba','rbKyun'].forEach(id => {
+    if (localStorage.getItem('read_' + id + '_' + today)) {
+      const btn = document.getElementById(id);
+      if (btn) { btn.textContent = '✓ 確認済み'; btn.classList.add('done'); }
+    }
+  });
 }
 
 function renderContentMap(noteArticles, novelStories) {
