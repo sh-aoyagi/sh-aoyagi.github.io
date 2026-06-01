@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>電脳会社 ダッシュボード</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js" onerror="void(0)"></script>
 <script>
-var SUPABASE_URL = 'https://dfnhkljlohlmuoidajla.supabase.co';
-var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmhrbGpsb2hsbXVvaWRhamxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMzA1MDQsImV4cCI6MjA2MTkwNjUwNH0.Wc_7KHE3NQ7m_uPFBCHdV_q17fmxSM_B_p3kY3hXjTQ';
+if (typeof SUPABASE_URL === 'undefined') var SUPABASE_URL = 'https://dfnhkljlohlmuoidajla.supabase.co';
+if (typeof SUPABASE_ANON_KEY === 'undefined') var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmhrbGpsb2hsbXVvaWRhamxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMzA1MDQsImV4cCI6MjA2MTkwNjUwNH0.Wc_7KHE3NQ7m_uPFBCHdV_q17fmxSM_B_p3kY3hXjTQ';
 </script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -147,6 +148,21 @@ body { background: #0a0a0a; color: #e8e0d0; font-family: 'Segoe UI','Noto Sans J
 .loading { color: #444; font-size: 12px; }
 @media (max-width: 768px) { .kpi-bar { grid-template-columns: 1fr 1fr; } .action-bar { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .kpi-bar { grid-template-columns: 1fr; } }
+/* ── PDCA 承認カード ── */
+.proposal-card { background: linear-gradient(135deg, #0d1a2a, #1a0a2a); border: 1px solid #4a3a6a; border-left: 3px solid #c084fc; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+.proposal-header { padding: 12px 20px; border-bottom: 1px solid #2a1a3a; display: flex; align-items: center; justify-content: space-between; }
+.proposal-label { font-size: 13px; color: #c084fc; font-weight: bold; letter-spacing: 1px; }
+.proposal-badge { font-size: 10px; background: #3a1a5a; border: 1px solid #6a3a9a; color: #c084fc; border-radius: 10px; padding: 2px 8px; }
+.proposal-body { padding: 14px 20px; font-size: 12px; color: #c0b8d0; line-height: 1.8; max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
+.proposal-body.expanded { max-height: none; }
+.proposal-footer { padding: 10px 20px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-approve { flex: 1; min-width: 100px; background: #0d2a1a; border: 1px solid #22c55e; color: #22c55e; border-radius: 7px; padding: 9px 0; font-size: 13px; font-weight: bold; cursor: pointer; transition: all .15s; }
+.btn-approve:hover { background: #143a20; }
+.btn-approve.done { background: #0d2a1a; cursor: default; }
+.btn-reject { flex: 1; min-width: 100px; background: #2a0a0a; border: 1px solid #ef4444; color: #ef4444; border-radius: 7px; padding: 9px 0; font-size: 13px; font-weight: bold; cursor: pointer; transition: all .15s; }
+.btn-reject:hover { background: #3a1010; }
+.proposal-expand { font-size: 11px; color: #666; cursor: pointer; padding: 2px 8px; border: 1px solid #333; border-radius: 4px; background: none; }
+.proposal-expand:hover { color: #aaa; }
 /* ── フローティング クイズボタン ── */
 #quizFloat {
   position: fixed;
@@ -396,6 +412,9 @@ function closeNav(){document.getElementById('navOverlay').classList.remove('open
     </div>
   </div>
 </div>
+
+<!-- PDCA 承認カード -->
+<div id="proposalSection"></div>
 
 <!-- アコーディオン宿題 -->
 <div class="acc-todo">
@@ -663,6 +682,65 @@ function markSkip(id) {
 }
 
 renderAccTodos();
+loadProposal();
+
+// ── PDCA 提案カード ──
+async function loadProposal() {
+  const approved = JSON.parse(localStorage.getItem('proposal_approved') || '[]');
+  const rejected = JSON.parse(localStorage.getItem('proposal_rejected') || '[]');
+  try {
+    const { data } = await sb.from('meeting_notes')
+      .select('id, title, content, created_at')
+      .eq('category', 'pdca_proposal')
+      .order('created_at', { ascending: false })
+      .limit(3);
+    const pending = (data || []).filter(p => !approved.includes(p.id) && !rejected.includes(p.id));
+    const section = document.getElementById('proposalSection');
+    if (!pending.length) { section.innerHTML = ''; return; }
+    section.innerHTML = pending.map(p => {
+      const preview = (p.content||'').substring(0, 400) + '…';
+      return `<div class="proposal-card" id="prop-${p.id}">
+        <div class="proposal-header">
+          <span class="proposal-label">📊 PDCA提案 — 承認待ち</span>
+          <span class="proposal-badge">${p.title.substring(0,30)}</span>
+        </div>
+        <div class="proposal-body" id="pbody-${p.id}">${preview}</div>
+        <div class="proposal-footer">
+          <button class="btn-approve" onclick="approveP(${p.id})">✓ 承認して実施</button>
+          <button class="btn-reject" onclick="rejectP(${p.id})">✗ 否認・再提案</button>
+          <button class="proposal-expand" onclick="expandP(${p.id},this)">全文を見る</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+function expandP(id, btn) {
+  const body = document.getElementById('pbody-' + id);
+  if (!body) return;
+  if (body.classList.contains('expanded')) {
+    body.classList.remove('expanded'); btn.textContent = '全文を見る';
+  } else {
+    sb.from('meeting_notes').select('content').eq('id', id).single().then(({data}) => {
+      if (data) body.textContent = data.content;
+      body.classList.add('expanded'); btn.textContent = '閉じる';
+    });
+  }
+}
+
+function approveP(id) {
+  const arr = JSON.parse(localStorage.getItem('proposal_approved') || '[]');
+  arr.push(id); localStorage.setItem('proposal_approved', JSON.stringify(arr));
+  const card = document.getElementById('prop-' + id);
+  if (card) card.querySelector('.proposal-footer').innerHTML = '<span style="color:#22c55e;font-size:12px;font-weight:bold;">✓ 承認済み — 庵野が次の記事から新方針を適用します</span>';
+}
+
+function rejectP(id) {
+  const arr = JSON.parse(localStorage.getItem('proposal_rejected') || '[]');
+  arr.push(id); localStorage.setItem('proposal_rejected', JSON.stringify(arr));
+  const card = document.getElementById('prop-' + id);
+  if (card) { card.style.opacity = '0'; card.style.transition = '.3s'; setTimeout(() => card.remove(), 300); }
+}
 </script>
 </body>
 </html>
