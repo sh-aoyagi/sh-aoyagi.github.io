@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>電脳会社 ダッシュボード</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -19,22 +21,13 @@
     border-bottom: 1px solid #2a2a2a;
     margin-bottom: 32px;
   }
-  .header h1 {
-    font-size: 28px;
-    color: #d4a017;
-    letter-spacing: 4px;
-    margin-bottom: 6px;
-  }
-  .header .date {
-    color: #666;
-    font-size: 13px;
-    letter-spacing: 2px;
-  }
+  .header h1 { font-size: 28px; color: #d4a017; letter-spacing: 4px; margin-bottom: 6px; }
+  .header .date { color: #666; font-size: 13px; letter-spacing: 2px; }
   .kpi-bar {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
   .kpi-card {
     background: #141414;
@@ -44,11 +37,123 @@
     text-align: center;
   }
   .kpi-card .label { font-size: 12px; color: #888; margin-bottom: 8px; letter-spacing: 1px; }
-  .kpi-card .value { font-size: 28px; font-weight: bold; color: #d4a017; }
+  .kpi-card .value { font-size: 26px; font-weight: bold; color: #d4a017; }
   .kpi-card .sub { font-size: 11px; color: #555; margin-top: 4px; }
+  /* ── デイリーブリーフパネル ── */
+  .brief-section {
+    background: #0d1117;
+    border: 1px solid #2a3a2a;
+    border-left: 3px solid #22c55e;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .brief-section-header {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e2a1e;
+  }
+  .brief-section-header .label {
+    font-size: 13px;
+    color: #22c55e;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+  .brief-section-header .meta { font-size: 12px; color: #666; }
+  .brief-body { padding: 16px 20px; }
+  .brief-title-line {
+    font-size: 14px;
+    color: #e8e0d0;
+    font-weight: bold;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .brief-preview {
+    font-size: 12px;
+    color: #999;
+    line-height: 1.7;
+    max-height: 80px;
+    overflow: hidden;
+  }
+  .brief-full {
+    font-size: 12px;
+    color: #ccc;
+    line-height: 1.8;
+    display: none;
+    white-space: pre-wrap;
+    max-height: 500px;
+    overflow-y: auto;
+    border-top: 1px solid #1a2a1a;
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+  .brief-toggle {
+    background: #1a2a1a;
+    border: 1px solid #2a4a2a;
+    color: #22c55e;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background .15s;
+  }
+  .brief-toggle:hover { background: #223322; }
+  .brief-empty { font-size: 13px; color: #555; padding: 8px 0; }
+  .brief-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .brief-action-btn {
+    background: #111;
+    border: 1px solid #333;
+    color: #aaa;
+    font-size: 11px;
+    padding: 5px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .15s;
+    display: inline-block;
+  }
+  .brief-action-btn:hover { background: #1a2a1a; border-color: #22c55e; color: #22c55e; }
+  /* ── noteコンテンツ全体図 ── */
+  .content-map {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .content-map-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid #1e1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .content-map-header .label { font-size: 13px; color: #d4a017; font-weight: bold; letter-spacing: 1px; }
+  .content-map-header .sub { font-size: 11px; color: #555; }
+  .content-map-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1px;
+    background: #1e1e1e;
+  }
+  .content-type-cell {
+    background: #141414;
+    padding: 14px 16px;
+  }
+  .content-type-cell .ct-name { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .content-type-cell .ct-count { font-size: 20px; font-weight: bold; color: #d4a017; }
+  .content-type-cell .ct-status { font-size: 10px; color: #555; margin-top: 3px; }
+  .content-type-cell.active .ct-name { color: #22c55e; }
+  .content-type-cell.active .ct-count { color: #22c55e; }
+  .content-type-cell.new .ct-name { color: #60a5fa; }
+  .content-type-cell.new .ct-count { color: #60a5fa; }
+  /* ── チームグリッド ── */
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
     margin-bottom: 32px;
   }
@@ -72,6 +177,7 @@
   .green { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
   .yellow { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
   .red { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+  .blue { background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
   .card-body { padding: 16px 20px; }
   .kpi-row {
     display: flex;
@@ -87,10 +193,14 @@
   .kpi-row .val.gold { color: #d4a017; }
   .kpi-row .val.green-text { color: #22c55e; }
   .kpi-row .val.red-text { color: #ef4444; }
+  .kpi-row .val.blue-text { color: #60a5fa; }
   .progress-bar-wrap { margin: 12px 0 4px; }
   .progress-label { font-size: 11px; color: #666; margin-bottom: 5px; }
   .progress-bar { height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #b8860b, #d4a017); border-radius: 3px; transition: width 0.5s; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #b8860b, #d4a017); border-radius: 3px; transition: width 0.8s ease; }
+  .progress-fill.green-fill { background: linear-gradient(90deg, #166534, #22c55e); }
+  .progress-fill.blue-fill { background: linear-gradient(90deg, #1d4ed8, #3b82f6); }
+  /* ── 宿題リスト ── */
   .todo-section {
     background: #141414;
     border: 1px solid #2a2a2a;
@@ -126,9 +236,10 @@
   .badge-auto { background: #0e7490aa; color: #67e8f9; border: 1px solid #0e749066; }
   .badge-done { background: #16532488; color: #4ade80; border: 1px solid #16532455; }
   .todo-text { color: #ccc; line-height: 1.5; }
+  /* ── メンバーグリッド ── */
   .member-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 8px;
     margin-top: 8px;
   }
@@ -141,28 +252,26 @@
     color: #aaa;
   }
   .member-chip .role { color: #d4a017; font-weight: bold; display: block; margin-bottom: 2px; }
+  /* ── 締め切りバナー ── */
   .deadline {
     text-align: center;
     padding: 20px;
     background: #1a0a0a;
     border: 1px solid #ef444433;
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
   .deadline .label { font-size: 12px; color: #888; letter-spacing: 2px; margin-bottom: 8px; }
   .deadline .target { font-size: 24px; font-weight: bold; color: #ef4444; }
   .deadline .sub { font-size: 12px; color: #666; margin-top: 4px; }
+  /* ── データ取得時刻 ── */
+  .data-ts { font-size: 11px; color: #333; text-align: right; margin-bottom: 8px; }
+  /* ── フッター ── */
   .footer { text-align: center; padding: 24px 0; color: #333; font-size: 12px; letter-spacing: 1px; }
-  @media (max-width: 600px) {
-    .kpi-bar { grid-template-columns: 1fr 1fr; }
-    .grid { grid-template-columns: 1fr; }
-  }
-
   /* ── ハンバーガーメニュー ── */
   .ham-btn {
     position: fixed;
-    top: 16px;
-    right: 20px;
+    top: 16px; right: 20px;
     z-index: 500;
     background: #1a1a1a;
     border: 1px solid #333;
@@ -175,22 +284,17 @@
     transition: background .15s;
   }
   .ham-btn:hover { background: #252525; }
-
   .nav-overlay {
     display: none;
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0,0,0,.65);
     z-index: 600;
   }
   .nav-overlay.open { display: block; }
-
   .nav-sidebar {
     position: fixed;
-    top: 0;
-    left: -290px;
-    width: 290px;
-    height: 100vh;
+    top: 0; left: -290px;
+    width: 290px; height: 100vh;
     background: #141414;
     border-right: 1px solid #2a2a2a;
     z-index: 700;
@@ -198,23 +302,15 @@
     padding: 22px 0;
   }
   .nav-sidebar.open { left: 0; }
-
   .nav-x {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    cursor: pointer;
-    color: #666;
-    font-size: 19px;
-    line-height: 1;
+    position: absolute; top: 14px; right: 16px;
+    cursor: pointer; color: #666; font-size: 19px; line-height: 1;
   }
   .nav-head {
     padding: 0 20px 16px;
     border-bottom: 1px solid #2a2a2a;
-    font-size: 13px;
-    font-weight: bold;
-    color: #d4a017;
-    letter-spacing: 2px;
+    font-size: 13px; font-weight: bold;
+    color: #d4a017; letter-spacing: 2px;
   }
   .nav-item {
     display: block;
@@ -228,6 +324,15 @@
   .nav-item:hover { background: #1a1a1a; }
   .nav-item.active { color: #d4a017; background: #1a1200; }
   .nav-divider { height: 1px; background: #2a2a2a; margin: 6px 0; }
+  /* ── ローディング ── */
+  .loading { color: #444; font-size: 13px; }
+  @media (max-width: 768px) {
+    .kpi-bar { grid-template-columns: 1fr 1fr; }
+    .grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .kpi-bar { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -242,10 +347,12 @@
 <div class="nav-sidebar" id="navSidebar">
   <div class="nav-x" onclick="closeNav()">✕</div>
   <div class="nav-head">☰ メニュー</div>
-  <a class="nav-item active" href="/00_ダッシュボード/dashboard.html">📊 ダッシュボード</a>
+  <a class="nav-item active" href="./dashboard.html">📊 ダッシュボード</a>
   <div class="nav-divider"></div>
-  <a class="nav-item" href="/note-workspace/">📝 note作成</a>
-  <a class="nav-item" href="/mercari-workspace/">🛍️ メルカリ出品</a>
+  <a class="nav-item" href="../note-workspace/index.html">📝 note作成</a>
+  <a class="nav-item" href="../mercari-workspace/index.html">🛍️ メルカリ出品</a>
+  <div class="nav-divider"></div>
+  <a class="nav-item" href="../01_決算城/index.html">🏯 決算城</a>
 </div>
 
 <script>
@@ -259,35 +366,71 @@ function closeNav() {
 }
 </script>
 
+<!-- ヘッダー -->
 <div class="header">
   <h1>電脳会社 ダッシュボード</h1>
-  <div class="date">CEO：青柳 ／ 総監督：庵野 ／ 2026-05-22 更新</div>
+  <div class="date" id="dashDate">読み込み中…</div>
 </div>
 
+<!-- 締め切りバナー -->
 <div class="deadline">
   <div class="label">直近ゴール</div>
   <div class="target">6/15 までに ¥3,500 回収</div>
   <div class="sub">楽天証券アフィリ 1件（約¥3,000）が最短ルート ／ 竹中が来週中に設定完了予定</div>
 </div>
 
+<!-- KPIバー -->
 <div class="kpi-bar">
   <div class="kpi-card">
     <div class="label">決算城 記事進捗</div>
-    <div class="value">1 / 100</div>
-    <div class="sub">001 Alphabet 完了</div>
+    <div class="value" id="kpiCastle"><span class="loading">…</span></div>
+    <div class="sub">目標 100本</div>
   </div>
   <div class="kpi-card">
-    <div class="label">メルカリ 今月売上</div>
-    <div class="value">¥ —</div>
-    <div class="sub">目標 ¥50,000</div>
+    <div class="label">メルカリ 出品中</div>
+    <div class="value" id="kpiMercari"><span class="loading">…</span></div>
+    <div class="sub">目標 常時20点以上</div>
   </div>
   <div class="kpi-card">
     <div class="label">競馬 今月収益</div>
     <div class="value">¥ —</div>
     <div class="sub">目標 ¥10,000</div>
   </div>
+  <div class="kpi-card">
+    <div class="label">デイリーブリーフ</div>
+    <div class="value" id="kpiBrief" style="font-size:14px;"><span class="loading">…</span></div>
+    <div class="sub">meeting_notes</div>
+  </div>
 </div>
 
+<!-- デイリー・インテリジェンス・ブリーフパネル -->
+<div class="brief-section">
+  <div class="brief-section-header">
+    <span class="label">INTELLIGENCE BRIEF</span>
+    <span class="meta" id="briefMeta">Supabase接続中…</span>
+  </div>
+  <div class="brief-body" id="briefBody">
+    <div class="brief-empty loading">データ取得中…</div>
+  </div>
+  <div class="brief-actions">
+    <a class="brief-action-btn" href="../note-workspace/index.html" target="_blank">📝 note記事を書く →</a>
+    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn">✓ 読了</button>
+  </div>
+</div>
+
+<!-- noteコンテンツ全体図 -->
+<div class="content-map">
+  <div class="content-map-header">
+    <span class="label">NOTE コンテンツ全体図</span>
+    <span class="sub" id="contentMapTs">読み込み中…</span>
+  </div>
+  <div class="content-map-body" id="contentMapBody">
+    <div class="content-type-cell"><div class="ct-name">読み込み中</div><div class="ct-count">…</div></div>
+  </div>
+</div>
+
+<!-- チームグリッド -->
+<div id="dataTs" class="data-ts"></div>
 <div class="grid">
 
   <!-- 決算城チーム -->
@@ -298,18 +441,14 @@ function closeNav() {
     </div>
     <div class="card-body">
       <div class="kpi-row"><span class="key">ステータス</span><span class="val">開発中（2026-05-22〜）</span></div>
-      <div class="kpi-row"><span class="key">記事完成</span><span class="val gold">1 / 100本</span></div>
+      <div class="kpi-row"><span class="key">記事完成</span><span class="val gold" id="castleArticles">…</span></div>
       <div class="kpi-row"><span class="key">GitHub Pages</span><span class="val red-text">未公開</span></div>
       <div class="kpi-row"><span class="key">アフィリ設定</span><span class="val red-text">未（来週中）</span></div>
       <div class="kpi-row"><span class="key">SNSアカウント</span><span class="val red-text">未取得</span></div>
       <div class="kpi-row"><span class="key">月次目標</span><span class="val">記事10本・アフィリCV5件</span></div>
       <div class="progress-bar-wrap">
         <div class="progress-label">記事進捗（100本）</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:1%"></div></div>
-      </div>
-      <div class="progress-bar-wrap">
-        <div class="progress-label">初期設定（GitHub / A8 / GA4 / SNS）</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+        <div class="progress-bar"><div class="progress-fill" id="castleBar" style="width:0%"></div></div>
       </div>
     </div>
   </div>
@@ -322,14 +461,14 @@ function closeNav() {
     </div>
     <div class="card-body">
       <div class="kpi-row"><span class="key">ステータス</span><span class="val green-text">稼働中</span></div>
-      <div class="kpi-row"><span class="key">X アカウント</span><span class="val green-text">@FIRE1173Go 取得済み</span></div>
+      <div class="kpi-row"><span class="key">X アカウント</span><span class="val gold">@FIRE1173Go（凍結中）</span></div>
       <div class="kpi-row"><span class="key">Make.com フロー</span><span class="val gold">構築済み（設定中）</span></div>
       <div class="kpi-row"><span class="key">FIREスコア記事</span><span class="val green-text">¥980 完成済み</span></div>
       <div class="kpi-row"><span class="key">今週の予想記事</span><span class="val">— / 水曜公開</span></div>
       <div class="kpi-row"><span class="key">月次目標</span><span class="val">有料10本・¥10,000</span></div>
       <div class="progress-bar-wrap">
         <div class="progress-label">Make.com 自動化完成度</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+        <div class="progress-bar"><div class="progress-fill green-fill" style="width:60%"></div></div>
       </div>
     </div>
   </div>
@@ -342,13 +481,33 @@ function closeNav() {
     </div>
     <div class="card-body">
       <div class="kpi-row"><span class="key">ステータス</span><span class="val green-text">稼働中</span></div>
-      <div class="kpi-row"><span class="key">現在の出品数</span><span class="val">— 点（目標 20点以上）</span></div>
+      <div class="kpi-row"><span class="key">現在の出品数</span><span class="val" id="mercariListed">…</span></div>
       <div class="kpi-row"><span class="key">再出品サイクル</span><span class="val">2日に1回厳守</span></div>
-      <div class="kpi-row"><span class="key">未処理画像</span><span class="val gold">あり（パレス処理待ち）</span></div>
+      <div class="kpi-row"><span class="key">再出品候補</span><span class="val gold" id="mercariRelist">…</span></div>
       <div class="kpi-row"><span class="key">月次目標</span><span class="val">¥50,000 / 売却3点以上</span></div>
       <div class="progress-bar-wrap">
         <div class="progress-label">月間売上達成率</div>
         <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 民SNS部隊 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="status-dot blue"></div>
+      <div class="team-name">04 民SNS部隊</div>
+    </div>
+    <div class="card-body">
+      <div class="kpi-row"><span class="key">ステータス</span><span class="val blue-text">設計中（2026-05-31〜）</span></div>
+      <div class="kpi-row"><span class="key">統括</span><span class="val">配給</span></div>
+      <div class="kpi-row"><span class="key">素材生成</span><span class="val">写楽（X/IG/note/TikTok）</span></div>
+      <div class="kpi-row"><span class="key">アンバサダー管理</span><span class="val">ゲバラ</span></div>
+      <div class="kpi-row"><span class="key">チャンネル</span><span class="val red-text">Discord 未設定</span></div>
+      <div class="kpi-row"><span class="key">目標</span><span class="val">民10人 × 各SNS投稿</span></div>
+      <div class="progress-bar-wrap">
+        <div class="progress-label">アンバサダー獲得進捗</div>
+        <div class="progress-bar"><div class="progress-fill blue-fill" style="width:0%"></div></div>
       </div>
     </div>
   </div>
@@ -387,6 +546,10 @@ function closeNav() {
       <span class="todo-badge badge-auto">自動</span>
       <span class="todo-text">Make.com スケジュール設定・status更新処理（競馬チーム）</span>
     </div>
+    <div class="todo-item">
+      <span class="todo-badge badge-auto">自動</span>
+      <span class="todo-text">民SNS部隊 Discord サーバー作成 + 素材自動配信フロー設計</span>
+    </div>
   </div>
 </div>
 
@@ -410,6 +573,7 @@ function closeNav() {
       <div class="member-chip"><span class="role">経済解説</span>島津</div>
       <div class="member-chip"><span class="role">グロース</span>黒田</div>
       <div class="member-chip"><span class="role">アフィリ</span>竹中</div>
+      <div class="member-chip"><span class="role">画像</span>永徳</div>
     </div>
     <div style="font-size: 12px; color: #888; margin-bottom: 6px;">競馬チーム（ウマ娘）</div>
     <div class="member-grid" style="margin-bottom: 14px;">
@@ -437,6 +601,14 @@ function closeNav() {
       <div class="member-chip"><span class="role">解説</span>ディッキ</div>
       <div class="member-chip"><span class="role">マネタイズ</span>ワコ</div>
     </div>
+    <div style="font-size: 12px; color: #888; margin-bottom: 6px;">民SNS部隊</div>
+    <div class="member-grid" style="margin-bottom: 14px;">
+      <div class="member-chip"><span class="role">統括・配給</span>配給</div>
+      <div class="member-chip"><span class="role">素材生成</span>写楽</div>
+      <div class="member-chip"><span class="role">大使管理</span>ゲバラ</div>
+      <div class="member-chip"><span class="role">成果分析</span>マルクス</div>
+      <div class="member-chip"><span class="role">CH係</span>モールス</div>
+    </div>
     <div style="font-size: 12px; color: #888; margin-bottom: 6px;">横断チーム（名探偵）</div>
     <div class="member-grid">
       <div class="member-chip"><span class="role">校正</span>コナン</div>
@@ -446,7 +618,171 @@ function closeNav() {
   </div>
 </div>
 
-<div class="footer">電脳会社 ダッシュボード ／ 庵野総監督 制作 ／ 3日ごとに更新</div>
+<div class="footer">電脳会社 ダッシュボード ／ 庵野総監督 制作 ／ Supabase接続済み</div>
+
+<script>
+// ── Supabase 初期化 ──
+let sb;
+try {
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) {
+  console.warn('config.js未設定。静的表示モードで動作します。');
+}
+
+// ── ヘッダー日付 ──
+const today = new Date();
+const dateStr = today.toLocaleDateString('ja-JP', {year:'numeric', month:'2-digit', day:'2-digit'});
+document.getElementById('dashDate').textContent = 'CEO：青柳 ／ 総監督：庵野 ／ ' + dateStr + ' 取得';
+
+async function init() {
+  if (!sb) {
+    setStaticFallback();
+    return;
+  }
+
+  const now = new Date().toISOString().slice(0,10);
+
+  try {
+    const [mercariRes, relistRes, castleRes, briefRes, noteRes, novelRes] = await Promise.all([
+      // 出品中件数
+      sb.from('mercari_items').select('id', {count:'exact', head:true}).eq('status','listed'),
+      // 再出品候補（2日超経過）
+      sb.from('mercari_items').select('id', {count:'exact', head:true})
+        .eq('status','listed')
+        .lt('last_relisted_at', new Date(Date.now() - 2*24*60*60*1000).toISOString()),
+      // 決算城 記事本数（body入り）
+      sb.from('castle_articles').select('id', {count:'exact', head:true}).not('body','is',null),
+      // 今日のブリーフ
+      sb.from('meeting_notes')
+        .select('id, date, title, content')
+        .eq('category','daily_intelligence_brief')
+        .order('date', {ascending:false})
+        .limit(1)
+        .maybeSingle(),
+      // noteコンテンツ集計
+      sb.from('note_articles').select('category, status'),
+      // 自キュン（novel_stories）集計
+      sb.from('novel_stories').select('status')
+    ]);
+
+    // メルカリ出品数
+    const listed = mercariRes.count ?? 0;
+    document.getElementById('kpiMercari').textContent = listed + ' 点';
+    document.getElementById('mercariListed').textContent = listed + ' 点（目標20点以上）';
+    document.getElementById('mercariListed').className = 'val ' + (listed >= 20 ? 'green-text' : 'gold');
+
+    // 再出品候補
+    const relist = relistRes.count ?? 0;
+    document.getElementById('mercariRelist').textContent = relist > 0 ? relist + ' 点（要再出品）' : 'なし';
+
+    // 決算城
+    const castleCount = castleRes.count ?? 0;
+    document.getElementById('kpiCastle').textContent = castleCount + ' / 100';
+    document.getElementById('castleArticles').textContent = castleCount + ' / 100本';
+    document.getElementById('castleBar').style.width = castleCount + '%';
+
+    // デイリーブリーフ
+    if (briefRes.data) {
+      const b = briefRes.data;
+      const isToday = b.date === now;
+      document.getElementById('kpiBrief').textContent = isToday ? '✓ 本日収集済' : b.date + ' 収集';
+      document.getElementById('kpiBrief').className = isToday ? 'val green-text' : 'val gold';
+      document.getElementById('briefMeta').textContent = b.date + ' 収集';
+      renderBrief(b);
+    } else {
+      document.getElementById('kpiBrief').textContent = '未収集';
+      document.getElementById('briefMeta').textContent = '未収集';
+      document.getElementById('briefBody').innerHTML = '<div class="brief-empty">本日のブリーフはまだ収集されていません。「ブリーフ実行」と声をかけてください。</div>';
+    }
+
+    document.getElementById('dataTs').textContent = 'データ取得: ' + new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+
+    // noteコンテンツ全体図
+    renderContentMap(noteRes.data || [], novelRes.data || []);
+
+  } catch(e) {
+    console.error('Supabase error:', e);
+    setStaticFallback();
+  }
+}
+
+function renderBrief(b) {
+  const preview = (b.content || '').substring(0, 450).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const full = (b.content || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  document.getElementById('briefBody').innerHTML =
+    '<div class="brief-title-line">' + (b.title || '').replace(/</g,'&lt;') + '</div>' +
+    '<div class="brief-preview" id="bPreview">' + preview.replace(/\n/g,'<br>') + '…</div>' +
+    '<div class="brief-full" id="bFull">' + full.replace(/\n/g,'<br>') + '</div>' +
+    '<button class="brief-toggle" onclick="toggleBrief(this)">全文を見る ▼</button>';
+}
+
+function toggleBrief(btn) {
+  const preview = document.getElementById('bPreview');
+  const full = document.getElementById('bFull');
+  if (full.style.display === 'none' || full.style.display === '') {
+    full.style.display = 'block';
+    preview.style.display = 'none';
+    btn.textContent = '閉じる ▲';
+  } else {
+    full.style.display = 'none';
+    preview.style.display = 'block';
+    btn.textContent = '全文を見る ▼';
+  }
+}
+
+function renderContentMap(noteArticles, novelStories) {
+  const categories = [
+    { key:'競馬',      label:'競馬',      cls:'active',  note:'毎週水曜 ¥100' },
+    { key:'自キュン',  label:'自キュン',   cls:'active',  note:'novel_stories', isNovel:true },
+    { key:'AI記事',    label:'AI記事',     cls:'new',     note:'ブリーフ連携' },
+    { key:'ビジネス',  label:'ビジネス',   cls:'new',     note:'電脳独立日記' },
+    { key:'自社サービス', label:'自社PR', cls:'new',     note:'kassenjo等' },
+  ];
+
+  const countByCategory = {};
+  noteArticles.forEach(a => {
+    countByCategory[a.category] = (countByCategory[a.category]||0) + 1;
+  });
+  const novelCount = novelStories.length;
+
+  const html = categories.map(c => {
+    const cnt = c.isNovel ? novelCount : (countByCategory[c.key] || 0);
+    const badge = cnt > 0 ? '' : ' style="opacity:.4"';
+    return `<div class="content-type-cell ${c.cls}"${badge}>
+      <div class="ct-name">${c.label}</div>
+      <div class="ct-count">${cnt}</div>
+      <div class="ct-status">${c.note}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('contentMapBody').innerHTML = html;
+  document.getElementById('contentMapTs').textContent =
+    noteArticles.length + '本 + 自キュン' + novelCount + '本';
+}
+
+function markBriefRead() {
+  const btn = document.getElementById('briefReadBtn');
+  btn.textContent = '✓ 読了済み';
+  btn.style.borderColor = '#22c55e';
+  btn.style.color = '#22c55e';
+  btn.disabled = true;
+  localStorage.setItem('brief_read_' + new Date().toISOString().slice(0,10), '1');
+}
+
+function setStaticFallback() {
+  ['kpiMercari','kpiCastle','kpiBrief'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '— (offline)';
+  });
+  document.getElementById('briefBody').innerHTML = '<div class="brief-empty">config.js未設定。オフラインモード。</div>';
+  document.getElementById('briefMeta').textContent = 'offline';
+}
+
+init();
+
+// 3分おきにデータ再取得（スマホで開きっぱなしでも最新表示）
+setInterval(init, 3 * 60 * 1000);
+</script>
 
 </body>
 </html>

@@ -196,6 +196,34 @@ body {
 }
 .card-body.tall { max-height: 220px; }
 .card-body.empty { color: var(--muted); font-style: italic; }
+.title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #1a1a1a;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.title-row:last-child { border-bottom: none; }
+.title-row .title-text { flex: 1; }
+.title-row .title-text.skipped { text-decoration: line-through; color: #444; }
+.t-btn {
+  background: none;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--muted);
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.t-btn.apply:hover { border-color: #d4a017; color: #d4a017; }
+.t-btn.skip:hover { border-color: #555; color: #666; }
+.t-btn.applied { border-color: #22c55e; color: #22c55e; background: #0d2a1a; }
 
 /* Gemini hint card */
 .gemini-steps {
@@ -277,9 +305,10 @@ body {
 <div class="nav-sidebar" id="navSidebar">
   <div class="nav-x" onclick="closeNav()">✕</div>
   <div class="nav-head">☰ メニュー</div>
-  <a class="nav-item" href="/00_ダッシュボード/dashboard.html">📊 ダッシュボード</a>
-  <a class="nav-item active" href="/note-workspace/">📝 note作成</a>
-  <a class="nav-item" href="/mercari-workspace/">🛍️ メルカリ出品</a>
+  <a class="nav-item" href="../00_ダッシュボード/dashboard.html">📊 ダッシュボード</a>
+  <a class="nav-item active" href="./index.html">📝 note作成</a>
+  <a class="nav-item" href="../mercari-workspace/index.html">🛍️ メルカリ出品</a>
+  <a class="nav-item" href="../kassenjo-workspace/index.html">🏯 決算城</a>
 </div>
 
 <!-- TOP BAR -->
@@ -297,6 +326,24 @@ body {
 
   <!-- ===== LEFT PANE ===== -->
   <div class="left-pane">
+
+    <!-- 競合タイトル分析 -->
+    <div class="card" id="competitorCard">
+      <div class="card-head">
+        <span class="card-label">競合タイトルの共通パターン</span>
+        <div class="card-btns">
+          <select id="researchCat" onchange="loadResearch(this.value)" style="background:#0a0a0a;border:1px solid #2a2a2a;color:#aaa;border-radius:4px;padding:2px 6px;font-size:11px;">
+            <option value="">カテゴリ選択</option>
+            <option value="racing">競馬</option>
+            <option value="diet">ダイエット</option>
+          </select>
+          <button class="link-btn" onclick="loadResearch(document.getElementById('researchCat').value)" style="padding:3px 10px;">更新</button>
+        </div>
+      </div>
+      <div id="competitorBody" style="padding:10px 12px;font-size:12px;color:#555;min-height:60px;">
+        カテゴリを選択してください
+      </div>
+    </div>
 
     <!-- [1] 画像プロンプト -->
     <div class="card">
@@ -512,6 +559,70 @@ function copyField(id, btn) {
     btn.classList.add('done');
     setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1800);
   });
+}
+
+async function loadResearch(cat) {
+  const body = document.getElementById('competitorBody');
+  if (!cat || !sb) {
+    body.innerHTML = '<span style="color:#555">カテゴリを選択してください</span>';
+    return;
+  }
+  body.innerHTML = '<span style="color:#555">読み込み中...</span>';
+  try {
+    const { data, error } = await sb
+      .from('note_research_cache')
+      .select('topic, example_titles, top_keywords, run_date')
+      .eq('category', cat)
+      .order('run_date', {ascending: false})
+      .limit(5);
+    if (error) throw error;
+    if (!data || !data.length) {
+      body.innerHTML = '<span style="color:#555">データなし（庵野よろで収集してください）</span>';
+      return;
+    }
+    // example_titlesを全部フラット化
+    const allTitles = [];
+    data.forEach(d => {
+      if (Array.isArray(d.example_titles)) d.example_titles.forEach(t => allTitles.push(t));
+    });
+    const unique = [...new Set(allTitles)].slice(0, 12);
+    if (!unique.length) {
+      body.innerHTML = '<span style="color:#555">タイトルデータなし</span>';
+      return;
+    }
+    body.innerHTML = unique.map((t, i) =>
+      `<div class="title-row" id="tr${i}">
+        <span class="title-text" id="tt${i}">${t}</span>
+        <button class="t-btn apply" onclick="applyTitle('${t.replace(/'/g,"\\'")}',this)">反映</button>
+        <button class="t-btn skip" onclick="skipTitle(${i})">スキップ</button>
+      </div>`
+    ).join('');
+  } catch(e) {
+    body.innerHTML = `<span style="color:#ef4444">エラー: ${e.message}</span>`;
+  }
+}
+
+function applyTitle(title, btn) {
+  // タイトルフィールドに反映
+  const el = document.getElementById('fTitle');
+  if (el && !el.classList.contains('empty')) {
+    // 既存タイトルの後に候補を追記
+    el.textContent = title;
+  } else {
+    el.textContent = title;
+    el.className = 'card-body';
+  }
+  btn.textContent = '✓ 反映済み';
+  btn.className = 't-btn applied';
+  btn.disabled = true;
+  // コピーボタンを光らせる
+  navigator.clipboard.writeText(title).catch(()=>{});
+}
+
+function skipTitle(idx) {
+  const row = document.getElementById('tr'+idx);
+  const txt = document.getElementById('tt'+idx);
+  if (row) { txt.classList.add('skipped'); row.style.opacity = '0.3'; }
 }
 
 init();

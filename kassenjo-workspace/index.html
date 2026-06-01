@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>決算城ワークスペース | 電脳会社</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="../config.js" onerror="onConfigMissing()"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg:     #0a0a0a;
+  --bg2:    #141414;
+  --bg3:    #1a1a1a;
+  --border: #2a2a2a;
+  --text:   #e8e0d0;
+  --muted:  #888;
+  --gold:   #d4a017;
+  --green:  #22c55e;
+  --red:    #ef4444;
+  --bar-h:  52px;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+/* TOP BAR */
+.top-bar {
+  height: var(--bar-h);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.ham-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px;
+  color: var(--gold); font-size: 17px; cursor: pointer; flex-shrink: 0;
+}
+.ham-btn:hover { background: var(--bg3); }
+.bar-title { font-size: 15px; font-weight: bold; color: var(--gold); letter-spacing: 2px; flex-shrink: 0; }
+.bar-title span { font-size: 11px; color: var(--muted); font-weight: normal; margin-left: 8px; }
+#articleSelect {
+  flex: 1; max-width: 520px;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 6px 10px;
+  border-radius: 6px; font-size: 13px; cursor: pointer;
+}
+#articleSelect:focus { outline: none; border-color: var(--gold); }
+.conn-badge {
+  font-size: 11px; padding: 3px 10px; border-radius: 20px;
+  background: var(--bg3); border: 1px solid var(--border); color: var(--muted); flex-shrink: 0;
+}
+.conn-badge.ok  { color: var(--green); border-color: #1a4a2a; background: #0d2a19; }
+.conn-badge.err { color: var(--red);   border-color: #4a1a1a; background: #2a0d0d; }
+/* NAV */
+.nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 200; }
+.nav-overlay.open { display: block; }
+.nav-sidebar {
+  position: fixed; top: 0; left: -280px; width: 280px; height: 100vh;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  z-index: 201; transition: left .22s ease; padding: 20px 0;
+}
+.nav-sidebar.open { left: 0; }
+.nav-x { position: absolute; top: 14px; right: 14px; cursor: pointer; color: var(--muted); font-size: 18px; }
+.nav-head { padding: 0 18px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: bold; color: var(--gold); letter-spacing: 2px; }
+.nav-item { display: block; padding: 14px 18px; color: var(--text); text-decoration: none; border-bottom: 1px solid #1c1c1c; transition: background .15s; font-size: 14px; }
+.nav-item:hover { background: var(--bg3); }
+.nav-item.active { color: var(--gold); }
+/* WORKSPACE */
+.workspace { flex: 1; display: flex; overflow: hidden; }
+/* LEFT PANE */
+.left-pane {
+  width: 42%; overflow-y: auto; border-right: 1px solid var(--border);
+  padding: 14px; display: flex; flex-direction: column; gap: 10px;
+}
+/* META CARD */
+.meta-card {
+  background: var(--bg2); border: 1px solid #3a2a00;
+  border-radius: 7px; padding: 12px 14px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.meta-item .meta-key { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+.meta-item .meta-val { font-size: 13px; color: var(--gold); font-weight: bold; }
+.meta-item .meta-val.small { font-size: 11px; color: var(--text); font-weight: normal; }
+.fire-badge {
+  grid-column: 1 / -1;
+  background: #1a1200; border: 1px solid #3a2a00;
+  border-radius: 4px; padding: 6px 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.fire-score { font-size: 24px; font-weight: bold; color: var(--gold); }
+.fire-label { font-size: 11px; color: var(--muted); line-height: 1.5; }
+/* SECTION CARD */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 12px; background: var(--bg3); border-bottom: 1px solid var(--border); gap: 8px;
+}
+.card-label { font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; flex-shrink: 0; }
+.card-btns { display: flex; gap: 6px; flex-shrink: 0; }
+.copy-btn {
+  background: var(--gold); color: #000; border: none;
+  border-radius: 20px; padding: 4px 13px; font-size: 11px;
+  font-weight: bold; cursor: pointer; transition: background .15s; white-space: nowrap;
+}
+.copy-btn:hover { background: #e8b420; }
+.copy-btn.done { background: var(--green); }
+.link-btn {
+  background: var(--bg); color: var(--muted); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 13px; font-size: 11px;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: background .15s; display: inline-block;
+}
+.link-btn:hover { background: var(--bg3); color: var(--text); }
+.card-body {
+  padding: 10px 12px; line-height: 1.75; color: var(--text);
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 160px; overflow-y: auto;
+}
+.card-body.tall { max-height: 240px; }
+.card-body.empty { color: var(--muted); font-style: italic; }
+/* ACTION AREA */
+.action-area {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 14px;
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+}
+.action-btn {
+  border: none; border-radius: 6px; padding: 8px 18px;
+  font-size: 12px; font-weight: bold; cursor: pointer; transition: all .15s;
+}
+.action-btn.publish {
+  background: var(--gold); color: #000;
+}
+.action-btn.publish:hover { background: #e8b420; }
+.action-btn.publish:disabled { background: #333; color: #666; cursor: not-allowed; }
+.action-btn.image-done {
+  background: #0d2a1a; border: 1px solid #22c55e; color: #22c55e;
+}
+.action-btn.image-done:hover { background: #143a20; }
+.action-btn.image-done.done { opacity: 0.6; cursor: default; }
+.action-status { font-size: 11px; color: var(--muted); flex: 1; text-align: right; }
+/* RIGHT PANE */
+.right-pane { width: 58%; display: flex; flex-direction: column; overflow: hidden; }
+.right-bar {
+  padding: 10px 14px; background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.right-bar .r-label { font-size: 12px; color: var(--muted); }
+.site-btn {
+  background: #111; color: var(--text); border: 1px solid var(--border);
+  border-radius: 20px; padding: 6px 18px; font-size: 12px; font-weight: bold;
+  text-decoration: none; transition: background .15s; white-space: nowrap;
+}
+.site-btn:hover { background: #222; }
+.site-btn.primary { background: #000; border-color: #555; color: #fff; }
+.right-body {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--muted); padding: 40px 60px;
+}
+.right-body .big-icon { font-size: 52px; margin-bottom: 20px; }
+.right-body .big-title { font-size: 18px; font-weight: bold; color: var(--text); margin-bottom: 10px; }
+.right-body .sub-text { font-size: 13px; line-height: 1.9; text-align: center; margin-bottom: 28px; }
+.flow-steps {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 20px;
+  width: 100%; max-width: 480px; line-height: 2.4; font-size: 13px;
+}
+.flow-steps .fs-title { font-weight: bold; color: var(--gold); margin-bottom: 6px; }
+.flow-steps div { color: var(--muted); }
+.flow-steps div strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
+<div class="nav-sidebar" id="navSidebar">
+  <div class="nav-x" onclick="closeNav()">✕</div>
+  <div class="nav-head">☰ メニュー</div>
+  <a class="nav-item" href="../00_ダッシュボード/dashboard.html">📊 ダッシュボード</a>
+  <a class="nav-item" href="../note-workspace/index.html">📝 note作成</a>
+  <a class="nav-item" href="../mercari-workspace/index.html">🛍️ メルカリ出品</a>
+  <a class="nav-item active" href="./index.html">🏯 決算城</a>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <button class="ham-btn" onclick="toggleNav()">☰</button>
+  <span class="bar-title">🏯 決算城ワークスペース <span>記事選択 → プロンプトコピー → Gemini → note公開</span></span>
+  <select id="articleSelect" onchange="onSelect(this.value)">
+    <option value="">── 企業を選択（記事あり） ──</option>
+  </select>
+  <span class="conn-badge" id="connBadge">接続中...</span>
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+  <!-- LEFT PANE -->
+  <div class="left-pane">
+
+    <!-- 企業メタ情報 -->
+    <div class="meta-card" id="metaCard" style="display:none">
+      <div class="meta-item">
+        <div class="meta-key">企業</div>
+        <div class="meta-val small" id="mCompany">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">城主 × 城</div>
+        <div class="meta-val small" id="mCastle">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">CEO</div>
+        <div class="meta-val small" id="mCeo">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-key">IR</div>
+        <div class="meta-val small" id="mIr">—</div>
+      </div>
+      <div class="fire-badge" id="fireBadge">
+        <div class="fire-score" id="fireScore">—</div>
+        <div class="fire-label">FIREスコア<br><span id="fireLabel">—</span></div>
+      </div>
+    </div>
+
+    <!-- [1] 4コマ漫画プロンプト -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label">[1] 4コマ漫画プロンプト</span>
+        <div class="card-btns">
+          <a class="link-btn" href="https://gemini.google.com/app" target="_blank">Geminiを開く ↗</a>
+          <button class="copy-btn" onclick="copyField('fManga',this)">コピー</button>
+        </div>
+      </div>
+      <div class="card-body empty" id="fManga">記事を選択してください</div>
+    </div>
+
+    <!-- [2] TOP画像プロンプト -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label">[2] TOP画像プロンプト（1280×670px）</span>
+        <div class="card-btns">
+          <a class="link-btn" href="https://gemini.google.com/app" target="_blank">Geminiを開く ↗</a>
+          <button class="copy-btn" onclick="copyField('fHero',this)">コピー</button>
+        </div>
+      </div>
+      <div class="card-body empty" id="fHero">記事を選択してください</div>
+    </div>
+
+    <!-- [3] 記事本文 -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label">[3] 記事本文</span>
+        <button class="copy-btn" onclick="copyField('fBody',this)">コピー</button>
+      </div>
+      <div class="card-body tall empty" id="fBody">記事を選択してください</div>
+    </div>
+
+    <!-- アクション -->
+    <div class="action-area" id="actionArea" style="display:none">
+      <button class="action-btn image-done" id="btnImageDone" onclick="markImageDone(this)">🖼️ 画像生成済み</button>
+      <button class="action-btn publish" id="btnPublish" onclick="markPublished(this)">🏯 公開済みにする</button>
+      <span class="action-status" id="actionStatus">—</span>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANE -->
+  <div class="right-pane">
+    <div class="right-bar">
+      <span class="r-label">決算城</span>
+      <a class="site-btn primary" href="../01_決算城/index.html" target="_blank">🏯 決算城サイトを開く →</a>
+      <a class="site-btn" href="https://gemini.google.com/app" target="_blank">Gemini ↗</a>
+    </div>
+    <div class="right-body">
+      <div class="big-icon">🏯</div>
+      <div class="big-title">決算城ワークスペース</div>
+      <div class="sub-text">
+        左で企業を選択 → プロンプトをコピー → Geminiで画像生成<br>
+        本文をコピーして決算城サイトに貼り付け → 公開済みボタンで完了
+      </div>
+      <div class="flow-steps">
+        <div class="fs-title">▼ 作業フロー</div>
+        <div>① <strong>企業を選択</strong>（左のセレクター）</div>
+        <div>② <strong>[1] 4コマプロンプト</strong> コピー → Geminiで漫画生成</div>
+        <div>③ <strong>[2] TOP画像プロンプト</strong> コピー → Geminiでバナー生成</div>
+        <div>④ <strong>[3] 記事本文</strong> コピー → 決算城サイトに貼付</div>
+        <div>⑤ <strong>🖼️ 画像生成済み</strong> → <strong>🏯 公開済み</strong> の順でボタンを押す</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let sb = null;
+let articles = [];
+let currentId = null;
+
+function onConfigMissing() { setBadge('⚠️ config.js なし', 'err'); }
+function toggleNav() {
+  document.getElementById('navOverlay').classList.toggle('open');
+  document.getElementById('navSidebar').classList.toggle('open');
+}
+function closeNav() {
+  document.getElementById('navOverlay').classList.remove('open');
+  document.getElementById('navSidebar').classList.remove('open');
+}
+function setBadge(t, type) {
+  const el = document.getElementById('connBadge');
+  el.textContent = t;
+  el.className = 'conn-badge' + (type ? ' ' + type : '');
+}
+
+async function init() {
+  if (typeof SUPABASE_URL === 'undefined') return;
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data, error } = await sb
+      .from('castle_articles')
+      .select('id, company, castle, samurai, ceo, body, manga_prompt, hero_prompt, ir_url, fire_score, status, affiliate_link')
+      .not('body', 'is', null)
+      .neq('status', 'published')
+      .order('company', { ascending: true });
+    if (error) throw error;
+    articles = data || [];
+    const sel = document.getElementById('articleSelect');
+    articles.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id;
+      opt.textContent = `${a.company} ／ ${a.samurai} × ${a.castle}`;
+      sel.appendChild(opt);
+    });
+    setBadge(`✓ 未公開 ${articles.length}件`, 'ok');
+  } catch(e) {
+    setBadge(`エラー: ${e.message.slice(0,40)}`, 'err');
+  }
+}
+
+function onSelect(id) {
+  currentId = id;
+  if (!id) {
+    ['fManga','fHero','fBody'].forEach(f => {
+      const el = document.getElementById(f);
+      el.textContent = '記事を選択してください';
+      el.className = 'card-body' + (f==='fBody'?' tall':'') + ' empty';
+    });
+    document.getElementById('metaCard').style.display = 'none';
+    document.getElementById('actionArea').style.display = 'none';
+    return;
+  }
+  const a = articles.find(x => x.id === id);
+  if (!a) return;
+
+  // メタ情報
+  document.getElementById('metaCard').style.display = 'grid';
+  document.getElementById('mCompany').textContent = a.company || '—';
+  document.getElementById('mCastle').textContent = `${a.samurai} × ${a.castle}`;
+  document.getElementById('mCeo').textContent = a.ceo || '—';
+  const irEl = document.getElementById('mIr');
+  if (a.ir_url) {
+    irEl.innerHTML = `<a href="${a.ir_url}" target="_blank" style="color:#60a5fa;text-decoration:none">IR公式 ↗</a>`;
+  } else {
+    irEl.textContent = '未設定';
+  }
+  const score = a.fire_score;
+  document.getElementById('fireScore').textContent = score ?? '—';
+  document.getElementById('fireLabel').textContent =
+    score >= 75 ? '🔥 激走候補' : score >= 65 ? '⚡ 有力' : score ? '📊 参考' : '未設定';
+
+  // フィールド
+  setField('fManga', a.manga_prompt, false);
+  setField('fHero',  a.hero_prompt,  false);
+  setField('fBody',  a.body,         true);
+
+  // アクションエリア
+  document.getElementById('actionArea').style.display = 'flex';
+  document.getElementById('actionStatus').textContent = `ステータス: ${a.status}`;
+  document.getElementById('btnImageDone').className = 'action-btn image-done';
+  document.getElementById('btnImageDone').textContent = '🖼️ 画像生成済み';
+  document.getElementById('btnImageDone').disabled = false;
+  document.getElementById('btnPublish').disabled = false;
+}
+
+function setField(id, value, tall) {
+  const el = document.getElementById(id);
+  const base = 'card-body' + (tall ? ' tall' : '');
+  el.textContent = value || '（データなし）';
+  el.className = value ? base : base + ' empty';
+}
+
+function copyField(id, btn) {
+  const el = document.getElementById(id);
+  if (el.classList.contains('empty')) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済み';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1800);
+  }).catch(() => {
+    const r = document.createRange();
+    r.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+  });
+}
+
+function markImageDone(btn) {
+  btn.textContent = '✓ 画像生成完了';
+  btn.classList.add('done');
+  btn.disabled = true;
+}
+
+async function markPublished(btn) {
+  if (!sb || !currentId) return;
+  if (!confirm('公開済みにしますか？リストから消えます。')) return;
+  btn.disabled = true;
+  btn.textContent = '更新中...';
+  const { error } = await sb.from('castle_articles')
+    .update({ status: 'published', published_at: new Date().toISOString() })
+    .eq('id', currentId);
+  if (!error) {
+    articles = articles.filter(a => a.id !== currentId);
+    const sel = document.getElementById('articleSelect');
+    const opt = sel.querySelector(`option[value="${currentId}"]`);
+    if (opt) opt.remove();
+    sel.value = '';
+    onSelect('');
+    setBadge(`✓ 未公開 ${articles.length}件`, 'ok');
+  } else {
+    btn.textContent = 'エラー';
+    btn.disabled = false;
+  }
+}
+
+init();
+</script>
+</body>
+</html>

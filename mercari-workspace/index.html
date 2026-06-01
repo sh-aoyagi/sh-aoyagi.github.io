@@ -230,6 +230,35 @@ tbody td:first-child { text-align: left; max-width: 140px; overflow: hidden; tex
 .td-profit.neg { color: var(--red); }
 .td-na { color: #555; font-style: italic; }
 .table-empty { padding: 20px; text-align: center; color: var(--muted); }
+.act-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+  display: block;
+  width: 100%;
+  margin-bottom: 3px;
+}
+.act-btn:last-child { margin-bottom: 0; }
+.act-btn.relist:hover { background: #0d2a1a; border-color: #22c55e; color: #22c55e; }
+.act-btn.sold:hover { background: #2a1a0d; border-color: #f97316; color: #f97316; }
+.act-btn.done { background: #0d2a1a; border-color: #22c55e; color: #22c55e; cursor: default; }
+.act-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.refresh-btn {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  border-radius: 4px; padding: 2px 8px; font-size: 13px; cursor: pointer;
+  margin-left: auto; transition: background .15s;
+}
+.refresh-btn:hover { background: var(--bg3); color: var(--text); }
+.td-up   { color: #22c55e; font-weight: bold; }
+.td-down { color: #ef4444; font-weight: bold; }
+.td-same { color: #888; }
+.td-guer { color: #f97316; }
 
 /* ── RIGHT PANE ── */
 .right-pane { width: 60%; display: flex; flex-direction: column; overflow: hidden; }
@@ -256,9 +285,10 @@ tbody td:first-child { text-align: left; max-width: 140px; overflow: hidden; tex
 <div class="nav-sidebar" id="navSidebar">
   <div class="nav-x" onclick="closeNav()">✕</div>
   <div class="nav-head">☰ メニュー</div>
-  <a class="nav-item" href="/00_ダッシュボード/dashboard.html">📊 ダッシュボード</a>
-  <a class="nav-item" href="/note-workspace/">📝 note作成</a>
-  <a class="nav-item active" href="/mercari-workspace/">🛍️ メルカリ出品</a>
+  <a class="nav-item" href="../00_ダッシュボード/dashboard.html">📊 ダッシュボード</a>
+  <a class="nav-item" href="../note-workspace/index.html">📝 note作成</a>
+  <a class="nav-item active" href="./index.html">🛍️ メルカリ出品</a>
+  <a class="nav-item" href="../kassenjo-workspace/index.html">🏯 決算城</a>
 </div>
 
 <!-- TOP BAR -->
@@ -317,6 +347,7 @@ ADD COLUMN profit_estimate    INTEGER;</div>
       <div class="table-head-bar">
         <span class="table-head-label">商品価格テーブル（listed のみ）</span>
         <span id="itemCount" style="font-size:11px;color:var(--muted)">読込中...</span>
+        <button class="refresh-btn" onclick="refreshItems()" title="データを再取得">🔄</button>
       </div>
       <div style="overflow-x:auto">
         <table>
@@ -329,6 +360,7 @@ ADD COLUMN profit_estimate    INTEGER;</div>
               <th>概算利益</th>
               <th>推奨価格</th>
               <th>ゲリラ価格</th>
+              <th>アクション</th>
             </tr>
           </thead>
           <tbody id="itemTableBody">
@@ -402,7 +434,7 @@ async function init() {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const { data, error } = await sb
       .from('mercari_items')
-      .select('item_no, name, price, cost, shipping, likes_count, views, status')
+      .select('item_no, name, price, cost, shipping, likes_count, views, status, recommended_price, guerrilla_price')
       .eq('status', 'listed')
       .order('item_no', { ascending: true });
 
@@ -414,7 +446,7 @@ async function init() {
     document.getElementById('itemCount').textContent = `${items.length} 件`;
   } catch(e) {
     setBadge(`接続エラー: ${e.message.slice(0,40)}`, 'err');
-    document.getElementById('itemTableBody').innerHTML = `<tr><td colspan="7" class="table-empty">接続エラー: ${e.message}</td></tr>`;
+    document.getElementById('itemTableBody').innerHTML = `<tr><td colspan="8" class="table-empty">接続エラー: ${e.message}</td></tr>`;
     document.getElementById('itemCount').textContent = 'エラー';
   }
 }
@@ -422,21 +454,32 @@ async function init() {
 function renderTable() {
   const tbody = document.getElementById('itemTableBody');
   if (!items.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="table-empty">listed商品がありません</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="table-empty">listed商品がありません</td></tr>';
     return;
   }
   tbody.innerHTML = items.map(it => {
     const fee = Math.round(it.price * 0.1);
     const profit = it.price - fee - (it.cost || 0) - (it.shipping || 0);
     const pClass = profit >= 0 ? 'pos' : 'neg';
+    const rec = it.recommended_price;
+    const guer = it.guerrilla_price;
+    const diff = rec ? rec - it.price : 0;
+    const recClass = rec ? (diff > 0 ? 'td-up' : diff < 0 ? 'td-down' : 'td-same') : 'td-na';
+    const recText = rec ? `¥${rec.toLocaleString()} ${diff > 0 ? '▲'+diff.toLocaleString() : diff < 0 ? '▼'+Math.abs(diff).toLocaleString() : '−'}` : '未設定';
+    const guerClass = guer ? 'td-guer' : 'td-na';
+    const guerText = guer ? `¥${guer.toLocaleString()}` : '未設定';
     return `<tr>
       <td title="${it.name}">${it.name}</td>
       <td>${it.item_no}</td>
       <td>¥${it.price.toLocaleString()}</td>
       <td>¥${(it.cost || 0).toLocaleString()}</td>
       <td class="td-profit ${pClass}">¥${profit.toLocaleString()}</td>
-      <td class="td-na">未設定</td>
-      <td class="td-na">未設定</td>
+      <td class="${recClass}">${recText}</td>
+      <td class="${guerClass}">${guerText}</td>
+      <td>
+        <button class="act-btn relist" onclick="markRelisted(${it.item_no},this)">再出品済み</button>
+        <button class="act-btn sold" onclick="markSold(${it.item_no},this)">売れた</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -509,6 +552,51 @@ function copyPrompt(btn) {
     btn.classList.add('done');
     setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1800);
   });
+}
+
+async function refreshItems() {
+  const btn = document.querySelector('.refresh-btn');
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  await init();
+  if (btn) { btn.textContent = '🔄'; btn.disabled = false; }
+}
+
+async function markRelisted(itemNo, btn) {
+  if (!sb) return;
+  btn.disabled = true;
+  btn.textContent = '更新中...';
+  const { error } = await sb.from('mercari_items')
+    .update({ last_relisted_at: new Date().toISOString(),
+              relist_count: (items.find(i=>i.item_no===itemNo)?.relist_count||0)+1 })
+    .eq('item_no', itemNo);
+  if (!error) {
+    btn.textContent = '✓ 記録済み';
+    btn.className = 'act-btn done';
+    btn.disabled = true;
+    setBadge('✓ 再出品日時を更新しました', 'ok');
+  } else {
+    btn.textContent = 'エラー';
+    btn.disabled = false;
+  }
+}
+
+async function markSold(itemNo, btn) {
+  if (!sb) return;
+  if (!confirm(`No.${itemNo} を「売れた（sold）」にしますか？\nリストから消えます。`)) return;
+  btn.disabled = true;
+  btn.textContent = '更新中...';
+  const { error } = await sb.from('mercari_items')
+    .update({ status: 'sold' })
+    .eq('item_no', itemNo);
+  if (!error) {
+    items = items.filter(i => i.item_no !== itemNo);
+    renderTable();
+    document.getElementById('itemCount').textContent = `${items.length} 件`;
+    setBadge(`✓ 売却記録。残 listed ${items.length}件`, 'ok');
+  } else {
+    btn.textContent = 'エラー';
+    btn.disabled = false;
+  }
 }
 
 function copySql(btn) {
