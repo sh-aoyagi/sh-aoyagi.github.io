@@ -41,22 +41,17 @@ body { background: #0a0a0a; color: #e8e0d0; font-family: 'Segoe UI','Noto Sans J
 .header h1 { font-size: 24px; color: #d4a017; letter-spacing: 4px; margin-bottom: 4px; }
 .header .date { color: #666; font-size: 12px; }
 /* ACTION BAR */
-.action-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
-.action-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; padding: 14px 16px; }
-.ac-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.ac-title { font-size: 12px; font-weight: bold; color: #d4a017; letter-spacing: 1px; }
-.ac-body { font-size: 12px; color: #aaa; line-height: 1.7; min-height: 48px; }
-.action-btn { margin-top: 8px; width: 100%; background: #1a1a1a; border: 1px solid #333; color: #e8e0d0; font-size: 11px; font-weight: bold; padding: 7px 0; border-radius: 6px; cursor: pointer; transition: all .15s; text-align: center; text-decoration: none; display: block; }
-.action-btn:hover { background: #222; border-color: #d4a017; color: #d4a017; }
-.action-btn.gold { background: #1a1200; border-color: #d4a017; color: #d4a017; }
-.action-btn.green { background: #0d2a1a; border-color: #22c55e; color: #22c55e; }
-.price-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 6px; }
-.price-table th { color: #555; font-weight: normal; padding: 2px 4px; text-align: right; border-bottom: 1px solid #222; }
-.price-table th:first-child { text-align: left; }
-.price-table td { padding: 3px 4px; border-bottom: 1px solid #1a1a1a; }
-.price-table td:first-child { color: #aaa; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.price-table td:not(:first-child) { text-align: right; }
-.p-up { color: #22c55e; } .p-down { color: #ef4444; }
+.action-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.action-flag { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; padding: 16px 18px; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 5px; transition: all .15s; position: relative; overflow: hidden; }
+.action-flag.has-work { border-color: #d4a017; }
+.action-flag.has-work:hover { background: #1a1200; transform: translateY(-1px); }
+.action-flag.no-work { opacity: 0.3; pointer-events: none; }
+.af-icon { font-size: 20px; }
+.af-label { font-size: 13px; font-weight: bold; color: #e8e0d0; }
+.af-status.active { font-size: 12px; color: #d4a017; }
+.af-status.done { font-size: 12px; color: #444; }
+.af-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #d4a017; transition: right .15s; }
+.action-flag.has-work:hover .af-arrow { right: 10px; }
 .read-btn { font-size: 10px; padding: 2px 8px; background: none; border: 1px solid #333; border-radius: 3px; color: #444; cursor: pointer; transition: all .15s; flex-shrink: 0; }
 .read-btn.done { border-color: #22c55e; color: #22c55e; background: #0d2a1a; }
 /* BRIEF */
@@ -289,44 +284,26 @@ function closeNav(){document.getElementById('navOverlay').classList.remove('open
   </div>
 </div>
 
-<!-- 今日のアクション -->
+<!-- 今日のアクション（シンプルフラグ） -->
 <div class="action-bar">
-  <div class="action-card">
-    <div class="ac-head">
-      <span class="ac-title">🛍️ メルカリ価格変更</span>
-      <button class="read-btn" id="rbMercari" onclick="markRead('rbMercari')">確認</button>
-    </div>
-    <div class="ac-body" id="priceActionBody"><span class="loading">読み込み中…</span></div>
-    <button class="action-btn gold" onclick="copyPriceList()" id="copyPriceBtn">📋 全商品リストをコピー</button>
-    <button class="action-btn" onclick="copyComment()" style="margin-top:5px;">💬 底値コメントをコピー</button>
-  </div>
-  <div class="action-card">
-    <div class="ac-head">
-      <span class="ac-title">🏇 競馬 今週</span>
-      <button class="read-btn" id="rbKeiba" onclick="markRead('rbKeiba')">確認</button>
-    </div>
-    <div class="ac-body" id="keibaActionBody">
-      <div>📅 6/7（日）<strong style="color:#d4a017">安田記念 G1</strong></div>
-      <div style="color:#555;font-size:11px;margin-top:3px;">東京11R 芝1600m</div>
-      <div style="margin-top:5px;" id="keibaArticleStatus"><span class="loading">記事状況確認中…</span></div>
-    </div>
-    <a class="action-btn green" href="./note.html">📝 note記事を作る →</a>
-    <a class="action-btn" href="./00_ダッシュボード/quiz.html" style="margin-top:5px;">🎯 今日のクイズ</a>
-  </div>
-  <div class="action-card">
-    <div class="ac-head">
-      <span class="ac-title">💕 自キュン Season00</span>
-      <button class="read-btn" id="rbKyun" onclick="markRead('rbKyun')">確認</button>
-    </div>
-    <div class="ac-body">
-      <div>目標 <strong style="color:#d4a017">100本</strong> ／ <strong>3本</strong>/日ペース</div>
-      <div style="margin-top:5px;">進捗: <strong style="color:#d4a017" id="kyunCount">…</strong> / 100本</div>
-      <div style="background:#1a1a1a;border-radius:4px;height:5px;margin-top:5px;overflow:hidden;">
-        <div id="kyunBar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#c084fc);border-radius:4px;width:0%;transition:width .5s;"></div>
-      </div>
-    </div>
-    <a class="action-btn" href="./note.html">✍️ 自キュン記事を作る →</a>
-  </div>
+  <a class="action-flag has-work" href="./mercari.html" id="flagMercari">
+    <span class="af-icon">🛍️</span>
+    <span class="af-label">メルカリ</span>
+    <span class="af-status active" id="mercariFlag">確認中…</span>
+    <span class="af-arrow">→</span>
+  </a>
+  <a class="action-flag has-work" href="./keiba.html" id="flagKeiba">
+    <span class="af-icon">🏇</span>
+    <span class="af-label">競馬</span>
+    <span class="af-status active" id="keibaFlag">安田記念 6/7</span>
+    <span class="af-arrow">→</span>
+  </a>
+  <a class="action-flag has-work" href="./kyun.html" id="flagKyun">
+    <span class="af-icon">💕</span>
+    <span class="af-label">自キュン</span>
+    <span class="af-status active" id="kyunFlag">確認中…</span>
+    <span class="af-arrow">→</span>
+  </a>
 </div>
 
 <!-- ブリーフ -->
@@ -458,7 +435,16 @@ async function init() {
     document.getElementById('mercariListed').textContent = listed + ' 点';
     document.getElementById('mercariListed').className = 'val ' + (listed >= 20 ? 'green-text' : 'gold');
     document.getElementById('mercariRelist').textContent = (relistRes.count ?? 0) > 0 ? (relistRes.count) + ' 点（要再出品）' : 'なし';
-    if (mercariData.data) renderPriceAction(mercariData.data);
+    // メルカリフラグ更新
+    if (mercariData.data) {
+      const needsWork = mercariData.data.filter(it => it.recommended_price && it.recommended_price !== it.price);
+      const fEl = document.getElementById('mercariFlag');
+      const fCard = document.getElementById('flagMercari');
+      if (fEl) {
+        if (needsWork.length) { fEl.textContent = needsWork.length + '件 価格変更あり'; fEl.className = 'af-status active'; }
+        else { fEl.textContent = '作業なし ✓'; fEl.className = 'af-status done'; fCard.classList.remove('has-work'); fCard.classList.add('no-work'); }
+      }
+    }
 
     // 決算城
     const cc = castleRes.count ?? 0;
@@ -482,15 +468,21 @@ async function init() {
     // noteコンテンツ
     renderContentMap(noteRes.data||[], novelRes.data||[]);
 
-    // 自キュン
-    const kc = (novelRes.data||[]).length;
-    document.getElementById('kyunCount').textContent = kc;
-    document.getElementById('kyunBar').style.width = Math.min(kc,100)+'%';
+    // 自キュンフラグ更新
+    const kyunPending = (novelRes.data||[]).filter(s => s.status !== 'published').length;
+    const kyunEl = document.getElementById('kyunFlag');
+    const kyunCard = document.getElementById('flagKyun');
+    if (kyunEl) {
+      if (kyunPending > 0) { kyunEl.textContent = kyunPending + '本 下書きあり'; kyunEl.className = 'af-status active'; }
+      else { kyunEl.textContent = '作業なし ✓'; kyunEl.className = 'af-status done'; kyunCard.classList.remove('has-work'); kyunCard.classList.add('no-work'); }
+    }
 
-    // 競馬記事
-    const ka = (noteRes.data||[]).filter(a=>a.category==='競馬');
-    document.getElementById('keibaArticleStatus').innerHTML =
-      'draft: <strong style="color:#f59e0b">'+(ka.filter(a=>a.status==='draft').length)+'本</strong> ／ 公開済: <strong style="color:#22c55e">'+(ka.filter(a=>a.status==='published').length)+'本</strong>';
+    // 競馬フラグ（今週レースあり）
+    const ka = (noteRes.data||[]).filter(a=>a.category==='競馬' && a.status==='draft');
+    const keibaEl = document.getElementById('keibaFlag');
+    if (keibaEl) {
+      keibaEl.textContent = ka.length > 0 ? '安田記念 記事あり' : '安田記念 6/7';
+    }
 
     document.getElementById('dataTs').textContent = 'データ取得: ' + new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
     restoreReadStates();
