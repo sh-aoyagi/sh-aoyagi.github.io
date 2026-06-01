@@ -146,29 +146,32 @@ body { background: #111; color: #e8e0d0; font-family: 'Segoe UI','Noto Sans JP',
 .loading { color: #666; font-size: 13px; }
 
 /* ══════════════════════════════════════
-   DESIGN V3 — コントラスト＋リズム
-   アクセント：#3DCFC2（ティール）
-   背景3段：#0f0f0f / #1a1a1a / #222
-   テキスト：#fff（主）/ #ccc（副）
+   DESIGN V3 — ティール＋コントラスト
+   #3DCFC2 がすべてのアクセント
+   黄色(#d4a017)は数字KPIのみ残す
    ══════════════════════════════════════ */
 
 body { background: #0f0f0f; color: #ffffff; }
 .page-body { padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
+/* SVGアイコン共通 */
+.nav-ic { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; flex-shrink:0; }
+.gnav-links a { display:flex; align-items:center; gap:7px; }
+.nav-item { display:flex; align-items:center; gap:10px; }
 
 /* NAV */
 .gnav { background: #141414; border-bottom: 1px solid #2a2a2a; }
-.gnav-logo { color: #3DCFC2; letter-spacing: 3px; }
-.gnav-links a { color: #999; }
-.gnav-links a:hover { background: #222; color: #fff; }
+.gnav-logo { color: #fff; letter-spacing: 3px; }
+.gnav-links a { color: #777; }
+.gnav-links a:hover { background: #1a1a1a; color: #fff; }
 .gnav-links a.active { color: #3DCFC2; background: rgba(61,207,194,0.08); }
 .gnav-ham { border-color: #2a2a2a; color: #3DCFC2; }
-.nav-sidebar { background: #141414; border-right-color: #2a2a2a; }
+.nav-sidebar { background: #0f0f0f; border-right-color: #2a2a2a; }
 .nav-head { color: #3DCFC2; border-bottom-color: #2a2a2a; }
-.nav-item { color: #ddd; border-bottom-color: #1e1e1e; }
-.nav-item:hover { background: #1e1e1e; }
+.nav-item { color: #ddd; border-bottom-color: #1a1a1a; }
+.nav-item:hover { background: #1a1a1a; }
 .nav-item.active { color: #3DCFC2; border-left: 3px solid #3DCFC2; padding-left: 17px; }
 .nav-divider { background: #2a2a2a; }
-.nav-x { color: #666; }
+.nav-x { color: #555; }
 
 /* HEADER */
 .header { border-bottom: 2px solid #2a2a2a; margin-bottom: 32px; padding-bottom: 20px; align-items: baseline; }
@@ -397,11 +400,11 @@ body { background: #0f0f0f; color: #ffffff; }
 <nav class="gnav">
   <span class="gnav-logo">電脳会社</span>
   <div class="gnav-links">
-    <a href="./dashboard.html" class="active">📊 ダッシュ</a>
-    <a href="./kyun.html">💕 自キュン</a>
-    <a href="./keiba.html">🏇 競馬</a>
-    <a href="./mercari.html">🛍️ メルカリ</a>
-    <a href="./kassenjo.html">🏯 決算城</a>
+    <a href="./dashboard.html" class="active"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg> ダッシュ</a>
+    <a href="./kyun.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
+    <a href="./keiba.html"><svg class="nav-ic" viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
+    <a href="./mercari.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ</a>
+    <a href="./kassenjo.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
   </div>
   <a class="gnav-ext" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
   <button class="gnav-ham" onclick="toggleNav()">☰</button>
@@ -411,15 +414,15 @@ body { background: #0f0f0f; color: #ffffff; }
 <div class="nav-sidebar" id="navSidebar">
   <div class="nav-x" onclick="closeNav()">✕</div>
   <div class="nav-head">メニュー</div>
-  <a class="nav-item active" href="./dashboard.html">📊 ダッシュボード</a>
+  <a class="nav-item active" href="./dashboard.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg> ダッシュボード</a>
   <div class="nav-divider"></div>
-  <a class="nav-item" href="./kyun.html">💕 自キュン</a>
-  <a class="nav-item" href="./keiba.html">🏇 競馬</a>
-  <a class="nav-item" href="./mercari.html">🛍️ メルカリ</a>
-  <a class="nav-item" href="./kassenjo.html">🏯 決算城</a>
+  <a class="nav-item" href="./kyun.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
+  <a class="nav-item" href="./keiba.html"><svg class="nav-ic" viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
+  <a class="nav-item" href="./mercari.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ</a>
+  <a class="nav-item" href="./kassenjo.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
   <div class="nav-divider"></div>
-  <a class="nav-item" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">🔗 出品一覧 ↗</a>
-  <a class="nav-item" href="./00_ダッシュボード/quiz.html">🎯 今日のクイズ</a>
+  <a class="nav-item" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M9 2.5h4.5v4.5M13.5 2.5L7 9M6.5 3.5H3A1.5 1.5 0 001.5 5v8A1.5 1.5 0 003 14.5h8a1.5 1.5 0 001.5-1.5v-3.5"/></svg> 出品一覧</a>
+  <a class="nav-item" href="./00_ダッシュボード/quiz.html"><svg class="nav-ic" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6 6a2 2 0 114 0c0 1-1 1.5-2 2.5V10"/><circle cx="8" cy="12.5" r=".5" fill="currentColor"/></svg> 今日のクイズ</a>
 </div>
 
 <script>

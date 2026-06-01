@@ -197,6 +197,44 @@ body {
 .flow-steps .fs-title { font-weight: bold; color: var(--gold); margin-bottom: 6px; }
 .flow-steps div { color: var(--muted); }
 .flow-steps div strong { color: var(--text); }
+
+/* ══ DESIGN V3 OVERRIDE ══ */
+body { background: #0f0f0f !important; color: #fff !important; }
+.nav-ic { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+.gnav-links a { display:flex; align-items:center; gap:7px; color:#777 !important; }
+.gnav-links a:hover { background:#1a1a1a !important; color:#fff !important; }
+.gnav-links a.active { color:#3DCFC2 !important; background:rgba(61,207,194,0.09) !important; }
+.gnav { background:#141414 !important; border-bottom:1px solid #2a2a2a !important; }
+.gnav-logo { color:#fff !important; }
+.nav-item { display:flex !important; align-items:center; gap:8px; color:#ddd !important; }
+.nav-item.active { color:#3DCFC2 !important; border-left:3px solid #3DCFC2; padding-left:15px !important; }
+.nav-sidebar { background:#0f0f0f !important; }
+.nav-head { color:#3DCFC2 !important; }
+.copy-btn { background:#3DCFC2 !important; color:#000 !important; border-radius:6px !important; }
+.copy-btn:hover { background:#2ab8ac !important; }
+.copy-btn.done { background:#22c55e !important; }
+.copy-btn.primary { background:#3DCFC2 !important; color:#000 !important; }
+.field-copy-btn { background:#3DCFC2 !important; color:#000 !important; }
+.card, .action-tile, .note-article { background:#1a1a1a !important; border-color:#2a2a2a !important; }
+.card-head, .card-body, .atile-comment { background:#141414 !important; color:#fff !important; }
+.card-label { color:#aaa !important; }
+.card-body { color:#ddd !important; }
+.atile-name, .atile-comment { color:#ddd !important; }
+.atile-copy { background:#1a1a1a !important; border-color:#2a2a2a !important; color:#ddd !important; }
+.atile-copy:hover { border-color:#3DCFC2 !important; color:#3DCFC2 !important; }
+.tiles-title { color:#3DCFC2 !important; }
+.dismiss-btn { border-color:#3DCFC2 !important; color:#3DCFC2 !important; background:rgba(61,207,194,0.06) !important; }
+.progress-fill, .prog-fill { background:linear-gradient(90deg,#1a9a80,#3DCFC2) !important; }
+.bar-title, .right-title, .section-label-title { color:#3DCFC2 !important; }
+.conn-badge.ok { color:#3DCFC2 !important; border-color:rgba(61,207,194,0.3) !important; background:rgba(61,207,194,0.08) !important; }
+.race-card { background:#181818 !important; border-color:#2a2a2a !important; }
+.race-grade { color:#3DCFC2 !important; background:rgba(61,207,194,0.08) !important; border-color:rgba(61,207,194,0.2) !important; }
+.calendar, .cal-title { background:#1a1a1a !important; }
+.cal-task.has-task { color:#3DCFC2 !important; }
+.cal-day.today { border-top-color:#3DCFC2 !important; }
+.season-badge { background:rgba(61,207,194,0.1) !important; border-color:rgba(61,207,194,0.3) !important; color:#3DCFC2 !important; }
+.prog-bar { background:#2a2a2a !important; }
+textarea.field-body { background:#111 !important; color:#ddd !important; border:none !important; }
 </style>
 </head>
 <body>
@@ -206,22 +244,22 @@ body {
 <div class="nav-sidebar" id="navSidebar">
   <div class="nav-x" onclick="closeNav()">✕</div>
   <div class="nav-head">☰ メニュー</div>
-  <a class="nav-item" href="../dashboard.html">📊 ダッシュボード</a>
-  <a class="nav-item" href="../kyun.html">💕 自キュン</a>
-  <a class="nav-item" href="../keiba.html">🏇 競馬</a>
-  <a class="nav-item" href="../mercari.html">🛍️ メルカリ出品</a>
-  <a class="nav-item active" href="./index.html">🏯 決算城</a>
+  <a class="nav-item" href="../dashboard.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg> ダッシュボード</a>
+  <a class="nav-item" href="../kyun.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
+  <a class="nav-item" href="../keiba.html"><svg class="nav-ic" viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
+  <a class="nav-item" href="../mercari.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ出品</a>
+  <a class="nav-item active" href="./index.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
 </div>
 
 <!-- グローバルナビ -->
 <nav class="gnav">
   <span class="gnav-logo">電脳会社</span>
   <div class="gnav-links">
-    <a href="../dashboard.html">📊 ダッシュ</a>
-    <a href="../kyun.html">💕 自キュン</a>
-    <a href="../keiba.html">🏇 競馬</a>
-    <a href="../mercari.html">🛍️ メルカリ</a>
-    <a href="./index.html" class="active">🏯 決算城</a>
+    <a href="../dashboard.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg> ダッシュ</a>
+    <a href="../kyun.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
+    <a href="../keiba.html"><svg class="nav-ic" viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
+    <a href="../mercari.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ</a>
+    <a href="./index.html" class="active"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
   </div>
   <a class="gnav-ext" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
   <button class="gnav-ham" onclick="toggleNav()">☰</button>
@@ -230,7 +268,7 @@ body {
 <!-- TOP BAR -->
 <div class="top-bar">
   <button class="ham-btn" onclick="toggleNav()">☰</button>
-  <span class="bar-title">🏯 決算城ワークスペース <span>記事選択 → プロンプトコピー → Gemini → note公開</span></span>
+  <span class="bar-title"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城ワークスペース <span>記事選択 → プロンプトコピー → Gemini → note公開</span></span>
   <select id="articleSelect" onchange="onSelect(this.value)">
     <option value="">── 企業を選択（記事あり） ──</option>
   </select>
@@ -313,7 +351,7 @@ body {
   <div class="right-pane">
     <div class="right-bar">
       <span class="r-label">決算城</span>
-      <a class="site-btn primary" href="../01_決算城/index.html" target="_blank">🏯 決算城サイトを開く →</a>
+      <a class="site-btn primary" href="../01_決算城/index.html" target="_blank"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城サイトを開く →</a>
       <a class="site-btn" href="https://gemini.google.com/app" target="_blank">Gemini ↗</a>
     </div>
     <div class="right-body">

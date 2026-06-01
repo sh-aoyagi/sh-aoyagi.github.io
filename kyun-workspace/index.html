@@ -15,9 +15,11 @@ if (typeof SUPABASE_ANON_KEY === 'undefined') var SUPABASE_ANON_KEY = 'eyJhbGciO
 :root {
   --bg: #0a0a0a; --bg2: #141414; --bg3: #1a1a1a;
   --border: #2a2a2a; --text: #e8e0d0; --muted: #b0a898;
-  --gold: #d4a017; --green: #22c55e; --purple: #c084fc;
+  --gold: #d4a017; --green: #22c55e; --purple: #3DCFC2;
 }
-body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Noto Sans JP',sans-serif; min-height: 100vh; }
+body { background: #0f0f0f; color: #fff; font-family: 'Segoe UI','Noto Sans JP',sans-serif; min-height: 100vh; }
+.nav-ic { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; flex-shrink:0; }
+.gnav-links a,.nav-item { display:flex; align-items:center; gap:8px; }
 /* NAV */
 .gnav { background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 2px; padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 500; }
 .gnav-logo { font-size: 13px; font-weight: bold; color: var(--gold); letter-spacing: 2px; margin-right: 10px; white-space: nowrap; flex-shrink: 0; }
@@ -67,9 +69,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI','Noto 
 .field-block { border-top: 1px solid var(--border); }
 .field-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--bg3); }
 .field-label { font-size: 10px; font-weight: bold; color: var(--muted); letter-spacing: .5px; }
-.field-copy-btn { background: var(--gold); color: #000; border: none; border-radius: 12px; padding: 2px 10px; font-size: 10px; font-weight: bold; cursor: pointer; transition: background .15s; white-space: nowrap; }
-.field-copy-btn:hover { background: #e8b420; }
-.field-copy-btn.done { background: var(--green); }
+.field-copy-btn { background: var(--purple); color: #000; border: none; border-radius: 6px; padding: 3px 10px; font-size: 10px; font-weight: bold; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.field-copy-btn:hover { background: #2ab8ac; }
+.field-copy-btn.done { background: #22c55e; }
 .field-body { padding: 6px 10px; font-size: 11px; color: #d0c8bc; line-height: 1.6; max-height: 80px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
 .field-body.tall { max-height: 120px; }
 .field-body.empty { color: var(--muted); font-style: italic; }
@@ -86,6 +88,44 @@ textarea.field-body:focus { background: #111; }
 .archive-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
 .archive-title { font-size: 12px; color: var(--muted); }
 .archive-date { font-size: 10px; color: #555; }
+
+/* ══ DESIGN V3 OVERRIDE ══ */
+body { background: #0f0f0f !important; color: #fff !important; }
+.nav-ic { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+.gnav-links a { display:flex; align-items:center; gap:7px; color:#777 !important; }
+.gnav-links a:hover { background:#1a1a1a !important; color:#fff !important; }
+.gnav-links a.active { color:#3DCFC2 !important; background:rgba(61,207,194,0.09) !important; }
+.gnav { background:#141414 !important; border-bottom:1px solid #2a2a2a !important; }
+.gnav-logo { color:#fff !important; }
+.nav-item { display:flex !important; align-items:center; gap:8px; color:#ddd !important; }
+.nav-item.active { color:#3DCFC2 !important; border-left:3px solid #3DCFC2; padding-left:15px !important; }
+.nav-sidebar { background:#0f0f0f !important; }
+.nav-head { color:#3DCFC2 !important; }
+.copy-btn { background:#3DCFC2 !important; color:#000 !important; border-radius:6px !important; }
+.copy-btn:hover { background:#2ab8ac !important; }
+.copy-btn.done { background:#22c55e !important; }
+.copy-btn.primary { background:#3DCFC2 !important; color:#000 !important; }
+.field-copy-btn { background:#3DCFC2 !important; color:#000 !important; }
+.card, .action-tile, .note-article { background:#1a1a1a !important; border-color:#2a2a2a !important; }
+.card-head, .card-body, .atile-comment { background:#141414 !important; color:#fff !important; }
+.card-label { color:#aaa !important; }
+.card-body { color:#ddd !important; }
+.atile-name, .atile-comment { color:#ddd !important; }
+.atile-copy { background:#1a1a1a !important; border-color:#2a2a2a !important; color:#ddd !important; }
+.atile-copy:hover { border-color:#3DCFC2 !important; color:#3DCFC2 !important; }
+.tiles-title { color:#3DCFC2 !important; }
+.dismiss-btn { border-color:#3DCFC2 !important; color:#3DCFC2 !important; background:rgba(61,207,194,0.06) !important; }
+.progress-fill, .prog-fill { background:linear-gradient(90deg,#1a9a80,#3DCFC2) !important; }
+.bar-title, .right-title, .section-label-title { color:#3DCFC2 !important; }
+.conn-badge.ok { color:#3DCFC2 !important; border-color:rgba(61,207,194,0.3) !important; background:rgba(61,207,194,0.08) !important; }
+.race-card { background:#181818 !important; border-color:#2a2a2a !important; }
+.race-grade { color:#3DCFC2 !important; background:rgba(61,207,194,0.08) !important; border-color:rgba(61,207,194,0.2) !important; }
+.calendar, .cal-title { background:#1a1a1a !important; }
+.cal-task.has-task { color:#3DCFC2 !important; }
+.cal-day.today { border-top-color:#3DCFC2 !important; }
+.season-badge { background:rgba(61,207,194,0.1) !important; border-color:rgba(61,207,194,0.3) !important; color:#3DCFC2 !important; }
+.prog-bar { background:#2a2a2a !important; }
+textarea.field-body { background:#111 !important; color:#ddd !important; border:none !important; }
 </style>
 </head>
 <body>
@@ -93,11 +133,11 @@ textarea.field-body:focus { background: #111; }
 <nav class="gnav">
   <span class="gnav-logo">電脳会社</span>
   <div class="gnav-links">
-    <a href="../dashboard.html">📊 ダッシュ</a>
-    <a href="./index.html" class="active">💕 自キュン</a>
-    <a href="../keiba-workspace/index.html">🏇 競馬</a>
-    <a href="../mercari.html">🛍️ メルカリ</a>
-    <a href="../kassenjo.html">🏯 決算城</a>
+    <a href="../dashboard.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg> ダッシュ</a>
+    <a href="./index.html" class="active"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
+    <a href="../keiba-workspace/index.html"><svg class="nav-ic" viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
+    <a href="../mercari.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ</a>
+    <a href="../kassenjo.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
   </div>
   <button class="gnav-ham" onclick="toggleNav()">☰</button>
 </nav>
@@ -106,11 +146,11 @@ textarea.field-body:focus { background: #111; }
 <div class="nav-sidebar" id="navSidebar">
   <div class="nav-x" onclick="closeNav()">✕</div>
   <div class="nav-head">メニュー</div>
-  <a class="nav-item" href="../dashboard.html">📊 ダッシュボード</a>
-  <a class="nav-item active" href="./index.html">💕 自キュン</a>
-  <a class="nav-item" href="../keiba-workspace/index.html">🏇 競馬</a>
-  <a class="nav-item" href="../mercari.html">🛍️ メルカリ</a>
-  <a class="nav-item" href="../kassenjo.html">🏯 決算城</a>
+  <a class="nav-item" href="../dashboard.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg> ダッシュボード</a>
+  <a class="nav-item active" href="./index.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
+  <a class="nav-item" href="../keiba-workspace/index.html"><svg class="nav-ic" viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
+  <a class="nav-item" href="../mercari.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ</a>
+  <a class="nav-item" href="../kassenjo.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
 </div>
 <script>
 function toggleNav(){document.getElementById('navOverlay').classList.toggle('open');document.getElementById('navSidebar').classList.toggle('open');}
