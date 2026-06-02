@@ -63,10 +63,35 @@ body { background: #111; color: #e8e0d0; font-family: 'Segoe UI','Noto Sans JP',
 .brief-section-header .label { font-size: 13px; color: #22c55e; font-weight: bold; letter-spacing: 2px; }
 .brief-section-header .meta { font-size: 12px; color: #666; }
 .brief-body { padding: 14px 20px; }
-.brief-title-line { font-size: 14px; color: #e8e0d0; font-weight: bold; margin-bottom: 8px; line-height: 1.5; }
-.brief-preview { font-size: 12px; color: #999; line-height: 1.7; max-height: 72px; overflow: hidden; }
-.brief-full { font-size: 12px; color: #ccc; line-height: 1.8; display: none; white-space: pre-wrap; max-height: 480px; overflow-y: auto; border-top: 1px solid #1a2a1a; margin-top: 10px; padding-top: 10px; }
-.brief-toggle { background: #1a2a1a; border: 1px solid #2a4a2a; color: #22c55e; font-size: 11px; padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; }
+.brief-title-line { font-size: 17px; color: #fff; font-weight: bold; margin-bottom: 10px; line-height: 1.5; }
+.brief-preview { font-size: 15px; color: #ccc; line-height: 1.85; max-height: 120px; overflow: hidden; }
+.brief-full { font-size: 14px; color: #ccc; line-height: 1.9; display: none; max-height: 70vh; overflow-y: auto; border-top: 1px solid #2a2a2a; margin-top: 12px; padding-top: 12px; }
+.brief-toggle { background: rgba(61,207,194,0.08); border: 1px solid #3DCFC2; color: #3DCFC2; font-size: 12px; padding: 5px 14px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+/* ブリーフ アイテムカード */
+.brief-items { display: flex; flex-direction: column; gap: 10px; }
+.brief-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 14px 16px; }
+.brief-item-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.brief-item-num { font-size: 11px; font-weight: bold; color: #3DCFC2; background: rgba(61,207,194,0.1); border: 1px solid rgba(61,207,194,0.2); border-radius: 4px; padding: 2px 8px; flex-shrink: 0; }
+.brief-item-title { font-size: 15px; font-weight: 600; color: #fff; line-height: 1.4; flex: 1; }
+.brief-item-body { font-size: 14px; color: #ccc; line-height: 1.9; margin-bottom: 10px; }
+.brief-item-body .lbl { color: #888; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+.brief-item-body .val { color: #ddd; font-size: 14px; }
+.brief-item-body .shisa { color: #3DCFC2; font-size: 14px; }
+.brief-item-src { font-size: 12px; color: #666; margin-bottom: 10px; }
+.brief-item-src a { color: #666; text-decoration: none; }
+.brief-item-src a:hover { color: #3DCFC2; }
+/* わかった/わからなかったボタン */
+.brief-understand-btns { display: flex; gap: 8px; }
+.btn-got { flex: 1; background: rgba(61,207,194,0.08); border: 1px solid #3DCFC2; color: #3DCFC2; border-radius: 6px; padding: 6px 0; font-size: 12px; font-weight: bold; cursor: pointer; transition: all .15s; }
+.btn-got:hover, .btn-got.active { background: rgba(61,207,194,0.18); }
+.btn-lost { flex: 1; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.4); color: #f87171; border-radius: 6px; padding: 6px 0; font-size: 12px; font-weight: bold; cursor: pointer; transition: all .15s; }
+.btn-lost:hover, .btn-lost.active { background: rgba(239,68,68,0.14); }
+.btn-got.active::after { content: ' ✓'; }
+.btn-lost.active::after { content: ' ?'; }
+/* 理解度サマリー */
+.brief-understanding-bar { display: flex; align-items: center; gap: 10px; padding: 10px 20px 6px; font-size: 12px; color: #888; }
+.ub-fill { flex: 1; height: 4px; background: #2a2a2a; border-radius: 2px; overflow: hidden; }
+.ub-got { height: 100%; background: #3DCFC2; border-radius: 2px; transition: width .3s; }
 .brief-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; padding: 0 20px 14px; }
 .brief-action-btn { background: #111; border: 1px solid #333; color: #aaa; font-size: 11px; padding: 5px 14px; border-radius: 4px; cursor: pointer; text-decoration: none; transition: all .15s; display: inline-block; }
 .brief-action-btn:hover { background: #1a2a1a; border-color: #22c55e; color: #22c55e; }
@@ -725,19 +750,95 @@ async function init() {
   }
 }
 
+// ── ブリーフ 理解度トラッキング ──
+const BRIEF_U_KEY = 'brief_understand_' + new Date().toISOString().slice(0,10);
+let briefU = JSON.parse(localStorage.getItem(BRIEF_U_KEY) || '{}');
+
+function parseBriefItems(text) {
+  const items=[], lines=text.split('\n');
+  let cur=null;
+  for (const ln of lines) {
+    const m=ln.match(/^【No\.(\d+)】(.+)/);
+    if (m) { if(cur)items.push(cur); cur={num:m[1],title:m[2].trim(),summary:'',source:'',shisa:''}; }
+    else if (cur) {
+      const sm=ln.match(/^[-‐]\s*一言要約[:：]\s*(.+)/);
+      const so=ln.match(/^[-‐]\s*ソース[:：]\s*(.+)/);
+      const sh=ln.match(/^[-‐]\s*真平への示唆[:：]\s*(.+)/);
+      if(sm) cur.summary=sm[1].trim();
+      if(so) cur.source=so[1].trim();
+      if(sh) cur.shisa=sh[1].trim();
+    }
+  }
+  if(cur) items.push(cur);
+  return items;
+}
+
+function renderBriefItem(item) {
+  const sp=item.source.split('|'), sn=sp[0]?.trim()||'', su=sp[1]?.trim()||'';
+  const srcH=su?`<a href="${su}" target="_blank" rel="noopener">${sn} ↗</a>`:sn;
+  const st=briefU[item.num];
+  return `<div class="brief-item">
+    <div class="brief-item-head">
+      <span class="brief-item-num">No.${item.num}</span>
+      <span class="brief-item-title">${item.title.replace(/</g,'&lt;')}</span>
+    </div>
+    ${item.summary?`<div class="brief-item-body"><span class="lbl">要約</span><span class="val">${item.summary.replace(/</g,'&lt;')}</span></div>`:''}
+    ${item.shisa?`<div class="brief-item-body"><span class="lbl">示唆</span><span class="shisa">${item.shisa.replace(/</g,'&lt;')}</span></div>`:''}
+    ${srcH?`<div class="brief-item-src">${srcH}</div>`:''}
+    <div class="brief-understand-btns">
+      <button class="btn-got${st==='got'?' active':''}" id="bg-${item.num}" onclick="markU('${item.num}','got')">わかった</button>
+      <button class="btn-lost${st==='lost'?' active':''}" id="bl-${item.num}" onclick="markU('${item.num}','lost')">わからなかった</button>
+    </div>
+  </div>`;
+}
+
+function markU(num, val) {
+  briefU[num]=val;
+  localStorage.setItem(BRIEF_U_KEY, JSON.stringify(briefU));
+  const g=document.getElementById('bg-'+num), l=document.getElementById('bl-'+num);
+  if(g)g.classList.toggle('active',val==='got');
+  if(l)l.classList.toggle('active',val==='lost');
+  updateUBar();
+}
+
+function updateUBar() {
+  const got=Object.values(briefU).filter(v=>v==='got').length;
+  const total=document.querySelectorAll('.brief-item').length;
+  const pct=total?Math.round(got/total*100):0;
+  const bar=document.querySelector('.ub-got'), txt=document.querySelector('.brief-understanding-bar span');
+  if(bar)bar.style.width=pct+'%';
+  if(txt)txt.textContent=`${got}/${total} わかった（${pct}%）`;
+}
+
 function renderBrief(b) {
-  const preview = (b.content||'').substring(0,400).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const full = (b.content||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  document.getElementById('briefBody').innerHTML =
-    '<div class="brief-title-line">'+((b.title||'').replace(/</g,'&lt;'))+'</div>'+
-    '<div class="brief-preview" id="bPreview">'+preview.replace(/\n/g,'<br>')+'…</div>'+
-    '<div class="brief-full" id="bFull">'+full.replace(/\n/g,'<br>')+'</div>'+
-    '<button class="brief-toggle" onclick="toggleBrief(this)">全文を見る ▼</button>';
+  const content=b.content||'';
+  const items=parseBriefItems(content);
+  const container=document.getElementById('briefBody');
+  if (!items.length) {
+    const prev=content.substring(0,500).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    container.innerHTML='<div class="brief-title-line">'+((b.title||'').replace(/</g,'&lt;'))+'</div>'+
+      '<div class="brief-preview" id="bPreview">'+prev.replace(/\n/g,'<br>')+'…</div>'+
+      '<div class="brief-full" id="bFull">'+content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
+      '<button class="brief-toggle" onclick="toggleBrief(this)">全文を見る ▼</button>';
+    return;
+  }
+  const got=Object.values(briefU).filter(v=>v==='got').length;
+  const pct=items.length?Math.round(got/items.length*100):0;
+  container.innerHTML=
+    `<div class="brief-title-line">${(b.title||'').replace(/</g,'&lt;')}</div>`+
+    `<div class="brief-understanding-bar"><span>${got}/${items.length} わかった（${pct}%）</span><div class="ub-fill"><div class="ub-got" style="width:${pct}%"></div></div></div>`+
+    `<div class="brief-items">${items.map(renderBriefItem).join('')}</div>`;
+  Object.entries(briefU).forEach(([num,val])=>{
+    const g=document.getElementById('bg-'+num), l=document.getElementById('bl-'+num);
+    if(g&&val==='got')g.classList.add('active');
+    if(l&&val==='lost')l.classList.add('active');
+  });
 }
 
 function toggleBrief(btn) {
   const p=document.getElementById('bPreview'), f=document.getElementById('bFull');
-  if (!f.style.display||f.style.display==='none'){f.style.display='block';p.style.display='none';btn.textContent='閉じる ▲';}
+  if(!f||!p) return;
+  if(!f.style.display||f.style.display==='none'){f.style.display='block';p.style.display='none';btn.textContent='閉じる ▲';}
   else{f.style.display='none';p.style.display='block';btn.textContent='全文を見る ▼';}
 }
 
