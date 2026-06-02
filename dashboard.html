@@ -396,6 +396,33 @@ body { background: #0f0f0f; color: #ffffff; }
 .btn-reject:hover { background: #3a1010; }
 .proposal-expand { font-size: 11px; color: #666; cursor: pointer; padding: 2px 8px; border: 1px solid #333; border-radius: 4px; background: none; }
 .proposal-expand:hover { color: #aaa; }
+/* ── メルカリ計測ログ ── */
+.mercari-tracker { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+.tracker-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid #2a2a2a; }
+.tracker-title { font-size: 13px; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 8px; }
+.tracker-ts { font-size: 11px; color: #666; }
+.tracker-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tracker-table th { color: #666; font-weight: normal; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; text-align: left; border-bottom: 1px solid #222; }
+.tracker-table th:not(:first-child) { text-align: right; }
+.tracker-table td { padding: 9px 12px; border-bottom: 1px solid #1e1e1e; vertical-align: middle; }
+.tracker-table td:not(:first-child) { text-align: right; }
+.tracker-table tr:last-child td { border-bottom: none; }
+.tracker-table tr:hover td { background: #1e1e1e; }
+.td-name { color: #ddd; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.td-price { color: #fff; font-weight: 600; }
+.td-delta-up  { color: #3DCFC2; font-weight: bold; }
+.td-delta-mid { color: #f59e0b; font-weight: bold; }
+.td-delta-low { color: #ef4444; font-weight: bold; }
+.td-delta-zero { color: #ef4444; font-weight: bold; }
+.td-like { color: #3DCFC2; font-weight: bold; }
+.td-like-zero { color: #555; }
+.badge-ok   { display: inline-block; background: rgba(61,207,194,0.1); border: 1px solid rgba(61,207,194,0.3); color: #3DCFC2; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: bold; }
+.badge-warn { display: inline-block; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: bold; }
+.badge-watch{ display: inline-block; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: bold; }
+.tracker-footer { padding: 10px 18px; font-size: 11px; color: #888; border-top: 1px solid #222; display: flex; gap: 16px; flex-wrap: wrap; }
+.tracker-footer span { display: flex; align-items: center; gap: 4px; }
+/* mobile: hide tracker */
+@media (max-width: 768px) { .mercari-tracker { display: none; } }
 /* ── フローティング クイズボタン ── */
 #quizFloat {
   position: fixed;
@@ -579,6 +606,27 @@ function showTodoMobile(){
   </div>
 </div>
 
+
+<!-- メルカリ計測ログ -->
+<div class="section-label" style="margin-top:28px;">メルカリ 計測ログ</div>
+<div class="mercari-tracker">
+  <div class="tracker-head">
+    <span class="tracker-title">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg>
+      出品中の反応 — アルゴリズム判定
+    </span>
+    <span class="tracker-ts" id="trackerTs">—</span>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="tracker-table">
+      <thead><tr>
+        <th>商品</th><th>価格</th><th>閲覧増</th><th>いいね</th><th>判定</th>
+      </tr></thead>
+      <tbody id="trackerBody"><tr><td colspan="5" style="text-align:center;color:#555;padding:20px">読み込み中…</td></tr></tbody>
+    </table>
+  </div>
+  <div class="tracker-footer" id="trackerFooter"></div>
+</div>
 
 <div class="section-label" style="margin-top:28px;">KPI</div>
 <!-- 締め切り -->
@@ -905,6 +953,80 @@ function markBriefRead() {
 
 init();
 setInterval(init, 3*60*1000);
+loadMercariTracker();
+setInterval(loadMercariTracker, 3*60*1000);
+
+async function loadMercariTracker() {
+  try {
+    // 直近スナップショットを多めに取得（商品20 × 最大4計測 = 80件）
+    const { data: snaps } = await sb
+      .from('market_snapshots')
+      .select('item_no, name, price, views, likes_count, snapshot_date, created_at')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (!snaps || !snaps.length) return;
+
+    // 商品ごとに最新2件を取得
+    const byItem = {};
+    snaps.forEach(s => {
+      if (!byItem[s.item_no]) byItem[s.item_no] = [];
+      if (byItem[s.item_no].length < 2) byItem[s.item_no].push(s);
+    });
+
+    const items = Object.values(byItem).map(g => {
+      const cur = g[0], prv = g[1];
+      const delta = prv != null ? cur.views - prv.views : null;
+      const likes = cur.likes_count || 0;
+      // 判定
+      let status = 'ok';
+      if (likes === 0) {
+        if (delta === null) status = 'watch';
+        else if (delta <= 1) status = 'warn';
+        else if (delta <= 3) status = 'warn';
+        else if (delta <= 5) status = 'watch';
+      }
+      return { ...cur, delta, likes, status };
+    });
+
+    // 🔴→🟡→🟢の順
+    const order = { warn:0, watch:1, ok:2 };
+    items.sort((a,b) => order[a.status] - order[b.status]);
+
+    const warn  = items.filter(i=>i.status==='warn').length;
+    const watch = items.filter(i=>i.status==='watch').length;
+    const ok    = items.filter(i=>i.status==='ok').length;
+
+    document.getElementById('trackerTs').textContent =
+      new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}) + ' 更新';
+
+    document.getElementById('trackerBody').innerHTML = items.map(it => {
+      const d = it.delta;
+      const dCls = d === null ? '' : d <= 1 ? 'td-delta-zero' : d <= 3 ? 'td-delta-low' : d <= 5 ? 'td-delta-mid' : 'td-delta-up';
+      const dTxt = d === null ? '—' : (d >= 0 ? '+' : '') + d;
+      const lCls = it.likes > 0 ? 'td-like' : 'td-like-zero';
+      const lTxt = it.likes > 0 ? '♥' + it.likes : '0';
+      const badge = it.status === 'warn'
+        ? '<span class="badge-warn">値下げ候補</span>'
+        : it.status === 'watch'
+        ? '<span class="badge-watch">要注意</span>'
+        : '<span class="badge-ok">OK</span>';
+      return `<tr>
+        <td class="td-name" title="${it.name}">No.${it.item_no} ${it.name}</td>
+        <td class="td-price">¥${(it.price||0).toLocaleString()}</td>
+        <td class="${dCls}">${dTxt}</td>
+        <td class="${lCls}">${lTxt}</td>
+        <td>${badge}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('trackerFooter').innerHTML =
+      `<span>🔴 値下げ候補 <strong style="color:#ef4444">${warn}件</strong></span>` +
+      `<span>🟡 要注意 <strong style="color:#f59e0b">${watch}件</strong></span>` +
+      `<span>🟢 OK <strong style="color:#3DCFC2">${ok}件</strong></span>` +
+      `<span style="margin-left:auto;color:#555">データを貼るたびに自動更新</span>`;
+
+  } catch(e) { console.error('tracker:', e); }
+}
 
 // ── フローティングボタン：スクロールでフッターに消える ──
 window.addEventListener('scroll', () => {
