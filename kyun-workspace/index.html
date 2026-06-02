@@ -256,15 +256,31 @@ function renderCards() {
   row.innerHTML = pending.map((s, i) => cardHTML(s, i)).join('');
 }
 
+function splitBody(free, paid) {
+  const full = [free, paid].filter(Boolean).join('\n\n');
+  const blocks = [];
+  for (let i = 0; i < 5; i++) {
+    blocks.push(full.slice(i * 500, (i + 1) * 500));
+  }
+  return blocks;
+}
+
 function cardHTML(s, i) {
   const num = todayDone.length + i + 1;
   const imgP = s.cover_image_prompt || '';
   const title = s.title || '';
-  const freeC = s.free_content || '';
-  const paidC = s.paid_content || '';
   const tagsArr = Array.isArray(s.tags) ? s.tags : [];
   const tags = tagsArr.join(' ') || '自キュン 恋愛小説 読了5分';
   const price = s.price || 180;
+  const blocks = splitBody(s.free_content || '', s.paid_content || '');
+  const bodyBlocks = blocks.map((blk, bi) => {
+    const label = `本文${'①②③④⑤'[bi]}（${bi*500+1}〜${(bi+1)*500}文字）`;
+    const hasContent = blk.length > 0;
+    return `<div class="field-block">
+      <div class="field-head"><span class="field-label">${['③','④','⑤','⑥','⑦'][bi]} ${label}</span><button class="field-copy-btn" onclick="fc('${s.id}','body${bi}',this)">コピー</button></div>
+      <textarea class="field-body tall ${hasContent?'':'empty'}" id="f-body${bi}-${s.id}">${hasContent ? blk : '（なし）'}</textarea>
+    </div>`;
+  }).join('');
   return `<div class="story-card" id="sc-${s.id}">
     <div class="card-num">
       <span>本日 ${num}本目</span>
@@ -284,16 +300,9 @@ function cardHTML(s, i) {
       <div class="field-head"><span class="field-label">② タイトル</span><button class="field-copy-btn" onclick="fc('${s.id}','title',this)">コピー</button></div>
       <textarea class="field-body ${title?'':'empty'}" id="f-title-${s.id}" rows="2">${title||'（なし）'}</textarea>
     </div>
+    ${bodyBlocks}
     <div class="field-block">
-      <div class="field-head"><span class="field-label">③ 無料パート（ブロック1〜3）</span><button class="field-copy-btn" onclick="fc('${s.id}','free',this)">コピー</button></div>
-      <textarea class="field-body tall ${freeC?'':'empty'}" id="f-free-${s.id}">${freeC||'（なし）'}</textarea>
-    </div>
-    <div class="field-block">
-      <div class="field-head"><span class="field-label">④ 有料パート（ブロック4）</span><button class="field-copy-btn" onclick="fc('${s.id}','paid',this)">コピー</button></div>
-      <textarea class="field-body tall ${paidC?'':'empty'}" id="f-paid-${s.id}">${paidC||'（なし）'}</textarea>
-    </div>
-    <div class="field-block">
-      <div class="field-head"><span class="field-label">⑤ タグ</span><button class="field-copy-btn" onclick="fc('${s.id}','tags',this)">コピー</button></div>
+      <div class="field-head"><span class="field-label">⑧ タグ</span><button class="field-copy-btn" onclick="fc('${s.id}','tags',this)">コピー</button></div>
       <textarea class="field-body ${tags?'':'empty'}" id="f-tags-${s.id}" rows="2">${tags}</textarea>
     </div>
     <button class="dismiss-btn" onclick="dismiss('${s.id}','${encodeURIComponent(title)}')">✓ note投稿済み（消込）</button>
@@ -337,7 +346,7 @@ async function dismiss(id, encodedTitle) {
 }
 
 function fc(id, field, btn) {
-  // img→f-img, title→f-title, free→f-free, paid→f-paid, tags→f-tags
+  // img→f-img, title→f-title, body0〜body4→f-body0〜f-body4, tags→f-tags
   const el = document.getElementById('f-' + field + '-' + id);
   if (!el || el.classList.contains('empty')) return;
   const text = el.tagName === 'TEXTAREA' ? el.value : el.textContent;
