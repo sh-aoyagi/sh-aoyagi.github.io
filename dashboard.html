@@ -308,8 +308,54 @@ body { background: #0f0f0f; color: #ffffff; }
 .read-btn { border-color: #2a2a2a; color: #555; }
 .read-btn.done { border-color: #3DCFC2; color: #3DCFC2; background: rgba(61,207,194,0.07); }
 
+/* ── デスクトップ用レスポンシブ ── */
 @media (max-width: 768px) { .kpi-bar { grid-template-columns: 1fr 1fr; } .action-bar { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .kpi-bar { grid-template-columns: 1fr; } }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   📱 スマホ専用レイアウト
+   表示：ニュース（ブリーフ）のみ
+   クイズ・宿題はハンバーガーメニューへ
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 768px) {
+  /* ニュース以外を全て非表示 */
+  .action-bar,
+  .kpi-bar,
+  .content-map,
+  .grid,
+  .acc-todo,
+  .deadline,
+  .section-label,
+  .data-ts,
+  #proposalSection,
+  #quizFloat,
+  .footer { display: none !important; }
+
+  /* ヘッダーをコンパクトに */
+  .header { padding: 10px 0 14px; margin-bottom: 14px; flex-direction: column; gap: 2px; align-items: flex-start; }
+  .header h1 { font-size: 16px; letter-spacing: 2px; }
+  .header .date { font-size: 11px; }
+
+  /* ブリーフを全幅・角丸なし（ネイティブ感） */
+  .brief-section {
+    margin: 0 -24px 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: 3px solid #3DCFC2;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .brief-section-header { padding: 14px 20px; }
+  .brief-body { padding: 16px 20px; }
+  .brief-title-line { font-size: 16px; }
+  .brief-preview { font-size: 13px; max-height: none; }
+  .brief-actions { flex-direction: column; padding: 0 20px 16px; gap: 8px; }
+  .brief-action-btn { text-align: center; padding: 10px 16px; font-size: 13px; }
+  .brief-toggle { font-size: 12px; padding: 6px 16px; }
+
+  /* page-body の横余白を調整 */
+  .page-body { padding: 16px 20px; }
+}
 /* ── PDCA 承認カード ── */
 .proposal-card { background: linear-gradient(135deg, #0d1a2a, #1a0a2a); border: 1px solid #4a3a6a; border-left: 3px solid #c084fc; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
 .proposal-header { padding: 12px 20px; border-bottom: 1px solid #2a1a3a; display: flex; align-items: center; justify-content: space-between; }
@@ -422,12 +468,34 @@ body { background: #0f0f0f; color: #ffffff; }
   <a class="nav-item" href="./kassenjo.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
   <div class="nav-divider"></div>
   <a class="nav-item" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M9 2.5h4.5v4.5M13.5 2.5L7 9M6.5 3.5H3A1.5 1.5 0 001.5 5v8A1.5 1.5 0 003 14.5h8a1.5 1.5 0 001.5-1.5v-3.5"/></svg> 出品一覧</a>
-  <a class="nav-item" href="./00_ダッシュボード/quiz.html"><svg class="nav-ic" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6 6a2 2 0 114 0c0 1-1 1.5-2 2.5V10"/><circle cx="8" cy="12.5" r=".5" fill="currentColor"/></svg> 今日のクイズ</a>
+  <div class="nav-divider"></div>
+  <a class="nav-item" href="./00_ダッシュボード/quiz.html" style="color:#3DCFC2;font-weight:bold;"><svg class="nav-ic" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6 6a2 2 0 114 0c0 1-1 1.5-2 2.5V10"/><circle cx="8" cy="12.5" r=".5" fill="currentColor"/></svg> 今日のクイズ</a>
+  <a class="nav-item" href="#" onclick="showTodoMobile();closeNav();return false;" style="color:#d4a017;font-weight:bold;"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10"/></svg> 宿題リスト</a>
 </div>
 
 <script>
 function toggleNav(){document.getElementById('navOverlay').classList.toggle('open');document.getElementById('navSidebar').classList.toggle('open');}
 function closeNav(){document.getElementById('navOverlay').classList.remove('open');document.getElementById('navSidebar').classList.remove('open');}
+function showTodoMobile(){
+  const el = document.querySelector('.acc-todo');
+  if (!el) return;
+  el.style.display = 'block';
+  el.style.position = 'fixed';
+  el.style.inset = '0';
+  el.style.zIndex = '800';
+  el.style.overflowY = 'auto';
+  el.style.background = '#0f0f0f';
+  el.style.padding = '20px';
+  // 閉じるボタン追加
+  if (!document.getElementById('todoCloseBtn')) {
+    const btn = document.createElement('button');
+    btn.id = 'todoCloseBtn';
+    btn.textContent = '✕ 閉じる';
+    btn.style.cssText = 'position:sticky;top:0;display:block;width:100%;padding:12px;background:#1a1a1a;border:1px solid #3DCFC2;color:#3DCFC2;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;margin-bottom:16px;';
+    btn.onclick = function(){ el.style.display = 'none'; el.style.position = ''; el.style.inset = ''; el.style.zIndex = ''; el.style.background = ''; el.style.padding = ''; document.getElementById('todoCloseBtn').remove(); };
+    el.prepend(btn);
+  }
+}
 </script>
 
 <div class="page-body">
