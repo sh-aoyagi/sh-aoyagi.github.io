@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>電脳会社</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js" onerror="void(0)"></script>
+<script>
+if (typeof SUPABASE_URL === 'undefined') var SUPABASE_URL = 'https://dfnhkljlohlmuoidajla.supabase.co';
+if (typeof SUPABASE_ANON_KEY === 'undefined') var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmhrbGpsb2hsbXVvaWRhamxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMzA1MDQsImV4cCI6MjA2MTkwNjUwNH0.Wc_7KHE3NQ7m_uPFBCHdV_q17fmxSM_B_p3kY3hXjTQ';
+</script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg: #0f0f0f;
+  --card: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #ffffff;
+  --muted: #888;
+  --teal: #3DCFC2;
+  --gold: #d4a017;
+  --red: #ef4444;
+}
+html, body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Helvetica Neue', 'Noto Sans JP', sans-serif; min-height: 100vh; }
+
+/* ── NAV ── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(15,15,15,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: 52px;
+  display: flex; align-items: center;
+  padding: 0 18px;
+  gap: 12px;
+}
+.nav-logo { font-size: 15px; font-weight: 700; color: var(--teal); letter-spacing: 2px; flex: 1; }
+.nav-date { font-size: 11px; color: var(--muted); }
+.ham-btn {
+  width: 40px; height: 40px;
+  background: none; border: 1px solid var(--border);
+  border-radius: 8px; color: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+
+/* ── DRAWER ── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 200; }
+.overlay.open { display: block; }
+.drawer {
+  position: fixed; top: 0; right: -300px; width: 280px; height: 100vh;
+  background: #141414; border-left: 1px solid var(--border);
+  z-index: 201; transition: right .25s ease;
+  display: flex; flex-direction: column;
+  padding-bottom: 32px;
+}
+.drawer.open { right: 0; }
+.drawer-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+}
+.drawer-head span { font-size: 13px; font-weight: bold; color: var(--teal); letter-spacing: 1px; }
+.close-btn { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; }
+.drawer-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 20px; color: var(--text); text-decoration: none;
+  font-size: 16px; font-weight: 500;
+  border-bottom: 1px solid #1e1e1e;
+  cursor: pointer; transition: background .15s;
+}
+.drawer-item:hover { background: #1e1e1e; }
+.drawer-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.drawer-item.teal { color: var(--teal); }
+.drawer-item.gold { color: var(--gold); }
+.drawer-section { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 14px 20px 6px; }
+
+/* ── MAIN ── */
+.main { padding: 0; }
+
+/* ── BRIEF ── */
+.brief {
+  border-bottom: 1px solid var(--border);
+}
+.brief-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(61,207,194,0.04);
+  border-top: 3px solid var(--teal);
+}
+.brief-header .label {
+  font-size: 11px; font-weight: 700; color: var(--teal);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.brief-header .meta { font-size: 11px; color: var(--muted); }
+.brief-content { padding: 16px 18px; }
+.brief-title { font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.5; margin-bottom: 14px; }
+/* アイテムカード */
+.item-list { display: flex; flex-direction: column; gap: 10px; }
+.item-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.item-num { font-size: 11px; font-weight: 700; color: var(--teal); margin-bottom: 5px; }
+.item-title { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 8px; }
+.item-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+.item-summary { font-size: 14px; color: #ccc; line-height: 1.8; margin-bottom: 8px; }
+.item-shisa { font-size: 14px; color: var(--teal); line-height: 1.8; margin-bottom: 10px; }
+.item-src { font-size: 12px; color: #555; margin-bottom: 10px; }
+.item-src a { color: #555; text-decoration: none; }
+/* わかった ボタン */
+.understand-btns { display: flex; gap: 8px; }
+.btn-got {
+  flex: 1; background: rgba(61,207,194,0.08); border: 1px solid var(--teal);
+  color: var(--teal); border-radius: 8px; padding: 10px 0;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.btn-got.active { background: rgba(61,207,194,0.2); }
+.btn-lost {
+  flex: 1; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.4);
+  color: #f87171; border-radius: 8px; padding: 10px 0;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.btn-lost.active { background: rgba(239,68,68,0.15); }
+/* 理解度バー */
+.u-bar-wrap { display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: #141414; border-bottom: 1px solid var(--border); }
+.u-bar-text { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.u-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.u-bar-fill { height: 100%; background: var(--teal); border-radius: 2px; transition: width .3s; }
+/* 読了ボタン */
+.brief-actions { padding: 12px 18px; display: flex; gap: 8px; border-top: 1px solid var(--border); }
+.brief-act-btn {
+  flex: 1; background: var(--card); border: 1px solid var(--border);
+  color: #ccc; border-radius: 8px; padding: 11px 0;
+  font-size: 13px; font-weight: 600; cursor: pointer; text-align: center;
+  text-decoration: none; display: block; transition: all .15s;
+}
+.brief-act-btn:hover { border-color: var(--teal); color: var(--teal); }
+/* EMPTY STATE */
+.empty { padding: 60px 18px; text-align: center; color: var(--muted); font-size: 15px; line-height: 1.9; }
+.empty strong { color: var(--text); display: block; font-size: 18px; margin-bottom: 8px; }
+/* TODOオーバーレイ */
+.todo-overlay {
+  display: none; position: fixed; inset: 0; background: var(--bg);
+  z-index: 300; overflow-y: auto; padding: 0;
+}
+.todo-overlay.open { display: block; }
+.todo-close { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; background: #141414; border-bottom: 1px solid var(--border); z-index: 1; }
+.todo-close span { font-size: 15px; font-weight: 700; color: var(--gold); }
+.todo-close button { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
+.todo-inner { padding: 16px 18px; }
+/* Accordion items */
+.acc-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+.acc-head { display: flex; align-items: center; gap: 10px; padding: 16px; cursor: pointer; }
+.acc-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+.badge-ceo { background: rgba(212,160,23,0.12); color: var(--gold); border: 1px solid rgba(212,160,23,0.3); }
+.badge-auto { background: rgba(61,207,194,0.08); color: var(--teal); border: 1px solid rgba(61,207,194,0.25); }
+.acc-head-title { flex: 1; font-size: 14px; color: var(--text); font-weight: 500; }
+.acc-arrow { color: #555; font-size: 12px; transition: transform .2s; }
+.acc-arrow.open { transform: rotate(180deg); }
+.acc-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border); }
+.acc-body.open { display: block; }
+.acc-context { font-size: 13px; color: #ccc; line-height: 1.9; padding: 12px 0 8px; }
+.acc-manual { font-size: 12px; color: var(--muted); background: #111; border-radius: 6px; padding: 8px 12px; margin-bottom: 10px; }
+.acc-btns { display: flex; gap: 8px; }
+.acc-btn-do { flex: 1; background: rgba(61,207,194,0.08); border: 1px solid var(--teal); color: var(--teal); border-radius: 8px; padding: 10px 0; font-size: 13px; font-weight: 700; cursor: pointer; }
+.acc-btn-skip { flex: 1; background: var(--card); border: 1px solid #333; color: var(--muted); border-radius: 8px; padding: 10px 0; font-size: 13px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">電脳会社</span>
+  <span class="nav-date" id="navDate"></span>
+  <button class="ham-btn" onclick="openDrawer()">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 18 18"><line x1="2" y1="5" x2="16" y2="5"/><line x1="2" y1="9" x2="16" y2="9"/><line x1="2" y1="13" x2="16" y2="13"/></svg>
+  </button>
+</nav>
+
+<!-- ドロワー -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span>メニュー</span>
+    <button class="close-btn" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-section">ワークスペース</div>
+  <a class="drawer-item" href="../kyun.html"><svg viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
+  <a class="drawer-item" href="../keiba.html"><svg viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
+  <a class="drawer-item" href="../mercari.html"><svg viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ</a>
+  <a class="drawer-item" href="../kassenjo.html"><svg viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
+  <div class="drawer-section">アクション</div>
+  <a class="drawer-item teal" href="../00_ダッシュボード/quiz.html">
+    <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6 6a2 2 0 114 0c0 1-1 1.5-2 2.5V10"/><circle cx="8" cy="12.5" r=".5" fill="currentColor"/></svg>
+    今日のクイズ
+  </a>
+  <div class="drawer-item gold" onclick="openTodo(); closeDrawer();">
+    <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+    宿題リスト
+  </div>
+  <div class="drawer-section">外部リンク</div>
+  <a class="drawer-item" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank" style="color:#888;">
+    <svg viewBox="0 0 16 16"><path d="M9 2.5h4.5v4.5M13.5 2.5L7 9M6.5 3.5H3A1.5 1.5 0 001.5 5v8A1.5 1.5 0 003 14.5h8a1.5 1.5 0 001.5-1.5v-3.5"/></svg>
+    出品一覧
+  </a>
+  <div style="flex:1"></div>
+  <a class="drawer-item" href="../dashboard.html" style="color:#555;font-size:13px;">
+    <svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg>
+    PC版ダッシュボード
+  </a>
+</div>
+
+<!-- メインコンテンツ -->
+<main class="main" id="mainContent">
+  <div class="empty"><strong>読み込み中…</strong></div>
+</main>
+
+<!-- 宿題オーバーレイ -->
+<div class="todo-overlay" id="todoOverlay">
+  <div class="todo-close">
+    <span>宿題リスト</span>
+    <button onclick="closeTodo()">閉じる</button>
+  </div>
+  <div class="todo-inner" id="todoInner"></div>
+</div>
+
+<script>
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const TODAY = new Date().toISOString().slice(0,10);
+const U_KEY = 'brief_u_' + TODAY;
+let briefU = JSON.parse(localStorage.getItem(U_KEY) || '{}');
+let briefItems = [];
+
+document.getElementById('navDate').textContent =
+  new Date().toLocaleDateString('ja-JP',{month:'2-digit',day:'2-digit'}) + ' ' +
+  new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+
+function openDrawer() {
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+function openTodo() {
+  renderTodo();
+  document.getElementById('todoOverlay').classList.add('open');
+}
+function closeTodo() {
+  document.getElementById('todoOverlay').classList.remove('open');
+}
+
+// ── ブリーフ ──
+async function loadBrief() {
+  try {
+    const { data } = await sb.from('meeting_notes')
+      .select('id,date,title,content')
+      .eq('category','daily_intelligence_brief')
+      .order('date',{ascending:false})
+      .limit(1)
+      .maybeSingle();
+
+    if (!data) {
+      document.getElementById('mainContent').innerHTML =
+        '<div class="empty"><strong>ニュースがまだありません</strong>「更新して」で収集されます。</div>';
+      return;
+    }
+
+    briefItems = parseItems(data.content||'');
+    const got = Object.values(briefU).filter(v=>v==='got').length;
+    const total = briefItems.length;
+    const pct = total ? Math.round(got/total*100) : 0;
+
+    document.getElementById('mainContent').innerHTML = `
+      <div class="brief">
+        <div class="brief-header">
+          <span class="label">今日のインテリジェンス</span>
+          <span class="meta">${data.date}</span>
+        </div>
+        ${total > 0 ? `
+        <div class="u-bar-wrap">
+          <span class="u-bar-text">${got}/${total} わかった（${pct}%）</span>
+          <div class="u-bar"><div class="u-bar-fill" id="uFill" style="width:${pct}%"></div></div>
+        </div>` : ''}
+        <div class="brief-content">
+          <div class="brief-title">${(data.title||'').replace(/</g,'&lt;')}</div>
+          ${total > 0
+            ? `<div class="item-list">${briefItems.map(renderItem).join('')}</div>`
+            : `<div style="font-size:14px;color:#ccc;line-height:1.9;white-space:pre-wrap;">${(data.content||'').substring(0,800).replace(/</g,'&lt;')}…</div>`
+          }
+        </div>
+        <div class="brief-actions">
+          <button class="brief-act-btn" onclick="markRead()" id="readBtn">✓ 読了</button>
+        </div>
+      </div>`;
+
+    restoreU();
+  } catch(e) {
+    document.getElementById('mainContent').innerHTML =
+      '<div class="empty"><strong>接続エラー</strong>' + e.message + '</div>';
+  }
+}
+
+function parseItems(text) {
+  const items=[], lines=text.split('\n'); let cur=null;
+  for (const ln of lines) {
+    const m=ln.match(/^【No\.(\d+)】(.+)/);
+    if(m){if(cur)items.push(cur);cur={num:m[1],title:m[2].trim(),summary:'',source:'',shisa:''};}
+    else if(cur){
+      const sm=ln.match(/^[-‐・]\s*一言要約[:：]\s*(.+)/);
+      const so=ln.match(/^[-‐・]\s*ソース[:：]\s*(.+)/);
+      const sh=ln.match(/^[-‐・]\s*真平への示唆[:：]\s*(.+)/);
+      if(sm)cur.summary=sm[1].trim();
+      if(so)cur.source=so[1].trim();
+      if(sh)cur.shisa=sh[1].trim();
+    }
+  }
+  if(cur)items.push(cur);
+  return items;
+}
+
+function renderItem(item) {
+  const sp=item.source.split('|'),sn=sp[0]?.trim()||'',su=sp[1]?.trim()||'';
+  const srcH=su?`<a href="${su}" target="_blank" rel="noopener">${sn} ↗</a>`:sn;
+  const st=briefU[item.num];
+  return `<div class="item-card">
+    <div class="item-num">No.${item.num}</div>
+    <div class="item-title">${item.title.replace(/</g,'&lt;')}</div>
+    ${item.summary?`<div class="item-lbl">要約</div><div class="item-summary">${item.summary.replace(/</g,'&lt;')}</div>`:''}
+    ${item.shisa?`<div class="item-lbl">示唆</div><div class="item-shisa">${item.shisa.replace(/</g,'&lt;')}</div>`:''}
+    ${srcH?`<div class="item-src">${srcH}</div>`:''}
+    <div class="understand-btns">
+      <button class="btn-got${st==='got'?' active':''}" id="mg-${item.num}" onclick="markU('${item.num}','got')">わかった</button>
+      <button class="btn-lost${st==='lost'?' active':''}" id="ml-${item.num}" onclick="markU('${item.num}','lost')">わからなかった</button>
+    </div>
+  </div>`;
+}
+
+function markU(num,val) {
+  briefU[num]=val;
+  localStorage.setItem(U_KEY,JSON.stringify(briefU));
+  document.getElementById('mg-'+num)?.classList.toggle('active',val==='got');
+  document.getElementById('ml-'+num)?.classList.toggle('active',val==='lost');
+  const got=Object.values(briefU).filter(v=>v==='got').length;
+  const pct=briefItems.length?Math.round(got/briefItems.length*100):0;
+  const f=document.getElementById('uFill'),t=document.querySelector('.u-bar-text');
+  if(f)f.style.width=pct+'%';
+  if(t)t.textContent=`${got}/${briefItems.length} わかった（${pct}%）`;
+}
+
+function restoreU() {
+  Object.entries(briefU).forEach(([n,v])=>{
+    document.getElementById('mg-'+n)?.classList.toggle('active',v==='got');
+    document.getElementById('ml-'+n)?.classList.toggle('active',v==='lost');
+  });
+}
+
+function markRead() {
+  const btn=document.getElementById('readBtn');
+  if(btn){btn.textContent='✓ 読了済み';btn.style.color='var(--teal)';btn.style.borderColor='var(--teal)';btn.disabled=true;}
+  localStorage.setItem('brief_read_'+TODAY,'1');
+}
+
+// ── 宿題 ──
+const TODO_DATA = [
+  {id:'github-token',badge:'CEO',title:'GitHub Personal Access Token 取得',
+   context:'GitHub Pagesでサイトを公開するために必要。1回取得すれば以降は完全自動。手順書あり。',
+   manual:'04_手順書/01_GitHub_Token取得.txt（約10分）'},
+  {id:'a8-rakuten',badge:'CEO',title:'A8.net 登録・楽天証券に提携申請',
+   context:'6/15の¥3,500回収目標の最短ルート。楽天証券CV1件で約¥3,000。竹中がサポート。',
+   manual:'04_手順書/02_A8net登録.txt（約15分）'},
+  {id:'kassenjo-sns',badge:'CEO',title:'決算城 SNSアカウント取得（X/インスタ/スレッズ）',
+   context:'名前だけ取っておけばOK（無料・各5分）。後から本格運用。取り遅れると他に取られる。',
+   manual:'04_手順書/04_SNSアカウント取得_決算城.txt'},
+  {id:'kassenjo-articles',badge:'自動',title:'決算城 記事002〜100作成',
+   context:'「続きをやって」と言うだけで庵野が代行。青柳さんは何もしなくていい。',
+   manual:'「続きをやって」と発言するだけ'},
+  {id:'makecom',badge:'自動',title:'Make.com スケジュール設定（競馬チーム）',
+   context:'競馬記事の自動投稿スケジュール設定。庵野が設計書を作ってから着手。',
+   manual:'庵野が設計書を先出しする'}
+];
+
+const SKIP_KEY='todo_skip', DO_KEY='todo_do';
+const skipped=JSON.parse(localStorage.getItem(SKIP_KEY)||'[]');
+const doing=JSON.parse(localStorage.getItem(DO_KEY)||'[]');
+
+function renderTodo() {
+  const pending=TODO_DATA.filter(t=>!skipped.includes(t.id));
+  document.getElementById('todoInner').innerHTML = pending.length
+    ? pending.map(t=>`
+      <div class="acc-item" id="tacc-${t.id}">
+        <div class="acc-head" onclick="toggleAcc('${t.id}')">
+          <span class="acc-badge ${t.badge==='CEO'?'badge-ceo':'badge-auto'}">${t.badge}</span>
+          <span class="acc-head-title">${doing.includes(t.id)?'✓ ':''} ${t.title}</span>
+          <span class="acc-arrow" id="tarr-${t.id}">▼</span>
+        </div>
+        <div class="acc-body" id="tbody-${t.id}">
+          <div class="acc-context">${t.context}</div>
+          <div class="acc-manual">📌 ${t.manual}</div>
+          <div class="acc-btns">
+            <button class="acc-btn-do" onclick="todoDo('${t.id}')">✓ やった</button>
+            <button class="acc-btn-skip" onclick="todoSkip('${t.id}')">今はやらない</button>
+          </div>
+        </div>
+      </div>`).join('')
+    : '<div style="text-align:center;padding:40px;color:#555;font-size:15px;">✓ 全件対応済み</div>';
+}
+
+function toggleAcc(id) {
+  const b=document.getElementById('tbody-'+id),a=document.getElementById('tarr-'+id);
+  document.querySelectorAll('.acc-body.open').forEach(x=>{x.classList.remove('open');});
+  document.querySelectorAll('.acc-arrow.open').forEach(x=>{x.classList.remove('open');});
+  b.classList.add('open'); a.classList.add('open');
+}
+function todoDo(id) {
+  if(!doing.includes(id))doing.push(id);
+  localStorage.setItem(DO_KEY,JSON.stringify(doing)); renderTodo();
+}
+function todoSkip(id) {
+  if(!skipped.includes(id))skipped.push(id);
+  localStorage.setItem(SKIP_KEY,JSON.stringify(skipped)); renderTodo();
+}
+
+// ── init ──
+if(localStorage.getItem('brief_read_'+TODAY)) {
+  // 読了済みの場合もロード
+}
+loadBrief();
+</script>
+</body>
+</html>
