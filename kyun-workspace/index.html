@@ -207,16 +207,17 @@ function saveArchive(items) {
 
 async function init() {
   try {
+    // note_articles(自キュン) を主データソースに変更
     const { data, error } = await sb
-      .from('novel_stories')
-      .select('id,title,persona,emotion_type,era,free_text,paid_text,hook_line,chatgpt_image_prompt,x_copy,status,note_url')
+      .from('note_articles')
+      .select('id,article_no,title,free_content,paid_content,cover_image_prompt,tags,status,note_url,price')
+      .eq('category', '自キュン')
       .neq('status', 'published')
-      .order('id', { ascending: true });
+      .order('article_no', { ascending: true });
     if (error) throw error;
 
     allStories = (data || []).filter(s => !todayDone.includes(s.id));
-    const total = (data || []).length + getArchive().filter(a => a.wasPublished).length;
-    const pubCount = (await sb.from('novel_stories').select('id',{count:'exact',head:true}).eq('status','published')).count || 0;
+    const pubCount = (await sb.from('note_articles').select('id',{count:'exact',head:true}).eq('category','自キュン').eq('status','published')).count || 0;
     const grandTotal = (data||[]).length + pubCount;
 
     document.getElementById('progCount').textContent = grandTotal + ' / 100本';
@@ -257,22 +258,21 @@ function renderCards() {
 
 function cardHTML(s, i) {
   const num = todayDone.length + i + 1;
-  const imgP = s.chatgpt_image_prompt || '';
+  const imgP = s.cover_image_prompt || '';
   const title = s.title || '';
-  const body = (s.free_text || '') + (s.paid_text ? '\n\n---有料---\n' + s.paid_text : '');
-  const tags = [s.persona, s.emotion_type, s.era].filter(Boolean).join(' ');
+  const freeC = s.free_content || '';
+  const paidC = s.paid_content || '';
+  const tagsArr = Array.isArray(s.tags) ? s.tags : [];
+  const tags = tagsArr.join(' ') || '自キュン 恋愛小説 読了5分';
+  const price = s.price || 180;
   return `<div class="story-card" id="sc-${s.id}">
     <div class="card-num">
       <span>本日 ${num}本目</span>
-      <span style="color:var(--muted)">${s.persona||''}</span>
+      <span style="color:var(--teal)">¥${price}</span>
     </div>
     <div class="card-story-title">${title || '（タイトルなし）'}</div>
-    <div class="card-meta">
-      ${s.emotion_type?`<span class="meta-chip">💭${s.emotion_type}</span>`:''}
-      ${s.era?`<span class="meta-chip">📅${s.era}</span>`:''}
-    </div>
     <div class="field-block">
-      <div class="field-head"><span class="field-label">画像プロンプト</span>
+      <div class="field-head"><span class="field-label">① 画像プロンプト</span>
         <div style="display:flex;gap:5px;align-items:center;">
           <a href="https://gemini.google.com/app" target="_blank" style="font-size:9px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:2px 6px;">Gemini↗</a>
           <button class="field-copy-btn" onclick="fc('${s.id}','img',this)">コピー</button>
@@ -281,16 +281,20 @@ function cardHTML(s, i) {
       <textarea class="field-body ${imgP?'':'empty'}" id="f-img-${s.id}">${imgP||'（なし）'}</textarea>
     </div>
     <div class="field-block">
-      <div class="field-head"><span class="field-label">タイトル</span><button class="field-copy-btn" onclick="fc('${s.id}','title',this)">コピー</button></div>
+      <div class="field-head"><span class="field-label">② タイトル</span><button class="field-copy-btn" onclick="fc('${s.id}','title',this)">コピー</button></div>
       <textarea class="field-body ${title?'':'empty'}" id="f-title-${s.id}" rows="2">${title||'（なし）'}</textarea>
     </div>
     <div class="field-block">
-      <div class="field-head"><span class="field-label">本文</span><button class="field-copy-btn" onclick="fc('${s.id}','body',this)">コピー</button></div>
-      <textarea class="field-body tall ${body?'':'empty'}" id="f-body-${s.id}">${body||'（なし）'}</textarea>
+      <div class="field-head"><span class="field-label">③ 無料パート（ブロック1〜3）</span><button class="field-copy-btn" onclick="fc('${s.id}','free',this)">コピー</button></div>
+      <textarea class="field-body tall ${freeC?'':'empty'}" id="f-free-${s.id}">${freeC||'（なし）'}</textarea>
     </div>
     <div class="field-block">
-      <div class="field-head"><span class="field-label">タグ</span><button class="field-copy-btn" onclick="fc('${s.id}','tags',this)">コピー</button></div>
-      <textarea class="field-body ${tags?'':'empty'}" id="f-tags-${s.id}" rows="2">${tags||'自キュン 恋愛小説'}</textarea>
+      <div class="field-head"><span class="field-label">④ 有料パート（ブロック4）</span><button class="field-copy-btn" onclick="fc('${s.id}','paid',this)">コピー</button></div>
+      <textarea class="field-body tall ${paidC?'':'empty'}" id="f-paid-${s.id}">${paidC||'（なし）'}</textarea>
+    </div>
+    <div class="field-block">
+      <div class="field-head"><span class="field-label">⑤ タグ</span><button class="field-copy-btn" onclick="fc('${s.id}','tags',this)">コピー</button></div>
+      <textarea class="field-body ${tags?'':'empty'}" id="f-tags-${s.id}" rows="2">${tags}</textarea>
     </div>
     <button class="dismiss-btn" onclick="dismiss('${s.id}','${encodeURIComponent(title)}')">✓ note投稿済み（消込）</button>
   </div>`;
@@ -313,13 +317,13 @@ async function dismiss(id, encodedTitle) {
 
   el.classList.add('fading');
   setTimeout(async () => {
-    // Supabase更新
-    await sb.from('novel_stories').update({ status: 'published' }).eq('id', parseInt(id)).catch(()=>{});
+    // note_articles を published に更新（UUID）
+    await sb.from('note_articles').update({ status: 'published' }).eq('id', id).catch(()=>{});
 
     // localStorage
-    todayDone.push(parseInt(id));
+    todayDone.push(id);
     localStorage.setItem(TODAY_DONE_KEY, JSON.stringify(todayDone));
-    allStories = allStories.filter(s => s.id !== parseInt(id));
+    allStories = allStories.filter(s => s.id !== id);
 
     // アーカイブ
     const arch = getArchive();
@@ -333,6 +337,7 @@ async function dismiss(id, encodedTitle) {
 }
 
 function fc(id, field, btn) {
+  // img→f-img, title→f-title, free→f-free, paid→f-paid, tags→f-tags
   const el = document.getElementById('f-' + field + '-' + id);
   if (!el || el.classList.contains('empty')) return;
   const text = el.tagName === 'TEXTAREA' ? el.value : el.textContent;
