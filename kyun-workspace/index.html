@@ -56,9 +56,8 @@ body { background: #0f0f0f; color: #fff; font-family: 'Segoe UI','Noto Sans JP',
 .completed-title { font-size: 22px; font-weight: bold; color: var(--green); margin-bottom: 6px; }
 .completed-sub { font-size: 13px; color: var(--muted); }
 /* 3-COLUMN CARDS */
-.cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
-@media (max-width: 900px) { .cards-row { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) { .cards-row { grid-template-columns: 1fr; } }
+.cards-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
+@media (max-width: 700px) { .cards-row { grid-template-columns: 1fr; } }
 .story-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: opacity .3s, transform .3s; }
 .story-card.fading { opacity: 0; transform: scale(0.95); }
 .card-num { font-size: 10px; font-weight: bold; color: var(--purple); background: #1a0a2a; padding: 5px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -212,7 +211,7 @@ async function init() {
       .from('note_articles')
       .select('id,article_no,title,free_content,paid_content,cover_image_prompt,tags,status,note_url,price')
       .eq('category', '自キュン')
-      .neq('status', 'published')
+      .eq('status', 'draft')
       .order('article_no', { ascending: true });
     if (error) throw error;
 
@@ -236,16 +235,17 @@ async function init() {
 
 function updateTodayCount() {
   const done = todayDone.length;
-  document.getElementById('progToday').textContent = `今日 ${done}/3本`;
-  if (done >= 3) {
+  const total = allStories.length + done;
+  document.getElementById('progToday').textContent = `今日 ${done}/${total}本`;
+  if (total > 0 && done >= total) {
     document.getElementById('completedBanner').style.display = 'block';
   }
 }
 
 function renderCards() {
   const row = document.getElementById('cardsRow');
-  const pending = allStories.slice(0, 3);
-  if (!pending.length && todayDone.length >= 3) {
+  const pending = allStories.slice(0, 4);
+  if (!pending.length && todayDone.length >= 1) {
     row.innerHTML = '';
     return;
   }
