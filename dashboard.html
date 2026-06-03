@@ -491,6 +491,34 @@ body { background: #0f0f0f; color: #ffffff; }
   box-shadow: 0 4px 0 #0a4f20, 0 6px 12px rgba(0,0,0,0.4);
   margin-top: 10px;
 }
+
+/* ═══ 6タイル KPI グリッド ═══ */
+.kpi-tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+@media(max-width:700px){ .kpi-tiles { grid-template-columns:repeat(2,1fr); } }
+.ktile { background:#161616; border:1px solid #252525; border-radius:14px; padding:18px 16px 14px; position:relative; overflow:hidden; transition:transform .15s; }
+.ktile:hover { transform:translateY(-2px); }
+.ktile::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:14px 14px 0 0; }
+.ktile-note::before  { background:linear-gradient(90deg,#7c3aed,#c084fc); }
+.ktile-watch::before { background:linear-gradient(90deg,#3DCFC2,#22d3ee); }
+.ktile-merc::before  { background:linear-gradient(90deg,#f97316,#fbbf24); }
+.ktile-fin::before   { background:linear-gradient(90deg,#22c55e,#4ade80); }
+.ktile-race::before  { background:linear-gradient(90deg,#d4a017,#fde68a); }
+.ktile-castle::before{ background:linear-gradient(90deg,#f59e0b,#fb923c); }
+.ktile-label { font-size:10px; color:#777; letter-spacing:1px; text-transform:uppercase; font-weight:bold; margin-bottom:8px; }
+.ktile-main { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.ktile-num { font-size:30px; font-weight:800; color:#fff; line-height:1; font-variant-numeric:tabular-nums; }
+.ktile-unit { font-size:12px; color:#888; margin-top:4px; }
+.ktile-ring { flex-shrink:0; }
+.ktile-bar-wrap { height:4px; background:#2a2a2a; border-radius:2px; overflow:hidden; margin-top:6px; }
+.ktile-bar-fill { height:100%; border-radius:2px; transition:width .8s cubic-bezier(.4,0,.2,1); }
+.ktile-sub { font-size:11px; color:#666; margin-top:6px; display:flex; align-items:center; gap:6px; }
+.ktile-badge { font-size:9px; padding:2px 7px; border-radius:8px; font-weight:bold; }
+.badge-g1 { background:rgba(212,160,23,0.15); color:#d4a017; border:1px solid rgba(212,160,23,0.3); }
+.badge-ok { background:rgba(34,197,94,0.12); color:#22c55e; }
+.badge-warn { background:rgba(249,115,22,0.12); color:#f97316; }
+.badge-red { background:rgba(239,68,68,0.12); color:#ef4444; }
+.ktile-fin-pos .ktile-num { color:#22c55e; }
+.ktile-fin-neg .ktile-num { color:#ef4444; }
 </style>
 </head>
 <body>
@@ -555,6 +583,87 @@ function showTodoMobile(){
 <div class="header">
   <h1>電脳会社 ダッシュボード</h1>
   <div class="date" id="dashDate">読み込み中…</div>
+</div>
+
+<!-- ═══ 6タイル KPI ═══ -->
+<div class="kpi-tiles">
+
+  <!-- 1: note配信本数 -->
+  <div class="ktile ktile-note">
+    <div class="ktile-label">💕 note配信本数</div>
+    <div class="ktile-main">
+      <div class="ktile-ring" id="tileNoteRing"></div>
+      <div>
+        <div class="ktile-num"><span id="tileNoteNum">—</span></div>
+        <div class="ktile-unit">/ 100本</div>
+      </div>
+    </div>
+    <div class="ktile-bar-wrap"><div class="ktile-bar-fill" id="tileNoteBar" style="width:0%;background:linear-gradient(90deg,#7c3aed,#c084fc)"></div></div>
+    <div class="ktile-sub" id="tileNoteSub">読み込み中…</div>
+  </div>
+
+  <!-- 2: 総ウォッチ数 -->
+  <div class="ktile ktile-watch">
+    <div class="ktile-label">👁 総ウォッチ数</div>
+    <div class="ktile-main">
+      <div>
+        <div class="ktile-num"><span id="tileWatchNum">—</span></div>
+        <div class="ktile-unit">view</div>
+      </div>
+    </div>
+    <div class="ktile-sub" id="tileWatchSub"><span class="ktile-badge badge-warn">毎日17時更新</span></div>
+  </div>
+
+  <!-- 3: メルカリ出品数 -->
+  <div class="ktile ktile-merc">
+    <div class="ktile-label">🛍 メルカリ出品中</div>
+    <div class="ktile-main">
+      <div>
+        <div class="ktile-num"><span id="tileMercNum">—</span></div>
+        <div class="ktile-unit">点</div>
+      </div>
+    </div>
+    <div class="ktile-bar-wrap"><div class="ktile-bar-fill" id="tileMercBar" style="width:0%;background:linear-gradient(90deg,#f97316,#fbbf24)"></div></div>
+    <div class="ktile-sub" id="tileMercSub">読み込み中…</div>
+  </div>
+
+  <!-- 4: 差額（回収余力） -->
+  <div class="ktile ktile-fin" id="ktileFin">
+    <div class="ktile-label">💰 仕入れ差額</div>
+    <div class="ktile-main">
+      <div>
+        <div class="ktile-num"><span id="tileFinNum">—</span></div>
+        <div class="ktile-unit" id="tileFinUnit">読み込み中</div>
+      </div>
+    </div>
+    <div class="ktile-sub" id="tileFinSub"></div>
+  </div>
+
+  <!-- 5: 今週のメインレース -->
+  <div class="ktile ktile-race">
+    <div class="ktile-label">🏇 今週メインレース</div>
+    <div class="ktile-main">
+      <div>
+        <div class="ktile-num" style="font-size:18px;line-height:1.3;" id="tileRaceName">安田記念</div>
+        <div class="ktile-unit" id="tileRaceDate">6/7（日）東京11R</div>
+      </div>
+    </div>
+    <div class="ktile-sub"><span class="ktile-badge badge-g1">GⅠ</span> <span id="tileRaceInfo">芝1600m</span></div>
+  </div>
+
+  <!-- 6: 決算城 -->
+  <div class="ktile ktile-castle">
+    <div class="ktile-label">🏯 決算城</div>
+    <div class="ktile-main">
+      <div>
+        <div class="ktile-num"><span id="tileCastleNum">—</span></div>
+        <div class="ktile-unit">/ 100話</div>
+      </div>
+    </div>
+    <div class="ktile-bar-wrap"><div class="ktile-bar-fill" id="tileCastleBar" style="width:0%;background:linear-gradient(90deg,#f59e0b,#fb923c)"></div></div>
+    <div class="ktile-sub" id="tileCastleSub">読み込み中…</div>
+  </div>
+
 </div>
 
 <!-- ブリーフ（最上部） -->
@@ -721,17 +830,42 @@ document.getElementById('dashDate').textContent =
 
 let mercariPriceData = [];
 
+// ── ユーティリティ ──
+function countUp(el, target, dur, fmt) {
+  if (!el) return;
+  const s = performance.now();
+  (function tick(now) {
+    const p = Math.min((now-s)/dur, 1);
+    const e = 1 - Math.pow(1-p, 3);
+    el.textContent = fmt ? fmt(Math.round(e*target)) : Math.round(e*target).toLocaleString();
+    if (p < 1) requestAnimationFrame(tick);
+  })(performance.now());
+}
+function svgRing(pct, color) {
+  const r=22,cx=28,cy=28,circ=2*Math.PI*r,dash=(pct/100)*circ;
+  return `<svg width="56" height="56" viewBox="0 0 56 56" style="transform:rotate(-90deg)">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2a2a2a" stroke-width="4"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="4"
+      stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
+    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central"
+      fill="${color}" font-size="11" font-weight="bold" transform="rotate(90,${cx},${cy})">${pct}%</text>
+  </svg>`;
+}
+
 async function init() {
   const now = new Date().toISOString().slice(0,10);
   try {
-    const [mercariCount, mercariData, relistRes, castleRes, briefRes, noteRes, novelRes] = await Promise.all([
+    const [mercariCount, mercariData, relistRes, castleRes, briefRes, noteRes, novelRes,
+           noteKyunCount, mercariFinRes] = await Promise.all([
       sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed'),
       sb.from('mercari_items').select('item_no,name,price,recommended_price,cost,shipping').eq('status','listed').order('item_no'),
       sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed').lt('last_relisted_at', new Date(Date.now()-2*24*60*60*1000).toISOString()),
       sb.from('castle_articles').select('id',{count:'exact',head:true}).not('body','is',null),
       sb.from('meeting_notes').select('id,date,title,content').eq('category','daily_intelligence_brief').order('date',{ascending:false}).limit(1).maybeSingle(),
       sb.from('note_articles').select('category,status'),
-      sb.from('novel_stories').select('status')
+      sb.from('novel_stories').select('status'),
+      sb.from('note_articles').select('id',{count:'exact',head:true}).eq('category','自キュン').eq('status','published'),
+      sb.from('mercari_items').select('price,cost,status')
     ]);
 
     // メルカリ
@@ -751,8 +885,54 @@ async function init() {
       }
     }
 
-    // 決算城
+    // ── 6タイル更新 ──
+    // Tile1: note配信
+    const noteCount = noteKyunCount.count ?? 0;
+    const notePct = Math.round(noteCount);
+    document.getElementById('tileNoteRing').innerHTML = svgRing(notePct, '#c084fc');
+    countUp(document.getElementById('tileNoteNum'), noteCount, 800);
+    document.getElementById('tileNoteBar').style.width = notePct + '%';
+    document.getElementById('tileNoteSub').innerHTML = `<span class="ktile-badge badge-ok">自キュン ${noteCount}本</span> 公開済み`;
+
+    // Tile2: ウォッチ（localStorage保持・手動更新）
+    const watchVal = parseInt(localStorage.getItem('noteWatchCount') || '1043');
+    countUp(document.getElementById('tileWatchNum'), watchVal, 1000, v => v.toLocaleString());
+    document.getElementById('tileWatchSub').innerHTML = `<span class="ktile-badge badge-warn">毎日17時更新</span> <span style="font-size:10px;color:#555;">最終: ${localStorage.getItem('noteWatchDate')||'—'}</span>`;
+
+    // Tile3: メルカリ出品
+    const soldCount = (mercariFinRes.data||[]).filter(i=>i.status==='sold').length;
+    countUp(document.getElementById('tileMercNum'), listed, 700);
+    const mercPct = Math.round(listed / (listed + soldCount) * 100) || 0;
+    document.getElementById('tileMercBar').style.width = (100 - mercPct) + '%';
+    document.getElementById('tileMercSub').innerHTML = `売済 ${soldCount}件 ／ 出品中 ${listed}件`;
+
+    // Tile4: 差額
+    const allItems = mercariFinRes.data || [];
+    const totalCost = allItems.reduce((s,i)=>s+(i.cost||0),0);
+    const totalRev  = allItems.filter(i=>i.status==='sold').reduce((s,i)=>s+(i.price||0),0);
+    const diff = totalRev - totalCost;
+    const finEl = document.getElementById('tileFinNum');
+    const finTile = document.getElementById('ktileFin');
+    if (diff >= 0) {
+      finEl.textContent = '+¥' + diff.toLocaleString();
+      finTile.classList.add('ktile-fin-pos');
+    } else {
+      finEl.textContent = '−¥' + Math.abs(diff).toLocaleString();
+      finTile.classList.add('ktile-fin-neg');
+    }
+    document.getElementById('tileFinUnit').textContent = `仕入¥${Math.round(totalCost/1000)}K → 売上¥${Math.round(totalRev/1000)}K`;
+    document.getElementById('tileFinSub').innerHTML = diff >= 0
+      ? `<span class="ktile-badge badge-ok">黒字</span>`
+      : `<span class="ktile-badge badge-red">回収まで ¥${Math.abs(diff).toLocaleString()}</span>`;
+
+    // Tile6: 決算城
     const cc = castleRes.count ?? 0;
+    const castlePct = cc;
+    countUp(document.getElementById('tileCastleNum'), cc, 600);
+    document.getElementById('tileCastleBar').style.width = castlePct + '%';
+    document.getElementById('tileCastleSub').innerHTML = `<span class="ktile-badge" style="background:rgba(245,158,11,0.12);color:#f59e0b;">ステージング済 ${cc}話</span>`;
+
+    // 既存KPI（下部）
     document.getElementById('kpiCastle').textContent = cc + ' / 100';
     document.getElementById('castleArticles').textContent = cc + ' / 100本';
     document.getElementById('castleBar').style.width = cc + '%';
