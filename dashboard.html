@@ -896,10 +896,10 @@ async function init() {
 
     // メルカリ
     const listed = mercariCount.count ?? 0;
-    document.getElementById('kpiMercari').textContent = listed + ' 点';
-    document.getElementById('mercariListed').textContent = listed + ' 点';
-    document.getElementById('mercariListed').className = 'val ' + (listed >= 20 ? 'green-text' : 'gold');
-    document.getElementById('mercariRelist').textContent = (relistRes.count ?? 0) > 0 ? (relistRes.count) + ' 点（要再出品）' : 'なし';
+    const _set = (id,v,c)=>{ const e=document.getElementById(id); if(e){e.textContent=v; if(c)e.className=c;} };
+    _set('kpiMercari', listed + ' 点');
+    _set('mercariListed', listed + ' 点', 'val ' + (listed >= 20 ? 'green-text' : 'gold'));
+    _set('mercariRelist', (relistRes.count ?? 0) > 0 ? (relistRes.count) + ' 点（要再出品）' : 'なし');
     // メルカリフラグ更新
     if (mercariData.data) {
       const needsWork = mercariData.data.filter(it => it.recommended_price && it.recommended_price !== it.price);
@@ -976,21 +976,20 @@ async function init() {
     if(qEl) qEl.textContent = '「' + todayQ.text + '」';
     if(wEl) wEl.textContent = '— ' + todayQ.who + '（' + todayQ.role + '）';
 
-    // 既存KPI（下部）
-    document.getElementById('kpiCastle').textContent = cc + ' / 100';
-    document.getElementById('castleArticles').textContent = cc + ' / 100本';
-    document.getElementById('castleBar').style.width = cc + '%';
+    // 既存KPI参照（null安全）
+    _set('kpiCastle', cc + ' / 100');
+    _set('castleArticles', cc + ' / 100本');
+    const cbEl=document.getElementById('castleBar'); if(cbEl) cbEl.style.width=cc+'%';
 
     // ブリーフ
     if (briefRes.data) {
       const b = briefRes.data;
       const isToday = b.date === now;
-      document.getElementById('kpiBrief').textContent = isToday ? '✓ 収集済' : b.date;
-      document.getElementById('kpiBrief').className = isToday ? 'val green-text' : 'val gold';
-      document.getElementById('briefMeta').textContent = b.date + ' 収集';
+      _set('kpiBrief', isToday ? '✓ 収集済' : b.date, isToday ? 'val green-text' : 'val gold');
+      _set('briefMeta', b.date + ' 収集');
       renderBrief(b);
     } else {
-      document.getElementById('kpiBrief') && (document.getElementById('kpiBrief').textContent = '未収集');
+      _set('kpiBrief', '未収集');
       document.getElementById('briefBody').innerHTML = '<div class="brief-empty">「更新して」で今日のブリーフを収集できます。</div>';
     }
 
