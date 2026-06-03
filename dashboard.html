@@ -492,6 +492,32 @@ body { background: #0f0f0f; color: #ffffff; }
   margin-top: 10px;
 }
 
+/* ═══ 全体配色（黒背景・80%黒タイル・枠なし）═══ */
+body { background:#000 !important; }
+.page-body { background:#000; }
+.kpi-card { background:#333 !important; border:none !important; border-radius:12px; }
+.ktile { background:#333 !important; border:none !important; }
+.deadline { background:#333 !important; border:none !important; border-radius:12px; }
+.card { background:#333 !important; border:none !important; }
+.card-header { background:#2a2a2a !important; }
+.card-body { background:#333 !important; }
+.brief-section { background:#1a1a1a !important; border:1px solid #222 !important; }
+.brief-item { background:#333 !important; border:1px solid #2a2a2a !important; }
+.calendar { background:#1a1a1a !important; }
+.content-map { background:#333 !important; border:none !important; }
+.acc-todo { background:#333 !important; border:none !important; }
+.kpi-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+/* ブリーフ CAT区切り */
+.brief-cat-header { margin:16px 0 8px; padding:10px 14px; background:#222; border-radius:8px; }
+.brief-cat-label { font-size:11px; font-weight:bold; color:#3DCFC2; letter-spacing:1px; display:block; margin-bottom:6px; }
+.brief-cat-quote { font-size:12px; color:#ccc; font-style:italic; line-height:1.5; }
+.brief-cat-who { font-size:10px; color:#888; margin-left:8px; font-style:normal; }
+/* 用語解説 */
+.brief-glossary { margin-top:10px; background:#1e1e1e; border-radius:6px; padding:8px 10px; }
+.brief-gloss-head { font-size:10px; color:#f59e0b; font-weight:bold; display:block; margin-bottom:6px; }
+.brief-gloss-item { display:flex; gap:8px; margin-bottom:5px; align-items:flex-start; }
+.brief-gloss-term { font-size:10px; font-weight:bold; color:#3DCFC2; background:rgba(61,207,194,0.1); border-radius:4px; padding:1px 6px; flex-shrink:0; margin-top:2px; }
+.brief-gloss-def { font-size:11px; color:#aaa; line-height:1.5; }
 /* ═══ 6タイル KPI グリッド ═══ */
 .kpi-tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
 @media(max-width:700px){ .kpi-tiles { grid-template-columns:repeat(2,1fr); } }
@@ -702,18 +728,7 @@ function showTodoMobile(){
   </a>
 </div>
 
-<!-- ブリーフ（2つ目・IDは別名） -->
-<div class="brief-section">
-  <div class="brief-section-header">
-    <span class="label">📡 INTELLIGENCE BRIEF</span>
-    <span class="meta" id="briefMeta2">接続中…</span>
-  </div>
-  <div class="brief-body" id="briefBody2"><div class="brief-empty loading">データ取得中…</div></div>
-  <div class="brief-actions">
-    <a class="brief-action-btn" href="./note.html">📝 note記事を書く →</a>
-    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn2">✓ 読了</button>
-  </div>
-</div>
+<!-- ブリーフ2つ目は削除済み -->
 
 
 <!-- メルカリ計測ログ -->
@@ -745,12 +760,23 @@ function showTodoMobile(){
   <div class="sub">楽天証券アフィリ 1件（約¥3,000）が最短ルート</div>
 </div>
 
-<!-- KPI -->
+<!-- KPI 新3タイル -->
 <div class="kpi-bar">
-  <div class="kpi-card"><div class="label">決算城 記事</div><div class="value" id="kpiCastle"><span class="loading">…</span></div><div class="sub">目標100本</div></div>
-  <div class="kpi-card"><div class="label">メルカリ 出品中</div><div class="value" id="kpiMercari"><span class="loading">…</span></div><div class="sub">目標20点以上</div></div>
-  <div class="kpi-card"><div class="label">競馬 今月収益</div><div class="value">¥ —</div><div class="sub">目標¥10,000</div></div>
-  <div class="kpi-card"><div class="label">ブリーフ</div><div class="value" id="kpiBrief" style="font-size:13px;"><span class="loading">…</span></div><div class="sub">meeting_notes</div></div>
+  <div class="kpi-card">
+    <div class="label">🛍 メルカリ利益</div>
+    <div class="value" id="kpiMercProfit" style="font-size:22px;font-weight:800;">…</div>
+    <div class="sub" id="kpiMercProfitSub">5/15〜集計中</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">📝 note収益</div>
+    <div class="value" style="font-size:22px;font-weight:800;color:#3DCFC2;">¥ 0</div>
+    <div class="sub">有料記事 設定後に更新</div>
+  </div>
+  <div class="kpi-card" id="kpiExecCard">
+    <div class="label">💬 経営者の言葉</div>
+    <div class="value" id="kpiExecQuote" style="font-size:12px;line-height:1.6;color:#ddd;font-weight:normal;">読み込み中…</div>
+    <div class="sub" id="kpiExecWho" style="color:#888;font-size:10px;margin-top:6px;"></div>
+  </div>
 </div>
 
 <div class="section-label" style="margin-top:28px;">コンテンツ</div>
@@ -932,6 +958,24 @@ async function init() {
     document.getElementById('tileCastleBar').style.width = castlePct + '%';
     document.getElementById('tileCastleSub').innerHTML = `<span class="ktile-badge" style="background:rgba(245,158,11,0.12);color:#f59e0b;">ステージング済 ${cc}話</span>`;
 
+    // ── 新KPIタイル ──
+    // メルカリ利益（5/15以降・手数料10%控除）
+    const soldItems = allItems.filter(i=>i.status==='sold');
+    const mercProfit = Math.round(soldItems.reduce((s,i)=>s+(i.price||0)*0.9-(i.cost||0),0));
+    const kmpEl = document.getElementById('kpiMercProfit');
+    if(kmpEl){
+      kmpEl.textContent = (mercProfit>=0?'+':'')+'¥'+Math.abs(mercProfit).toLocaleString();
+      kmpEl.style.color = mercProfit>=0?'#22c55e':'#ef4444';
+    }
+    const kmpSub = document.getElementById('kpiMercProfitSub');
+    if(kmpSub) kmpSub.textContent = `${soldItems.length}件売却 / 手数料10%控除後`;
+
+    // 経営者の言葉（日付でローテーション）
+    const todayQ = EXEC_QUOTES[new Date().getDate() % EXEC_QUOTES.length];
+    const qEl=document.getElementById('kpiExecQuote'), wEl=document.getElementById('kpiExecWho');
+    if(qEl) qEl.textContent = '「' + todayQ.text + '」';
+    if(wEl) wEl.textContent = '— ' + todayQ.who + '（' + todayQ.role + '）';
+
     // 既存KPI（下部）
     document.getElementById('kpiCastle').textContent = cc + ' / 100';
     document.getElementById('castleArticles').textContent = cc + ' / 100本';
@@ -944,15 +988,10 @@ async function init() {
       document.getElementById('kpiBrief').textContent = isToday ? '✓ 収集済' : b.date;
       document.getElementById('kpiBrief').className = isToday ? 'val green-text' : 'val gold';
       document.getElementById('briefMeta').textContent = b.date + ' 収集';
-      document.getElementById('briefMeta2').textContent = b.date + ' 収集';
       renderBrief(b);
-      // 2つ目のセクションに同期
-      document.getElementById('briefBody2').innerHTML = document.getElementById('briefBody').innerHTML;
     } else {
-      document.getElementById('kpiBrief').textContent = '未収集';
-      const emptyMsg = '<div class="brief-empty">「更新して」で今日のブリーフを収集できます。</div>';
-      document.getElementById('briefBody').innerHTML = emptyMsg;
-      document.getElementById('briefBody2').innerHTML = emptyMsg;
+      document.getElementById('kpiBrief') && (document.getElementById('kpiBrief').textContent = '未収集');
+      document.getElementById('briefBody').innerHTML = '<div class="brief-empty">「更新して」で今日のブリーフを収集できます。</div>';
     }
 
     // noteコンテンツ
@@ -979,9 +1018,7 @@ async function init() {
 
   } catch(e) {
     console.error(e);
-    const errMsg = '<div class="brief-empty" style="color:#ef4444">接続エラー: ' + e.message + '</div>';
-    document.getElementById('briefBody').innerHTML = errMsg;
-    document.getElementById('briefBody2').innerHTML = errMsg;
+    document.getElementById('briefBody').innerHTML = '<div class="brief-empty" style="color:#ef4444">接続エラー: ' + e.message + '</div>';
   }
 }
 
@@ -989,16 +1026,66 @@ async function init() {
 const BRIEF_U_KEY = 'brief_understand_' + new Date().toISOString().slice(0,10);
 let briefU = JSON.parse(localStorage.getItem(BRIEF_U_KEY) || '{}');
 
+// ── 用語辞典 ──
+const GLOSSARY = {
+  'LLM':'大規模言語モデル。GPT・Claude・Geminiのように大量テキストで学習したAI。人間のように文章を生成・理解する。',
+  'MCP':'Model Context Protocol。AIとGmail・GitHubなどの外部ツールを繋ぐ接続規格。AnthropicのClaude向けに開発され業界標準化。',
+  'エージェント':'AIが自律的に計画→実行→確認を繰り返して目標を達成する仕組み。人間が細かく指示しなくても動く。',
+  'API':'異なるソフト同士が会話するための接続口。例：メルカリのデータをClaudeが読み取る時に使う橋。',
+  'RAG':'Retrieval-Augmented Generation。AIが回答前にデータベースから関連情報を検索して取り込む技術。',
+  'LLMO':'LLM Optimization。AI検索に最適化されたコンテンツ作り。SEOのAI版。',
+  'DeepSeek':'中国のAI企業とモデル名。GPT-4の100分の1のコストで同等性能と話題に。',
+  'マルチプロバイダー':'複数のAI会社のモデルを業務別に使い分ける戦略。1社依存を避けるリスク管理。',
+  'セレンディピティ':'意図しない偶然の発見。SNSアルゴリズムが「探していなかった好きなもの」を届けること。',
+  'ファインチューニング':'既存AIモデルに追加学習させて特定用途に特化させること。',
+  'エージェンティック':'AIが代理で行動・判断・購入なども行う性質のこと。「エージェンティックコマース」＝AI代理購入。',
+  'ステーブルコイン':'価格が安定した暗号資産。米ドルに連動するUSDTなど。決済インフラとして普及が加速中。',
+  'AI for Science':'科学研究にAIを活用する動き。脳イメージング・行動実験の効率化が目的。',
+  'アンビエント':'「環境」という意味。アンビエントヘルスケア＝意識せずに健康管理される仕組み。',
+};
+
+function extractGlossary(text) {
+  return Object.entries(GLOSSARY)
+    .filter(([k]) => text.includes(k))
+    .slice(0, 3);
+}
+
+// ── 経営者の言葉ローテーション ──
+const EXEC_QUOTES = [
+  { text:'完璧を目指すより、まず終わらせろ。', who:'Mark Zuckerberg', role:'Meta CEO' },
+  { text:'失敗はオプションだ。失敗していないなら、十分に革新的ではない。', who:'Elon Musk', role:'Tesla / X CEO' },
+  { text:'最も重要な決断は、何をするかではなく、何をしないかだ。', who:'Steve Jobs', role:'Apple 共同創業者' },
+  { text:'一番のリスクは、何もリスクを取らないことだ。', who:'Mark Zuckerberg', role:'Meta CEO' },
+  { text:'AIを使う者と、AIに使われる者に分かれる時代が来た。前者になれ。', who:'Sam Altman', role:'OpenAI CEO' },
+  { text:'今日植えた木の陰に、明日は座れる。', who:'Warren Buffett', role:'Berkshire CEO' },
+  { text:'競合が誰かを考えるな。顧客が誰かだけを考えろ。', who:'Jeff Bezos', role:'Amazon 創業者' },
+  { text:'スピードはビジネスの通貨だ。速く動いた者が市場を制する。', who:'Marc Andreessen', role:'a16z 創業者' },
+  { text:'小さく考えるな。大きく夢を描き、今すぐ行動しろ。', who:'Grant Cardone', role:'起業家' },
+  { text:'知識は経験によって完成する。読むだけでなく、動け。', who:'Napoleon Hill', role:'Think and Grow Rich 著者' },
+];
+
+// ── CAT別 関連金言 ──
+const CAT_QUOTES = [
+  { text:'AIと一緒に働くことを学んだ人間が、AIを恐れる人間に取って代わる。', who:'Sam Altman (OpenAI CEO)', cat:'AI/エージェント' },
+  { text:'人々はあなたが何を言ったかではなく、どう感じさせたかを覚えている。', who:'Maya Angelou', cat:'コンテンツマーケ' },
+  { text:'データは新しい石油だ。だが精製されて初めて価値を持つ。', who:'Clive Humby', cat:'AI×認知科学' },
+  { text:'情報を持つ者が富を持つ。自動化した者が自由を持つ。', who:'Tim Ferriss (「週4時間」の仕事術 著者)', cat:'個人起業' },
+  { text:'速く動け、モノを壊せ。', who:'Mark Zuckerberg (Meta CEO) - 創業期の信条', cat:'トレンド' },
+];
+
 function parseBriefItems(text) {
   const items=[], lines=text.split('\n');
   let cur=null;
   for (const ln of lines) {
     const m=ln.match(/^【No\.(\d+)】(.+)/);
-    if (m) { if(cur)items.push(cur); cur={num:m[1],title:m[2].trim(),summary:'',source:'',shisa:''}; }
-    else if (cur) {
-      const sm=ln.match(/^[-‐]\s*一言要約[:：]\s*(.+)/);
-      const so=ln.match(/^[-‐]\s*ソース[:：]\s*(.+)/);
-      const sh=ln.match(/^[-‐]\s*真平への示唆[:：]\s*(.+)/);
+    if (m) {
+      if(cur) items.push(cur);
+      cur={num:m[1],title:m[2].trim(),summary:'',source:'',shisa:''};
+    } else if (cur) {
+      // ダッシュあり・なし両対応
+      const sm=ln.match(/^(?:[-‐]\s*)?一言要約[:：]\s*(.+)/);
+      const so=ln.match(/^(?:[-‐]\s*)?ソース[:：]\s*(.+)/);
+      const sh=ln.match(/^(?:[-‐]\s*)?真平への示唆[:：]\s*(.+)/);
       if(sm) cur.summary=sm[1].trim();
       if(so) cur.source=so[1].trim();
       if(sh) cur.shisa=sh[1].trim();
@@ -1010,16 +1097,28 @@ function parseBriefItems(text) {
 
 function renderBriefItem(item) {
   const sp=item.source.split('|'), sn=sp[0]?.trim()||'', su=sp[1]?.trim()||'';
-  const srcH=su?`<a href="${su}" target="_blank" rel="noopener">${sn} ↗</a>`:sn;
+  const srcH=su?`<a href="${su}" target="_blank" rel="noopener" style="color:#3DCFC2">${sn} ↗</a>`:sn;
   const st=briefU[item.num];
+
+  // 用語解説：タイトル＋要約から最大3語を抽出
+  const searchText = item.title + ' ' + item.summary;
+  const glossTerms = extractGlossary(searchText);
+  const glossHtml = glossTerms.length
+    ? `<div class="brief-glossary">
+        <span class="brief-gloss-head">📖 用語解説</span>
+        ${glossTerms.map(([k,v])=>`<div class="brief-gloss-item"><span class="brief-gloss-term">${k}</span><span class="brief-gloss-def">${v}</span></div>`).join('')}
+       </div>`
+    : '';
+
   return `<div class="brief-item">
     <div class="brief-item-head">
       <span class="brief-item-num">No.${item.num}</span>
       <span class="brief-item-title">${item.title.replace(/</g,'&lt;')}</span>
     </div>
-    ${item.summary?`<div class="brief-item-body"><span class="lbl">要約</span><span class="val">${item.summary.replace(/</g,'&lt;')}</span></div>`:''}
-    ${item.shisa?`<div class="brief-item-body"><span class="lbl">示唆</span><span class="shisa">${item.shisa.replace(/</g,'&lt;')}</span></div>`:''}
+    ${item.summary?`<div class="brief-item-body"><span class="lbl">どういうことなのか</span><span class="val">${item.summary.replace(/</g,'&lt;')}</span></div>`:''}
+    ${item.shisa?`<div class="brief-item-body"><span class="lbl">私でいうと</span><span class="shisa">${item.shisa.replace(/</g,'&lt;')}</span></div>`:''}
     ${srcH?`<div class="brief-item-src">${srcH}</div>`:''}
+    ${glossHtml}
     <div class="brief-understand-btns">
       <button class="btn-got${st==='got'?' active':''}" id="bg-${item.num}" onclick="markU('${item.num}','got')">わかった</button>
       <button class="btn-lost${st==='lost'?' active':''}" id="bl-${item.num}" onclick="markU('${item.num}','lost')">わからなかった</button>
@@ -1057,17 +1156,40 @@ function renderBrief(b) {
       '<button class="brief-toggle" onclick="toggleBrief(this)">全文を見る ▼</button>';
     return;
   }
+
+  // CAT区切り検出（No.1-5 / 6-10 / 11-15 / 16-20 / 21-25）
+  const CAT_LABELS = ['CAT-1 AI/LLM/MCPエージェント','CAT-2 コンテンツマーケ/SNS','CAT-3 AI×認知科学/脳科学','CAT-4 個人起業/収益化','CAT-5 今日のトレンド'];
+  function catIndex(num){ return Math.floor((parseInt(num)-1)/5); }
   const got=Object.values(briefU).filter(v=>v==='got').length;
   const pct=items.length?Math.round(got/items.length*100):0;
   container.innerHTML=
     `<div class="brief-title-line">${(b.title||'').replace(/</g,'&lt;')}</div>`+
     `<div class="brief-understanding-bar"><span>${got}/${items.length} わかった（${pct}%）</span><div class="ub-fill"><div class="ub-got" style="width:${pct}%"></div></div></div>`+
-    `<div class="brief-items">${items.map(renderBriefItem).join('')}</div>`;
+    renderBriefWithCat(items);
   Object.entries(briefU).forEach(([num,val])=>{
     const g=document.getElementById('bg-'+num), l=document.getElementById('bl-'+num);
     if(g&&val==='got')g.classList.add('active');
     if(l&&val==='lost')l.classList.add('active');
   });
+}
+
+function renderBriefWithCat(items) {
+  let html='<div class="brief-items">';
+  let lastCat=-1;
+  items.forEach(item => {
+    const ci = catIndex(item.num);
+    if (ci !== lastCat && ci < CAT_LABELS.length) {
+      lastCat = ci;
+      const q = CAT_QUOTES[ci] || {};
+      html += `<div class="brief-cat-header">
+        <span class="brief-cat-label">${CAT_LABELS[ci]}</span>
+        ${q.text?`<div class="brief-cat-quote">「${q.text}」<span class="brief-cat-who">— ${q.who}</span></div>`:''}
+      </div>`;
+    }
+    html += renderBriefItem(item);
+  });
+  html += '</div>';
+  return html;
 }
 
 function toggleBrief(btn) {
