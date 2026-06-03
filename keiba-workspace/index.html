@@ -253,6 +253,20 @@ function renderCards() {
   row.innerHTML = pending.map((a, i) => cardHTML(a, i)).join('');
 }
 
+function kBtn(color, label, onclick) {
+  return `<button class="field-copy-btn" style="background:${color};color:#000;" onclick="${onclick}">${label}</button>`;
+}
+
+function splitSeg(text, size) {
+  // 最大sizeでブロック分割
+  const blocks = [];
+  for (let i = 0; i * size < text.length || i === 0; i++) {
+    blocks.push(text.slice(i * size, (i + 1) * size).trim());
+    if ((i + 1) * size >= text.length) break;
+  }
+  return blocks;
+}
+
 function cardHTML(a, i) {
   const num = weekDone.length + i + 1;
   const imgP = a.cover_image_prompt || '';
@@ -262,6 +276,14 @@ function cardHTML(a, i) {
   const price = a.price || 100;
   const free = a.free_content || '';
   const paid = a.paid_content || '';
+
+  // 無料パートを①②に分割、有料パートを①②③に分割（各500文字）
+  const SEG = 500;
+  const f1 = free.slice(0, SEG).trim();
+  const f2 = free.slice(SEG).trim();
+  const p1 = paid.slice(0, SEG).trim();
+  const p2 = paid.slice(SEG, SEG*2).trim();
+  const p3 = paid.slice(SEG*2).trim();
 
   return `<div class="story-card" id="sc-${a.id}">
     <div class="card-num">
@@ -275,29 +297,44 @@ function cardHTML(a, i) {
         <span class="field-label">① TOP画像プロンプト</span>
         <div style="display:flex;gap:5px;align-items:center;">
           <a href="https://gemini.google.com/app" target="_blank" style="font-size:9px;color:#b0a898;text-decoration:none;border:1px solid #2a2a2a;border-radius:8px;padding:2px 6px;">Gemini↗</a>
-          <button class="field-copy-btn" onclick="fc('${a.id}','img',this)">コピー</button>
+          ${kBtn('#f97316','TOP用コピー',`fc('${a.id}','img',this)`)}
         </div>
       </div>
       <textarea class="field-body ${imgP?'':'empty'}" id="f-img-${a.id}" rows="3">${imgP||'（なし）'}</textarea>
     </div>
 
     <div class="field-block">
-      <div class="field-head"><span class="field-label">② タイトル</span><button class="field-copy-btn" onclick="fc('${a.id}','title',this)">コピー</button></div>
+      <div class="field-head"><span class="field-label">② タイトル</span>${kBtn('#f5eb62','タイトルコピー',`fc('${a.id}','title',this)`)}</div>
       <textarea class="field-body ${title?'':'empty'}" id="f-title-${a.id}" rows="2">${title||'（なし）'}</textarea>
     </div>
 
     <div class="field-block">
-      <div class="field-head"><span class="field-label">③ 無料パート</span><button class="field-copy-btn" onclick="fc('${a.id}','free',this)">コピー</button></div>
-      <textarea class="field-body tall ${free?'':'empty'}" id="f-free-${a.id}">${free||'（なし）'}</textarea>
+      <div class="field-head"><span class="field-label">③ 無料パート①（〜500文字）</span>${kBtn('#376aed','無①コピー',`fc('${a.id}','free1',this)`)}</div>
+      <textarea class="field-body tall ${f1?'':'empty'}" id="f-free1-${a.id}">${f1||'（なし）'}</textarea>
     </div>
 
     <div class="field-block">
-      <div class="field-head"><span class="field-label">④ 有料パート</span><button class="field-copy-btn" onclick="fc('${a.id}','paid',this)">コピー</button></div>
-      <textarea class="field-body tall ${paid?'':'empty'}" id="f-paid-${a.id}">${paid||'（なし）'}</textarea>
+      <div class="field-head"><span class="field-label">③ 無料パート②（500〜文字）</span>${kBtn('#f255b6','無②コピー',`fc('${a.id}','free2',this)`)}</div>
+      <textarea class="field-body tall ${f2?'':'empty'}" id="f-free2-${a.id}">${f2||'（なし）'}</textarea>
     </div>
 
     <div class="field-block">
-      <div class="field-head"><span class="field-label">⑤ タグ</span><button class="field-copy-btn" onclick="fc('${a.id}','tags',this)">コピー</button></div>
+      <div class="field-head"><span class="field-label">④ 有料パート①（〜500文字）</span>${kBtn('#376aed','有①コピー',`fc('${a.id}','paid1',this)`)}</div>
+      <textarea class="field-body tall ${p1?'':'empty'}" id="f-paid1-${a.id}">${p1||'（なし）'}</textarea>
+    </div>
+
+    <div class="field-block">
+      <div class="field-head"><span class="field-label">④ 有料パート②（500〜1000文字）</span>${kBtn('#f255b6','有②コピー',`fc('${a.id}','paid2',this)`)}</div>
+      <textarea class="field-body tall ${p2?'':'empty'}" id="f-paid2-${a.id}">${p2||'（なし）'}</textarea>
+    </div>
+
+    <div class="field-block">
+      <div class="field-head"><span class="field-label">④ 有料パート③（1000〜文字）</span>${kBtn('#376aed','有③コピー',`fc('${a.id}','paid3',this)`)}</div>
+      <textarea class="field-body tall ${p3?'':'empty'}" id="f-paid3-${a.id}">${p3||'（なし）'}</textarea>
+    </div>
+
+    <div class="field-block">
+      <div class="field-head"><span class="field-label">⑤ タグ</span>${kBtn('#f5eb62','タグコピー',`fc('${a.id}','tags',this)`)}</div>
       <textarea class="field-body ${tags?'':'empty'}" id="f-tags-${a.id}" rows="2">${tags}</textarea>
     </div>
 

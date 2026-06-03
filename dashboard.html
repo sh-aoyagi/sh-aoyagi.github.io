@@ -593,16 +593,16 @@ function showTodoMobile(){
   </a>
 </div>
 
-<!-- ブリーフ -->
+<!-- ブリーフ（2つ目・IDは別名） -->
 <div class="brief-section">
   <div class="brief-section-header">
     <span class="label">📡 INTELLIGENCE BRIEF</span>
-    <span class="meta" id="briefMeta">接続中…</span>
+    <span class="meta" id="briefMeta2">接続中…</span>
   </div>
-  <div class="brief-body" id="briefBody"><div class="brief-empty loading">データ取得中…</div></div>
+  <div class="brief-body" id="briefBody2"><div class="brief-empty loading">データ取得中…</div></div>
   <div class="brief-actions">
     <a class="brief-action-btn" href="./note.html">📝 note記事を書く →</a>
-    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn">✓ 読了</button>
+    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn2">✓ 読了</button>
   </div>
 </div>
 
@@ -764,10 +764,15 @@ async function init() {
       document.getElementById('kpiBrief').textContent = isToday ? '✓ 収集済' : b.date;
       document.getElementById('kpiBrief').className = isToday ? 'val green-text' : 'val gold';
       document.getElementById('briefMeta').textContent = b.date + ' 収集';
+      document.getElementById('briefMeta2').textContent = b.date + ' 収集';
       renderBrief(b);
+      // 2つ目のセクションに同期
+      document.getElementById('briefBody2').innerHTML = document.getElementById('briefBody').innerHTML;
     } else {
       document.getElementById('kpiBrief').textContent = '未収集';
-      document.getElementById('briefBody').innerHTML = '<div class="brief-empty">「更新して」で今日のブリーフを収集できます。</div>';
+      const emptyMsg = '<div class="brief-empty">「更新して」で今日のブリーフを収集できます。</div>';
+      document.getElementById('briefBody').innerHTML = emptyMsg;
+      document.getElementById('briefBody2').innerHTML = emptyMsg;
     }
 
     // noteコンテンツ
@@ -794,7 +799,9 @@ async function init() {
 
   } catch(e) {
     console.error(e);
-    document.getElementById('briefBody').innerHTML = '<div class="brief-empty" style="color:#ef4444">接続エラー: ' + e.message + '</div>';
+    const errMsg = '<div class="brief-empty" style="color:#ef4444">接続エラー: ' + e.message + '</div>';
+    document.getElementById('briefBody').innerHTML = errMsg;
+    document.getElementById('briefBody2').innerHTML = errMsg;
   }
 }
 
