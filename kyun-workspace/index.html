@@ -257,10 +257,12 @@ function renderCards() {
 }
 
 function splitBody(free, paid) {
+  // free=本文①②③（~1200文字）、paid=本文④⑤（~800文字）を各400〜500文字ブロックに分割
+  const SEG = 500;
   const full = [free, paid].filter(Boolean).join('\n\n');
   const blocks = [];
   for (let i = 0; i < 5; i++) {
-    blocks.push(full.slice(i * 2000, (i + 1) * 2000));
+    blocks.push(full.slice(i * SEG, (i + 1) * SEG).trim());
   }
   return blocks;
 }
@@ -274,7 +276,7 @@ function cardHTML(s, i) {
   const price = s.price || 180;
   const blocks = splitBody(s.free_content || '', s.paid_content || '');
   const bodyBlocks = blocks.map((blk, bi) => {
-    const label = `本文${'①②③④⑤'[bi]}（${bi*2000+1}〜${(bi+1)*2000}文字）`;
+    const label = `本文${'①②③④⑤'[bi]}（約${bi*500+1}〜${(bi+1)*500}文字）`;
     const hasContent = blk.length > 0;
     return `<div class="field-block">
       <div class="field-head"><span class="field-label">${['③','④','⑤','⑥','⑦'][bi]} ${label}</span><button class="field-copy-btn" onclick="fc('${s.id}','body${bi}',this)">コピー</button></div>
