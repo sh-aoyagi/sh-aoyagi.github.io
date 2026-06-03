@@ -1156,9 +1156,6 @@ function renderBrief(b) {
     return;
   }
 
-  // CAT区切り検出（No.1-5 / 6-10 / 11-15 / 16-20 / 21-25）
-  const CAT_LABELS = ['CAT-1 AI/LLM/MCPエージェント','CAT-2 コンテンツマーケ/SNS','CAT-3 AI×認知科学/脳科学','CAT-4 個人起業/収益化','CAT-5 今日のトレンド'];
-  function catIndex(num){ return Math.floor((parseInt(num)-1)/5); }
   const got=Object.values(briefU).filter(v=>v==='got').length;
   const pct=items.length?Math.round(got/items.length*100):0;
   container.innerHTML=
@@ -1171,6 +1168,10 @@ function renderBrief(b) {
     if(l&&val==='lost')l.classList.add('active');
   });
 }
+
+// CAT区切り（グローバルスコープ）
+const CAT_LABELS = ['CAT-1 AI/LLM/MCPエージェント','CAT-2 コンテンツマーケ/SNS','CAT-3 AI×認知科学/脳科学','CAT-4 個人起業/収益化','CAT-5 今日のトレンド'];
+function catIndex(num){ return Math.floor((parseInt(num)-1)/5); }
 
 function renderBriefWithCat(items) {
   let html='<div class="brief-items">';
