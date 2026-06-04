@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>電脳会社 ダッシュボード</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./config.js" onerror="void(0)"></script>
 <script>
@@ -11,555 +12,479 @@ if (typeof SUPABASE_URL === 'undefined') var SUPABASE_URL = 'https://dfnhkljlohl
 if (typeof SUPABASE_ANON_KEY === 'undefined') var SUPABASE_ANON_KEY = 'sb_publishable_wJertOCOfoY43UE_sUS_5w_IDYwCv7S';
 </script>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #111; color: #e8e0d0; font-family: 'Segoe UI','Noto Sans JP',sans-serif; min-height: 100vh; }
-.page-body { padding: 24px 20px; max-width: 1200px; margin: 0 auto; }
-/* NAV */
-.gnav { background: #141414; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 2px; padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 500; }
-.gnav-logo { font-size: 13px; font-weight: bold; color: #d4a017; letter-spacing: 2px; margin-right: 10px; white-space: nowrap; flex-shrink: 0; }
-.gnav-links { display: flex; gap: 2px; flex: 1; }
-.gnav-links a { color: #666; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; transition: all .15s; white-space: nowrap; }
-.gnav-links a:hover { background: #1a1a1a; color: #e8e0d0; }
-.gnav-links a.active { color: #d4a017; background: #1a1200; }
-.gnav-ext { color: #444; font-size: 11px; text-decoration: none; padding: 5px 10px; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
-.gnav-ext:hover { color: #888; }
-.gnav-ham { display: none; background: none; border: 1px solid #2a2a2a; border-radius: 5px; padding: 4px 9px; color: #d4a017; font-size: 16px; cursor: pointer; flex-shrink: 0; }
-@media (max-width: 768px) { .gnav-links, .gnav-ext { display: none; } .gnav-ham { display: block; } }
-/* SIDEBAR */
-.nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 600; }
-.nav-overlay.open { display: block; }
-.nav-sidebar { position: fixed; top: 0; left: -290px; width: 290px; height: 100vh; background: #141414; border-right: 1px solid #2a2a2a; z-index: 700; transition: left .22s ease; padding: 22px 0; }
-.nav-sidebar.open { left: 0; }
-.nav-x { position: absolute; top: 14px; right: 16px; cursor: pointer; color: #666; font-size: 19px; }
-.nav-head { padding: 0 20px 16px; border-bottom: 1px solid #2a2a2a; font-size: 13px; font-weight: bold; color: #d4a017; letter-spacing: 2px; }
-.nav-item { display: block; padding: 15px 20px; color: #e8e0d0; text-decoration: none; font-size: 14px; border-bottom: 1px solid #1c1c1c; transition: background .15s; }
-.nav-item:hover { background: #1a1a1a; }
-.nav-item.active { color: #d4a017; background: #1a1200; }
-.nav-divider { height: 1px; background: #2a2a2a; margin: 6px 0; }
-/* HEADER */
-.header { display: flex; align-items: center; justify-content: space-between; padding: 0 0 20px; margin-bottom: 24px; border-bottom: 2px solid #2a2a2a; }
-.header h1 { font-size: 20px; color: #d4a017; letter-spacing: 3px; }
-.header .date { color: #888; font-size: 12px; }
-/* SECTION LABEL */
-.section-label { font-size: 11px; font-weight: bold; color: #888; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #2a2a2a; }
-.section-label::before { content: ''; width: 3px; height: 14px; background: #d4a017; border-radius: 2px; flex-shrink: 0; }
-/* ACTION BAR */
-.action-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
-.action-flag { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; padding: 16px 18px; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 5px; transition: all .15s; position: relative; overflow: hidden; }
-.action-flag.has-work { border-color: #d4a017; }
-.action-flag.has-work:hover { background: #1a1200; transform: translateY(-1px); }
-.action-flag.no-work { opacity: 0.3; pointer-events: none; }
-.af-icon { font-size: 20px; }
-.af-label { font-size: 13px; font-weight: bold; color: #e8e0d0; }
-.af-status.active { font-size: 12px; color: #d4a017; }
-.af-status.done { font-size: 12px; color: #444; }
-.af-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #d4a017; transition: right .15s; }
-.action-flag.has-work:hover .af-arrow { right: 10px; }
-.read-btn { font-size: 10px; padding: 2px 8px; background: none; border: 1px solid #333; border-radius: 3px; color: #444; cursor: pointer; transition: all .15s; flex-shrink: 0; }
-.read-btn.done { border-color: #22c55e; color: #22c55e; background: #0d2a1a; }
-/* BRIEF */
-.brief-section { background: #0d1117; border: 1px solid #2a3a2a; border-left: 3px solid #22c55e; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-.brief-section-header { padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2a1e; }
-.brief-section-header .label { font-size: 13px; color: #22c55e; font-weight: bold; letter-spacing: 2px; }
-.brief-section-header .meta { font-size: 12px; color: #666; }
-.brief-body { padding: 14px 20px; }
-.brief-title-line { font-size: 17px; color: #fff; font-weight: bold; margin-bottom: 10px; line-height: 1.5; }
-.brief-preview { font-size: 15px; color: #ccc; line-height: 1.85; max-height: 120px; overflow: hidden; }
-.brief-full { font-size: 14px; color: #ccc; line-height: 1.9; display: none; max-height: 70vh; overflow-y: auto; border-top: 1px solid #2a2a2a; margin-top: 12px; padding-top: 12px; }
-.brief-toggle { background: rgba(61,207,194,0.08); border: 1px solid #3DCFC2; color: #3DCFC2; font-size: 12px; padding: 5px 14px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
-/* ブリーフ アイテムカード */
-.brief-items { display: flex; flex-direction: column; gap: 10px; }
-.brief-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 14px 16px; }
-.brief-item-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-.brief-item-num { font-size: 11px; font-weight: bold; color: #3DCFC2; background: rgba(61,207,194,0.1); border: 1px solid rgba(61,207,194,0.2); border-radius: 4px; padding: 2px 8px; flex-shrink: 0; }
-.brief-item-title { font-size: 15px; font-weight: 600; color: #fff; line-height: 1.4; flex: 1; }
-.brief-item-body { font-size: 14px; color: #ccc; line-height: 1.9; margin-bottom: 10px; }
-.brief-item-body .lbl { color: #888; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
-.brief-item-body .val { color: #ddd; font-size: 14px; }
-.brief-item-body .shisa { color: #3DCFC2; font-size: 14px; }
-.brief-item-src { font-size: 12px; color: #666; margin-bottom: 10px; }
-.brief-item-src a { color: #666; text-decoration: none; }
-.brief-item-src a:hover { color: #3DCFC2; }
-/* わかった/わからなかったボタン */
+:root {
+  --bg-primary: #1a1a2e;
+  --bg-card: #1e1e3a;
+  --bg-card-alt: #16213e;
+  --border-color: rgba(255,255,255,0.08);
+  --accent-green: #00d4aa;
+  --accent-pink: #ff2d78;
+  --accent-orange: #ff6b35;
+  --accent-blue: #4d9fff;
+  --accent-cyan: #00bcd4;
+  --accent-purple: #a855f7;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255,255,255,0.6);
+  --text-accent-teal: #00d4aa;
+  --text-accent-cyan: #00e5ff;
+  --font-num: 'Orbitron', monospace;
+  --font-ja: 'Noto Sans JP', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-ja); min-height: 100vh; }
+
+/* ━━━━━━━━━━━ NAV ━━━━━━━━━━━ */
+.gnav {
+  background: #0d0d1a;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 20px; height: 52px;
+  position: sticky; top: 0; z-index: 500;
+  overflow-x: auto; white-space: nowrap;
+}
+.gnav-logo {
+  font-family: var(--font-ja); font-size: 14px; font-weight: 900;
+  color: #fff; letter-spacing: 2px; margin-right: 8px; flex-shrink: 0;
+}
+.gnav-tab {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 16px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; text-decoration: none;
+  transition: all .15s; flex-shrink: 0; cursor: pointer; border: none;
+  white-space: nowrap;
+}
+.gnav-tab-dashboard { border: 1.5px solid #fff; color: #fff; background: rgba(255,255,255,0.08); }
+.gnav-tab-dashboard:hover, .gnav-tab-dashboard.active { background: rgba(255,255,255,0.18); box-shadow: 0 0 12px rgba(255,255,255,0.2); }
+.gnav-tab-kyun { border: 1.5px solid var(--accent-green); color: var(--accent-green); background: transparent; }
+.gnav-tab-kyun:hover { background: rgba(0,212,170,0.12); box-shadow: 0 0 12px rgba(0,212,170,0.3); }
+.gnav-tab-fire { background: var(--accent-pink); color: #fff; border: none; }
+.gnav-tab-fire:hover { filter: brightness(1.15); box-shadow: 0 0 12px rgba(255,45,120,0.4); }
+.gnav-tab-castle { background: var(--accent-orange); color: #fff; border: none; }
+.gnav-tab-castle:hover { filter: brightness(1.15); box-shadow: 0 0 12px rgba(255,107,53,0.4); }
+.gnav-tab-mercari { background: var(--accent-blue); color: #fff; border: none; }
+.gnav-tab-mercari:hover { filter: brightness(1.15); box-shadow: 0 0 12px rgba(77,159,255,0.4); }
+.gnav-tab-news { border: 1.5px solid var(--accent-cyan); color: var(--accent-cyan); background: transparent; }
+.gnav-tab-news:hover { background: rgba(0,188,212,0.12); box-shadow: 0 0 12px rgba(0,188,212,0.3); }
+.gnav-tab-quiz { border: 1.5px solid var(--accent-green); color: var(--accent-green); background: transparent; }
+.gnav-tab-quiz:hover { background: rgba(0,212,170,0.12); box-shadow: 0 0 12px rgba(0,212,170,0.3); }
+.gnav-clock {
+  margin-left: auto; flex-shrink: 0;
+  font-family: var(--font-num); font-size: 13px; color: #fff;
+  letter-spacing: 0.05em;
+}
+/* mobile */
+@media(max-width:768px){
+  .gnav { padding: 0 12px; gap: 6px; }
+  .gnav-tab { padding: 5px 11px; font-size: 11px; }
+  .gnav-clock { display: none; }
+}
+
+/* ━━━━━━━━━━━ LAYOUT ━━━━━━━━━━━ */
+.page-body { padding: 20px; max-width: 1400px; margin: 0 auto; }
+
+.top-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+@media(max-width:1000px){ .top-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:640px){ .top-grid { grid-template-columns: 1fr; } }
+
+/* ━━━━━━━━━━━ CARD BASE ━━━━━━━━━━━ */
+.dash-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  animation: fadeUp .4s ease both;
+}
+.dash-card:nth-child(2) { animation-delay: .1s; }
+.dash-card:nth-child(3) { animation-delay: .2s; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card-title {
+  font-size: 13px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.card-title-cyan  { color: var(--accent-cyan); }
+.card-title-white { color: #fff; }
+
+/* ━━━━━━━━━━━ BADGE ROW ━━━━━━━━━━━ */
+.badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+}
+.pill-green  { background: var(--accent-green); color: #000; }
+.pill-pink   { background: var(--accent-pink); color: #fff; }
+.pill-gray   { background: rgba(255,255,255,0.1); color: var(--text-secondary); }
+.pill-blue   { background: var(--accent-blue); color: #fff; }
+.pill-orange { background: var(--accent-orange); color: #fff; }
+
+/* ━━━━━━━━━━━ GAUGE ROW ━━━━━━━━━━━ */
+.gauge-row { display: flex; align-items: center; gap: 16px; }
+.gauge-stats { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; }
+.stat-label { font-size: 11px; color: var(--text-secondary); }
+.stat-value {
+  font-family: var(--font-num); font-size: 20px; font-weight: 700;
+  color: var(--text-accent-teal); letter-spacing: 0.05em;
+}
+.stat-value-blue { color: var(--accent-blue); }
+
+/* SVGゲージ */
+.donut-wrap { flex-shrink: 0; position: relative; }
+.donut-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+}
+.donut-num {
+  font-family: var(--font-num); font-size: 22px; font-weight: 700; color: #fff; line-height: 1;
+}
+.donut-sub { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ━━━━━━━━━━━ CARD BUTTON ━━━━━━━━━━━ */
+.card-btn {
+  display: block; width: 100%; padding: 10px;
+  border-radius: 8px; border: none; cursor: pointer;
+  font-size: 13px; font-weight: 700; text-align: center;
+  text-decoration: none; transition: filter .15s, transform .15s;
+}
+.card-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+.card-btn-green { background: linear-gradient(135deg, var(--accent-green), #00a884); color: #000; }
+.card-btn-blue  { background: var(--accent-blue); color: #fff; }
+.card-btn-gray  { background: #333; color: #fff; }
+
+/* ━━━━━━━━━━━ BIG STATS (mercari) ━━━━━━━━━━━ */
+.big-stat-row { display: flex; flex-direction: column; gap: 6px; }
+.big-stat {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--border-color);
+}
+.big-stat:last-child { border-bottom: none; }
+.big-stat-label { font-size: 11px; color: var(--text-secondary); }
+.big-stat-num {
+  font-family: var(--font-num); font-size: 18px; font-weight: 700;
+  color: var(--accent-blue); letter-spacing: 0.03em;
+}
+.big-stat-neg { color: #ef4444; }
+
+/* ━━━━━━━━━━━ TASK LIST ━━━━━━━━━━━ */
+.task-list { display: flex; flex-direction: column; gap: 0; flex: 1; }
+.task-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--border-color); font-size: 12px;
+}
+.task-row:last-child { border-bottom: none; }
+.task-time { color: var(--text-secondary); font-size: 11px; flex-shrink: 0; min-width: 44px; font-family: var(--font-num); }
+.task-text { flex: 1; color: #ddd; }
+.task-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: 4px;
+  font-weight: 700; flex-shrink: 0;
+}
+.tbadge-done   { background: var(--accent-blue); color: #fff; }
+.tbadge-todo   { background: rgba(255,255,255,0.1); color: var(--text-secondary); }
+.tbadge-error  { background: var(--accent-orange); color: #fff; }
+.tbadge-hw     { background: var(--accent-pink); color: #fff; }
+
+/* ━━━━━━━━━━━ NEWS SECTION ━━━━━━━━━━━ */
+.news-section {
+  background: #111122;
+  padding: 24px 20px;
+  margin: 0 -20px 20px;
+}
+.news-section-title {
+  font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 10px;
+}
+.news-cat-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent-green); color: #000;
+  padding: 4px 14px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; margin-bottom: 12px;
+}
+.news-lead { color: var(--text-secondary); font-size: 14px; line-height: 1.8; }
+.brief-section { background: #111122; border: none; border-radius: 0; margin: 0; padding: 0; }
+.brief-section-header { padding: 0 0 12px; display: flex; align-items: center; justify-content: space-between; }
+.brief-section-header .label { color: var(--accent-cyan); font-size: 11px; font-weight: 700; letter-spacing: 2px; }
+.brief-section-header .meta { color: var(--text-secondary); font-size: 12px; }
+.brief-body { padding: 0; }
+.brief-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; padding: 0; }
+.brief-action-btn {
+  background: #222; border: 1px solid #333; color: #aaa;
+  font-size: 12px; padding: 7px 16px; border-radius: 6px;
+  cursor: pointer; text-decoration: none; transition: all .15s; display: inline-block;
+}
+.brief-action-btn:hover { background: rgba(0,212,170,0.1); border-color: var(--accent-green); color: var(--accent-green); }
+
+/* ━━━━━━━━━━━ NEWS CARDS ━━━━━━━━━━━ */
+.news-cards { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.news-card {
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex; gap: 20px;
+  animation: fadeUp .5s ease both;
+}
+.news-card-left { flex: 2; display: flex; flex-direction: column; gap: 10px; }
+.news-card-right {
+  flex: 1; background: rgba(255,255,255,0.04);
+  border-radius: 8px; padding: 14px;
+}
+.news-num { font-size: 11px; color: var(--text-secondary); font-family: var(--font-num); }
+.news-title { font-size: 15px; font-weight: 700; color: var(--text-accent-teal); line-height: 1.4; }
+.news-body-label { font-size: 11px; color: var(--accent-cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+.news-body-text { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+.news-shisa { color: #ccc; }
+.news-source { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.news-source a { color: var(--accent-cyan); text-decoration: none; }
+.news-source a:hover { text-decoration: underline; }
+.news-btns { display: flex; gap: 8px; margin-top: 8px; }
+.news-btn {
+  flex: 1; padding: 7px; border: none; border-radius: 6px;
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: filter .15s;
+}
+.news-btn:hover { filter: brightness(1.15); }
+.nbtn-ok   { background: var(--accent-green); color: #000; }
+.nbtn-ng   { background: var(--accent-pink); color: #fff; }
+.nbtn-del  { background: #444; color: #ccc; }
+.glossary-head {
+  font-size: 11px; color: #fff; font-weight: 700;
+  text-align: center; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color); margin-bottom: 10px;
+}
+.gloss-item { margin-bottom: 10px; }
+.gloss-term { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.gloss-def { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+@media(max-width:640px){ .news-card { flex-direction: column; } .news-card-right { display: none; } }
+
+/* ━━━━━━━━━━━ BRIEF COMPONENTS (preserved) ━━━━━━━━━━━ */
+.brief-title-line { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.6; margin-bottom: 10px; }
+.brief-preview { font-size: 13px; color: #ccc; line-height: 1.9; }
+.brief-full { font-size: 13px; color: #ccc; line-height: 1.9; display: none; border-top: 1px solid #2a2a2a; margin-top: 12px; padding-top: 12px; max-height: 70vh; overflow-y: auto; }
+.brief-toggle { background: rgba(0,212,170,0.08); border: 1px solid var(--accent-green); color: var(--accent-green); font-size: 12px; padding: 5px 14px; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+.brief-items { display: flex; flex-direction: column; gap: 12px; }
+.brief-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; }
+.brief-item-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.brief-item-num { font-size: 11px; font-weight: 700; color: var(--accent-cyan); background: rgba(0,188,212,0.1); border: 1px solid rgba(0,188,212,0.2); border-radius: 4px; padding: 2px 8px; flex-shrink: 0; font-family: var(--font-num); }
+.brief-item-title { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.4; flex: 1; }
+.brief-item-body { font-size: 13px; color: #ccc; line-height: 1.8; margin-bottom: 8px; }
+.brief-item-body .lbl { color: #888; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+.brief-item-body .val { color: #ddd; }
+.brief-item-body .shisa { color: var(--accent-cyan); }
+.brief-item-src { font-size: 11px; color: #555; margin-bottom: 8px; }
+.brief-item-src a { color: #555; text-decoration: none; }
+.brief-item-src a:hover { color: var(--accent-cyan); }
 .brief-understand-btns { display: flex; gap: 8px; }
-.btn-got { flex: 1; background: rgba(61,207,194,0.08); border: 1px solid #3DCFC2; color: #3DCFC2; border-radius: 6px; padding: 6px 0; font-size: 12px; font-weight: bold; cursor: pointer; transition: all .15s; }
-.btn-got:hover, .btn-got.active { background: rgba(61,207,194,0.18); }
-.btn-lost { flex: 1; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.4); color: #f87171; border-radius: 6px; padding: 6px 0; font-size: 12px; font-weight: bold; cursor: pointer; transition: all .15s; }
+.btn-got { flex: 1; background: rgba(0,212,170,0.08); border: 1px solid var(--accent-green); color: var(--accent-green); border-radius: 6px; padding: 6px 0; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; }
+.btn-got:hover, .btn-got.active { background: rgba(0,212,170,0.18); }
+.btn-lost { flex: 1; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.4); color: #f87171; border-radius: 6px; padding: 6px 0; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; }
 .btn-lost:hover, .btn-lost.active { background: rgba(239,68,68,0.14); }
 .btn-got.active::after { content: ' ✓'; }
 .btn-lost.active::after { content: ' ?'; }
-/* 理解度サマリー */
-.brief-understanding-bar { display: flex; align-items: center; gap: 10px; padding: 10px 20px 6px; font-size: 12px; color: #888; }
+.brief-understanding-bar { display: flex; align-items: center; gap: 10px; padding: 8px 0 12px; font-size: 12px; color: #888; }
 .ub-fill { flex: 1; height: 4px; background: #2a2a2a; border-radius: 2px; overflow: hidden; }
-.ub-got { height: 100%; background: #3DCFC2; border-radius: 2px; transition: width .3s; }
-.brief-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; padding: 0 20px 14px; }
-.brief-action-btn { background: #111; border: 1px solid #333; color: #aaa; font-size: 11px; padding: 5px 14px; border-radius: 4px; cursor: pointer; text-decoration: none; transition: all .15s; display: inline-block; }
-.brief-action-btn:hover { background: #1a2a1a; border-color: #22c55e; color: #22c55e; }
-.brief-empty { font-size: 13px; color: #555; padding: 6px 0; }
-/* QUICK LINKS */
-.quick-links { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-.quick-link { flex: 1; min-width: 100px; background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; text-align: center; text-decoration: none; color: #e8e0d0; transition: background .15s; }
-.quick-link:hover { background: #1a1a1a; }
-.quick-link .ql-icon { font-size: 20px; margin-bottom: 4px; }
-.quick-link .ql-label { font-size: 11px; font-weight: bold; color: #d4a017; }
-/* DEADLINE */
-.deadline { text-align: center; padding: 16px; background: #1a0a0a; border: 1px solid #ef444433; border-radius: 10px; margin-bottom: 20px; }
-.deadline .label { font-size: 11px; color: #888; letter-spacing: 2px; margin-bottom: 6px; }
-.deadline .target { font-size: 22px; font-weight: bold; color: #ef4444; }
-.deadline .sub { font-size: 11px; color: #666; margin-top: 4px; }
-/* KPI */
-.kpi-bar { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
-.kpi-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; padding: 16px; text-align: center; }
-.kpi-card .label { font-size: 11px; color: #888; margin-bottom: 6px; }
-.kpi-card .value { font-size: 22px; font-weight: bold; color: #d4a017; }
-.kpi-card .sub { font-size: 10px; color: #555; margin-top: 3px; }
-/* CONTENT MAP */
-.content-map { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-.content-map-header { padding: 12px 20px; border-bottom: 1px solid #1e1e1e; display: flex; align-items: center; justify-content: space-between; }
-.content-map-header .label { font-size: 13px; color: #d4a017; font-weight: bold; }
-.content-map-header .sub { font-size: 11px; color: #555; }
-.content-map-body { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 1px; background: #1e1e1e; }
-.content-type-cell { background: #141414; padding: 12px 14px; }
-.ct-name { font-size: 11px; color: #888; margin-bottom: 3px; }
-.ct-count { font-size: 18px; font-weight: bold; color: #d4a017; }
-.ct-status { font-size: 10px; color: #555; margin-top: 2px; }
-.content-type-cell.active .ct-name { color: #22c55e; }
-.content-type-cell.active .ct-count { color: #22c55e; }
-.content-type-cell.new .ct-name { color: #60a5fa; }
-.content-type-cell.new .ct-count { color: #60a5fa; }
-/* GRID */
-.grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 16px; margin-bottom: 24px; }
-.card { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; }
-.card-header { padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #1e1e1e; }
-.card-header .team-name { font-size: 14px; font-weight: bold; color: #e8e0d0; }
-.card-header .status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.green { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
-.yellow { background: #f59e0b; box-shadow: 0 0 5px #f59e0b; }
-.red { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
-.blue { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; }
-.card-body { padding: 14px 16px; }
-.kpi-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #1a1a1a; font-size: 12px; }
-.kpi-row:last-child { border-bottom: none; }
-.kpi-row .key { color: #888; }
-.kpi-row .val { color: #e8e0d0; font-weight: bold; }
-.kpi-row .val.gold { color: #d4a017; }
-.kpi-row .val.green-text { color: #22c55e; }
-.kpi-row .val.red-text { color: #ef4444; }
-.kpi-row .val.blue-text { color: #60a5fa; }
-.progress-bar-wrap { margin: 10px 0 2px; }
-.progress-label { font-size: 10px; color: #666; margin-bottom: 4px; }
-.progress-bar { height: 5px; background: #222; border-radius: 3px; overflow: hidden; }
-.progress-fill { height: 100%; background: linear-gradient(90deg,#b8860b,#d4a017); border-radius: 3px; transition: width .8s; }
-.progress-fill.green-fill { background: linear-gradient(90deg,#166534,#22c55e); }
-.progress-fill.blue-fill { background: linear-gradient(90deg,#1d4ed8,#3b82f6); }
-/* TODO */
-.todo-section { background: #141414; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
-.todo-header { padding: 12px 16px; border-bottom: 1px solid #1e1e1e; font-size: 14px; font-weight: bold; color: #d4a017; }
-.todo-body { padding: 12px 16px; }
-.todo-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid #1a1a1a; font-size: 12px; }
-.todo-item:last-child { border-bottom: none; }
-.todo-badge { font-size: 10px; padding: 2px 7px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; }
-.badge-ceo { background: #7c3aed33; color: #a78bfa; border: 1px solid #7c3aed55; }
-.badge-auto { background: #0e7490aa; color: #67e8f9; border: 1px solid #0e749066; }
-.todo-text { color: #ccc; line-height: 1.5; }
-/* MEMBER */
-.member-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap: 6px; margin-top: 6px; }
-.member-chip { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 5px; padding: 5px 8px; font-size: 10px; color: #aaa; }
-.member-chip .role { color: #d4a017; font-weight: bold; display: block; margin-bottom: 1px; }
-.footer { text-align: center; padding: 20px 0; color: #333; font-size: 11px; }
-.data-ts { font-size: 11px; color: #888; text-align: right; margin-bottom: 8px; }
-.loading { color: #666; font-size: 13px; }
+.ub-got { height: 100%; background: var(--accent-green); border-radius: 2px; transition: width .3s; }
+.brief-cat-header { margin: 16px 0 8px; padding: 10px 14px; background: rgba(255,255,255,0.04); border-radius: 8px; }
+.brief-cat-label { font-size: 11px; font-weight: 700; color: var(--accent-cyan); letter-spacing: 1px; display: block; margin-bottom: 6px; }
+.brief-cat-quote { font-size: 12px; color: #ccc; font-style: italic; line-height: 1.5; }
+.brief-cat-who { font-size: 10px; color: #888; margin-left: 8px; font-style: normal; }
+.brief-glossary { margin-top: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px 10px; }
+.brief-gloss-head { font-size: 10px; color: #f59e0b; font-weight: 700; display: block; margin-bottom: 6px; }
+.brief-gloss-item { display: flex; gap: 8px; margin-bottom: 5px; align-items: flex-start; }
+.brief-gloss-term { font-size: 10px; font-weight: 700; color: var(--accent-cyan); background: rgba(0,188,212,0.1); border-radius: 4px; padding: 1px 6px; flex-shrink: 0; margin-top: 2px; }
+.brief-gloss-def { font-size: 11px; color: #aaa; line-height: 1.5; }
+.brief-empty { font-size: 13px; color: #555; }
 
-/* ══════════════════════════════════════
-   DESIGN V3 — ティール＋コントラスト
-   #3DCFC2 がすべてのアクセント
-   黄色(#d4a017)は数字KPIのみ残す
-   ══════════════════════════════════════ */
-
-body { background: #0f0f0f; color: #ffffff; }
-.page-body { padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
-/* SVGアイコン共通 */
-.nav-ic { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; flex-shrink:0; }
-.gnav-links a { display:flex; align-items:center; gap:7px; }
-.nav-item { display:flex; align-items:center; gap:10px; }
-
-/* NAV */
-.gnav { background: #141414; border-bottom: 1px solid #2a2a2a; }
-.gnav-logo { color: #fff; letter-spacing: 3px; }
-.gnav-links a { color: #777; }
-.gnav-links a:hover { background: #1a1a1a; color: #fff; }
-.gnav-links a.active { color: #3DCFC2; background: rgba(61,207,194,0.08); }
-.gnav-ham { border-color: #2a2a2a; color: #3DCFC2; }
-.nav-sidebar { background: #0f0f0f; border-right-color: #2a2a2a; }
-.nav-head { color: #3DCFC2; border-bottom-color: #2a2a2a; }
-.nav-item { color: #ddd; border-bottom-color: #1a1a1a; }
-.nav-item:hover { background: #1a1a1a; }
-.nav-item.active { color: #3DCFC2; border-left: 3px solid #3DCFC2; padding-left: 17px; }
-.nav-divider { background: #2a2a2a; }
-.nav-x { color: #555; }
-
-/* HEADER */
-.header { border-bottom: 2px solid #2a2a2a; margin-bottom: 32px; padding-bottom: 20px; align-items: baseline; }
-.header h1 { font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: 4px; }
-.header .date { color: #999; font-size: 12px; }
-
-/* SECTION LABEL */
+/* ━━━━━━━━━━━ SECTION LABEL ━━━━━━━━━━━ */
 .section-label {
-  color: #fff;
-  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  border-bottom: none;
-  margin-bottom: 14px; padding-bottom: 0;
-  gap: 10px;
+  font-size: 11px; font-weight: 700; color: #fff;
+  letter-spacing: 2px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
 }
-.section-label::before { background: #3DCFC2; width: 4px; height: 16px; border-radius: 2px; }
+.section-label::before { content: ''; width: 4px; height: 16px; background: var(--accent-cyan); border-radius: 2px; flex-shrink: 0; }
 
-/* ACTION FLAGS */
-.action-flag { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 20px 22px; }
-.action-flag.has-work { border-top: 3px solid #3DCFC2; background: #1a1a1a; }
-.action-flag.has-work:hover { background: #1e1e1e; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(61,207,194,0.12); }
-.af-icon { font-size: 22px; }
-.af-label { color: #ffffff; font-size: 15px; font-weight: 600; }
-.af-status.active { color: #3DCFC2; font-size: 12px; font-weight: 500; }
-.af-status.done { color: #444; font-size: 12px; }
-.af-arrow { color: #3DCFC2; font-size: 20px; }
-
-/* BRIEF */
-.brief-section { background: #1a1a1a; border: 1px solid #2a2a2a; border-top: 3px solid #3DCFC2; border-radius: 10px; }
-.brief-section-header { border-bottom: 1px solid #2a2a2a; padding: 14px 22px; }
-.brief-section-header .label { color: #3DCFC2; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
-.brief-section-header .meta { color: #999; font-size: 12px; }
-.brief-body { padding: 16px 22px; }
-.brief-title-line { color: #ffffff; font-size: 15px; font-weight: 600; line-height: 1.6; }
-.brief-preview { color: #ccc; font-size: 13px; line-height: 1.9; }
-.brief-full { color: #ccc; border-top: 1px solid #2a2a2a; }
-.brief-toggle { background: rgba(61,207,194,0.08); border: 1px solid #3DCFC2; color: #3DCFC2; border-radius: 6px; }
-.brief-actions { padding: 0 22px 16px; gap: 10px; }
-.brief-action-btn { background: #222; border: 1px solid #333; color: #ddd; border-radius: 6px; padding: 7px 18px; font-size: 12px; }
-.brief-action-btn:hover { background: rgba(61,207,194,0.08); border-color: #3DCFC2; color: #3DCFC2; }
-.brief-empty { color: #555; font-size: 14px; }
-
-/* DEADLINE */
-.deadline { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 16px 22px; }
-.deadline .label { color: #aaa; font-size: 10px; letter-spacing: 2px; }
-.deadline .target { color: #ef4444; font-size: 22px; font-weight: 700; }
-.deadline .sub { color: #999; font-size: 12px; }
-
-/* KPI */
-.kpi-bar { gap: 12px; }
-.kpi-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 18px 20px; }
-.kpi-card .label { color: #aaa; font-size: 12px; font-weight: 500; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-.kpi-card .value { font-size: 28px; font-weight: 700; color: #d4a017; }
-.kpi-card .sub { color: #666; font-size: 11px; margin-top: 4px; }
-
-/* CONTENT MAP */
-.content-map { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; }
-.content-map-header { border-bottom: 1px solid #2a2a2a; padding: 14px 22px; }
-.content-map-header .label { color: #fff; font-size: 14px; font-weight: 600; }
-.content-map-header .sub { color: #999; font-size: 12px; }
-.content-map-body { background: #2a2a2a; gap: 1px; }
-.content-type-cell { background: #1a1a1a; padding: 16px 18px; }
-.ct-name { color: #aaa; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-.ct-count { font-size: 26px; font-weight: 700; color: #d4a017; }
-.ct-status { color: #666; font-size: 11px; margin-top: 3px; }
-.content-type-cell.active .ct-name { color: #3DCFC2; }
-.content-type-cell.active .ct-count { color: #3DCFC2; }
-.content-type-cell.new .ct-name { color: #d4a017; }
-.content-type-cell.new .ct-count { color: #d4a017; }
-
-/* TEAM CARDS */
-.card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; }
-.card-header { border-bottom: 1px solid #2a2a2a; padding: 14px 18px; background: #1e1e1e; }
-.card-header .team-name { color: #fff; font-size: 14px; font-weight: 600; }
-.card-body { padding: 14px 18px; }
-.kpi-row { border-bottom: 1px solid #222; padding: 8px 0; font-size: 13px; }
-.kpi-row:last-child { border-bottom: none; }
-.kpi-row .key { color: #aaa; }
-.kpi-row .val { color: #fff; font-weight: 600; }
-.kpi-row .val.gold { color: #d4a017; }
-.kpi-row .val.green-text { color: #3DCFC2; }
-.kpi-row .val.red-text { color: #ef4444; }
-.kpi-row .val.blue-text { color: #60a5fa; }
-.progress-label { color: #aaa; font-size: 11px; margin-bottom: 5px; }
-.progress-bar { background: #2a2a2a; height: 5px; border-radius: 3px; }
-.progress-fill { background: linear-gradient(90deg, #c8a000, #d4a017); }
-.progress-fill.green-fill { background: linear-gradient(90deg, #1a9a80, #3DCFC2); }
-.progress-fill.blue-fill { background: linear-gradient(90deg, #1d4ed8, #60a5fa); }
-.green { background: #3DCFC2; box-shadow: 0 0 6px rgba(61,207,194,0.5); }
-.yellow { background: #d4a017; box-shadow: 0 0 6px rgba(212,160,23,0.5); }
-.red { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
-.blue { background: #3b82f6; box-shadow: 0 0 6px rgba(59,130,246,0.5); }
-
-/* ACCORDION */
-.acc-todo-title { color: #ffffff; font-size: 16px; font-weight: 700; }
-.acc-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; }
-.acc-item.done-item { opacity: 0.35; }
-.acc-head { padding: 14px 18px; }
-.acc-head:hover { background: #1e1e1e; }
-.acc-head-title { color: #fff; font-size: 14px; }
-.acc-arrow { color: #666; }
-.acc-body { border-top: 1px solid #2a2a2a; }
-.acc-context { color: #ccc; font-size: 13px; line-height: 1.9; padding: 14px 0 10px; }
-.acc-manual { color: #aaa; background: #111; border-radius: 6px; font-size: 12px; padding: 8px 12px; margin-bottom: 12px; }
-.acc-btn-do { background: rgba(61,207,194,0.08); border-color: #3DCFC2; color: #3DCFC2; font-size: 13px; padding: 8px; border-radius: 7px; }
-.acc-btn-do:hover { background: rgba(61,207,194,0.16); }
-.acc-btn-skip { background: #1a1a1a; border-color: #333; color: #aaa; font-size: 13px; padding: 8px; border-radius: 7px; }
-.acc-btn-skip:hover { background: #222; color: #ccc; }
-.badge-ceo { background: rgba(212,160,23,0.12); color: #d4a017; border: 1px solid rgba(212,160,23,0.3); }
-.badge-auto { background: rgba(61,207,194,0.08); color: #3DCFC2; border: 1px solid rgba(61,207,194,0.25); }
-
-/* PROPOSAL */
-.proposal-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-top: 3px solid #d4a017; border-radius: 10px; }
-.proposal-header { border-bottom: 1px solid #2a2a2a; }
-.proposal-label { color: #d4a017; }
-.proposal-badge { background: rgba(212,160,23,0.1); border-color: rgba(212,160,23,0.3); color: #d4a017; }
-.proposal-body { color: #ccc; }
-.btn-approve { background: rgba(61,207,194,0.08); border-color: #3DCFC2; color: #3DCFC2; }
-.btn-approve:hover { background: rgba(61,207,194,0.15); }
-.btn-reject { background: rgba(239,68,68,0.08); border-color: #ef4444; color: #ef4444; }
-.btn-reject:hover { background: rgba(239,68,68,0.15); }
-
-/* DATA TS / LOADING */
-.data-ts { color: #555; font-size: 11px; }
-.loading { color: #555; font-size: 13px; }
-
-/* FOOTER */
-.footer { color: #555; }
-.footer-quiz { background: linear-gradient(135deg, #3DCFC2, #2aa898); color: #000; box-shadow: 0 5px 0 #1a7a70, 0 7px 18px rgba(0,0,0,0.5); }
-
-/* FLOAT QUIZ */
-#quizFloat { background: linear-gradient(135deg, #3DCFC2, #2aa898); color: #000; box-shadow: 0 6px 0 #1a7a70, 0 8px 20px rgba(0,0,0,0.5); }
-
-/* READ BTN */
-.read-btn { border-color: #2a2a2a; color: #555; }
-.read-btn.done { border-color: #3DCFC2; color: #3DCFC2; background: rgba(61,207,194,0.07); }
-
-/* ── デスクトップ用レスポンシブ ── */
-@media (max-width: 768px) { .kpi-bar { grid-template-columns: 1fr 1fr; } .action-bar { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } }
-@media (max-width: 480px) { .kpi-bar { grid-template-columns: 1fr; } }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   📱 スマホ専用レイアウト
-   表示：ニュース（ブリーフ）のみ
-   クイズ・宿題はハンバーガーメニューへ
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-@media (max-width: 768px) {
-  /* ニュース以外を全て非表示 */
-  .action-bar,
-  .kpi-bar,
-  .content-map,
-  .grid,
-  .acc-todo,
-  .deadline,
-  .section-label,
-  .data-ts,
-  #proposalSection,
-  #quizFloat,
-  .footer { display: none !important; }
-
-  /* ヘッダーをコンパクトに */
-  .header { padding: 10px 0 14px; margin-bottom: 14px; flex-direction: column; gap: 2px; align-items: flex-start; }
-  .header h1 { font-size: 16px; letter-spacing: 2px; }
-  .header .date { font-size: 11px; }
-
-  /* ブリーフを全幅・角丸なし（ネイティブ感） */
-  .brief-section {
-    margin: 0 -24px 0;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    border-top: 3px solid #3DCFC2;
-    border-bottom: 1px solid #2a2a2a;
-  }
-  .brief-section-header { padding: 14px 20px; }
-  .brief-body { padding: 16px 20px; }
-  .brief-title-line { font-size: 16px; }
-  .brief-preview { font-size: 13px; max-height: none; }
-  .brief-actions { flex-direction: column; padding: 0 20px 16px; gap: 8px; }
-  .brief-action-btn { text-align: center; padding: 10px 16px; font-size: 13px; }
-  .brief-toggle { font-size: 12px; padding: 6px 16px; }
-
-  /* page-body の横余白を調整 */
-  .page-body { padding: 16px 20px; }
-}
-/* ── PDCA 承認カード ── */
-.proposal-card { background: linear-gradient(135deg, #0d1a2a, #1a0a2a); border: 1px solid #4a3a6a; border-left: 3px solid #c084fc; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-.proposal-header { padding: 12px 20px; border-bottom: 1px solid #2a1a3a; display: flex; align-items: center; justify-content: space-between; }
-.proposal-label { font-size: 13px; color: #c084fc; font-weight: bold; letter-spacing: 1px; }
-.proposal-badge { font-size: 10px; background: #3a1a5a; border: 1px solid #6a3a9a; color: #c084fc; border-radius: 10px; padding: 2px 8px; }
-.proposal-body { padding: 14px 20px; font-size: 12px; color: #c0b8d0; line-height: 1.8; max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
-.proposal-body.expanded { max-height: none; }
-.proposal-footer { padding: 10px 20px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.btn-approve { flex: 1; min-width: 100px; background: #0d2a1a; border: 1px solid #22c55e; color: #22c55e; border-radius: 7px; padding: 9px 0; font-size: 13px; font-weight: bold; cursor: pointer; transition: all .15s; }
-.btn-approve:hover { background: #143a20; }
-.btn-approve.done { background: #0d2a1a; cursor: default; }
-.btn-reject { flex: 1; min-width: 100px; background: #2a0a0a; border: 1px solid #ef4444; color: #ef4444; border-radius: 7px; padding: 9px 0; font-size: 13px; font-weight: bold; cursor: pointer; transition: all .15s; }
-.btn-reject:hover { background: #3a1010; }
-.proposal-expand { font-size: 11px; color: #666; cursor: pointer; padding: 2px 8px; border: 1px solid #333; border-radius: 4px; background: none; }
-.proposal-expand:hover { color: #aaa; }
-/* ── メルカリ計測ログ ── */
-.mercari-tracker { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-.tracker-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid #2a2a2a; }
-.tracker-title { font-size: 13px; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 8px; }
-.tracker-ts { font-size: 11px; color: #666; }
+/* ━━━━━━━━━━━ MERCARI TRACKER ━━━━━━━━━━━ */
+.mercari-tracker { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.tracker-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid var(--border-color); }
+.tracker-title { font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+.tracker-ts { font-size: 11px; color: var(--text-secondary); font-family: var(--font-num); }
 .tracker-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.tracker-table th { color: #666; font-weight: normal; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; text-align: left; border-bottom: 1px solid #222; }
+.tracker-table th { color: #666; font-weight: normal; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .tracker-table th:not(:first-child) { text-align: right; }
-.tracker-table td { padding: 9px 12px; border-bottom: 1px solid #1e1e1e; vertical-align: middle; }
+.tracker-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
 .tracker-table td:not(:first-child) { text-align: right; }
 .tracker-table tr:last-child td { border-bottom: none; }
-.tracker-table tr:hover td { background: #1e1e1e; }
-.td-name { color: #ddd; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
-.td-price { color: #fff; font-weight: 600; }
-.td-delta-up  { color: #3DCFC2; font-weight: bold; }
-.td-delta-mid { color: #f59e0b; font-weight: bold; }
-.td-delta-low { color: #ef4444; font-weight: bold; }
-.td-delta-zero { color: #ef4444; font-weight: bold; }
-.td-like { color: #3DCFC2; font-weight: bold; }
-.td-like-zero { color: #555; }
-.badge-ok   { display: inline-block; background: rgba(61,207,194,0.1); border: 1px solid rgba(61,207,194,0.3); color: #3DCFC2; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: bold; }
-.badge-warn { display: inline-block; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: bold; }
-.badge-watch{ display: inline-block; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: bold; }
-.tracker-footer { padding: 10px 18px; font-size: 11px; color: #888; border-top: 1px solid #222; display: flex; gap: 16px; flex-wrap: wrap; }
-.tracker-footer span { display: flex; align-items: center; gap: 4px; }
-/* mobile: hide tracker */
-@media (max-width: 768px) { .mercari-tracker { display: none; } }
-/* ── フローティング クイズボタン ── */
-#quizFloat {
-  position: fixed;
-  bottom: 32px;
-  right: 28px;
-  z-index: 400;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #000;
-  border: none;
-  border-radius: 50px;
-  padding: 13px 22px;
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  box-shadow: 0 6px 0 #0a4f20, 0 8px 20px rgba(0,0,0,0.5);
-  transition: transform .15s, box-shadow .15s, opacity .3s;
-  user-select: none;
-}
-#quizFloat:hover { transform: translateY(2px); box-shadow: 0 4px 0 #0a4f20, 0 6px 15px rgba(0,0,0,0.5); }
-#quizFloat:active { transform: translateY(5px); box-shadow: 0 1px 0 #0a4f20, 0 3px 8px rgba(0,0,0,0.5); }
-#quizFloat.hide-float { opacity: 0; pointer-events: none; }
-/* ── アコーディオン 宿題 ── */
+.tracker-table tr:hover td { background: rgba(255,255,255,0.03); }
+.td-name { color: #ddd; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.td-price { color: #fff; font-weight: 600; font-family: var(--font-num); }
+.td-delta-up   { color: var(--accent-green); font-weight: 700; font-family: var(--font-num); }
+.td-delta-mid  { color: #f59e0b; font-weight: 700; font-family: var(--font-num); }
+.td-delta-low  { color: #ef4444; font-weight: 700; font-family: var(--font-num); }
+.td-delta-zero { color: #ef4444; font-weight: 700; font-family: var(--font-num); }
+.td-like       { color: var(--accent-green); font-weight: 700; }
+.td-like-zero  { color: #555; }
+.badge-ok   { display: inline-block; background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3); color: var(--accent-green); border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+.badge-warn { display: inline-block; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+.badge-watch{ display: inline-block; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+.tracker-footer { padding: 10px 18px; font-size: 11px; color: #888; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 16px; flex-wrap: wrap; }
+@media(max-width:768px){ .mercari-tracker { display: none; } }
+
+/* ━━━━━━━━━━━ TEAM CARDS ━━━━━━━━━━━ */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+.card-header { padding: 14px 18px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02); }
+.card-header .team-name { font-size: 14px; font-weight: 700; color: #fff; }
+.card-header .status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.green { background: var(--accent-green); box-shadow: 0 0 6px rgba(0,212,170,0.5); }
+.yellow { background: #d4a017; box-shadow: 0 0 6px rgba(212,160,23,0.5); }
+.red    { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+.blue   { background: var(--accent-blue); box-shadow: 0 0 6px rgba(77,159,255,0.5); }
+.card-body { padding: 14px 18px; }
+.kpi-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; }
+.kpi-row:last-child { border-bottom: none; }
+.kpi-row .key { color: var(--text-secondary); }
+.kpi-row .val { color: #fff; font-weight: 600; }
+.kpi-row .val.gold { color: #d4a017; }
+.kpi-row .val.green-text { color: var(--accent-green); }
+.kpi-row .val.red-text { color: #ef4444; }
+.kpi-row .val.blue-text { color: var(--accent-blue); }
+.progress-bar-wrap { margin: 10px 0 2px; }
+.progress-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; }
+.progress-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #d4a017, #fde68a); border-radius: 2px; transition: width .8s; }
+.progress-fill.green-fill { background: linear-gradient(90deg, var(--accent-green), #00e5ff); }
+.progress-fill.blue-fill  { background: linear-gradient(90deg, var(--accent-blue), #00e5ff); }
+
+/* ━━━━━━━━━━━ KPI ROW ━━━━━━━━━━━ */
+.kpi-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+@media(max-width:640px){ .kpi-bar { grid-template-columns: 1fr; } }
+.kpi-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; }
+.kpi-card .label { font-size: 11px; color: var(--text-secondary); font-weight: 500; margin-bottom: 8px; letter-spacing: 1px; }
+.kpi-card .value { font-family: var(--font-num); font-size: 24px; font-weight: 700; color: #d4a017; }
+.kpi-card .sub { color: #666; font-size: 11px; margin-top: 4px; }
+
+/* ━━━━━━━━━━━ DEADLINE ━━━━━━━━━━━ */
+.deadline { text-align: center; padding: 16px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.25); border-radius: 12px; margin-bottom: 20px; }
+.deadline .label { font-size: 10px; color: #aaa; letter-spacing: 2px; margin-bottom: 6px; }
+.deadline .target { font-size: 22px; font-weight: 700; color: #ef4444; font-family: var(--font-num); }
+.deadline .sub { font-size: 11px; color: #999; margin-top: 4px; }
+
+/* ━━━━━━━━━━━ CONTENT MAP ━━━━━━━━━━━ */
+.content-map { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.content-map-header { padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+.content-map-header .label { font-size: 14px; font-weight: 600; color: #fff; }
+.content-map-header .sub { font-size: 11px; color: var(--text-secondary); }
+.content-map-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1px; background: rgba(255,255,255,0.05); }
+.content-type-cell { background: var(--bg-card); padding: 16px 18px; }
+.ct-name { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.ct-count { font-size: 26px; font-weight: 700; color: #d4a017; font-family: var(--font-num); }
+.ct-status { color: #555; font-size: 11px; margin-top: 3px; }
+.content-type-cell.active .ct-name, .content-type-cell.active .ct-count { color: var(--accent-cyan); }
+.content-type-cell.new .ct-name, .content-type-cell.new .ct-count { color: #d4a017; }
+
+/* ━━━━━━━━━━━ ACCORDION ━━━━━━━━━━━ */
 .acc-todo { margin-bottom: 20px; }
-.acc-todo-title { font-size: 14px; font-weight: bold; color: #d4a017; margin-bottom: 10px; }
-.acc-item { background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
+.acc-todo-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+.acc-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
 .acc-item.done-item { opacity: 0.4; }
-.acc-head {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px; cursor: pointer;
-  transition: background .15s; user-select: none;
-}
-.acc-head:hover { background: #1a1a1a; }
+.acc-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; transition: background .15s; user-select: none; }
+.acc-head:hover { background: rgba(255,255,255,0.04); }
 .acc-badge { font-size: 10px; padding: 2px 8px; border-radius: 3px; flex-shrink: 0; }
-.badge-ceo { background: #7c3aed33; color: #a78bfa; border: 1px solid #7c3aed55; }
-.badge-auto { background: #0e7490aa; color: #67e8f9; border: 1px solid #0e749066; }
-.badge-done { background: #16532488; color: #4ade80; border: 1px solid #16532455; }
+.badge-ceo  { background: rgba(168,85,247,0.15); color: var(--accent-purple); border: 1px solid rgba(168,85,247,0.3); }
+.badge-auto { background: rgba(0,188,212,0.1); color: var(--accent-cyan); border: 1px solid rgba(0,188,212,0.25); }
+.badge-done { background: rgba(0,212,170,0.1); color: var(--accent-green); border: 1px solid rgba(0,212,170,0.25); }
 .acc-head-title { flex: 1; font-size: 13px; color: #e8e0d0; line-height: 1.4; }
 .acc-arrow { font-size: 12px; color: #555; transition: transform .2s; flex-shrink: 0; }
 .acc-arrow.open { transform: rotate(180deg); }
-.acc-body { display: none; padding: 0 16px 14px; border-top: 1px solid #1e1e1e; }
+.acc-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border-color); }
 .acc-body.open { display: block; }
 .acc-context { font-size: 12px; color: #b0a898; line-height: 1.8; padding: 12px 0 10px; }
-.acc-manual { font-size: 11px; color: #666; background: #0f0f0f; border-radius: 5px; padding: 6px 10px; margin-bottom: 10px; }
+.acc-manual { font-size: 11px; color: #666; background: rgba(0,0,0,0.3); border-radius: 5px; padding: 6px 10px; margin-bottom: 10px; }
 .acc-actions { display: flex; gap: 8px; }
-.acc-btn-do {
-  flex: 1; background: #0d2a1a; border: 1px solid #22c55e; color: #22c55e;
-  border-radius: 6px; padding: 7px 0; font-size: 12px; font-weight: bold;
-  cursor: pointer; transition: all .15s; text-align: center;
-}
-.acc-btn-do:hover { background: #143a20; }
-.acc-btn-skip {
-  flex: 1; background: #1a1a1a; border: 1px solid #444; color: #888;
-  border-radius: 6px; padding: 7px 0; font-size: 12px;
-  cursor: pointer; transition: all .15s; text-align: center;
-}
-.acc-btn-skip:hover { background: #222; color: #b0a898; }
-/* ── フッター クイズ静的 ── */
-.footer-quiz {
-  display: inline-block; background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #000; border-radius: 50px; padding: 10px 20px;
-  font-size: 13px; font-weight: bold; text-decoration: none;
-  box-shadow: 0 4px 0 #0a4f20, 0 6px 12px rgba(0,0,0,0.4);
-  margin-top: 10px;
-}
+.acc-btn-do { flex: 1; background: rgba(0,212,170,0.08); border: 1px solid var(--accent-green); color: var(--accent-green); border-radius: 6px; padding: 7px 0; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .15s; text-align: center; }
+.acc-btn-do:hover { background: rgba(0,212,170,0.15); }
+.acc-btn-skip { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid #444; color: #888; border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all .15s; text-align: center; }
+.acc-btn-skip:hover { background: rgba(255,255,255,0.08); color: #ccc; }
 
-/* ═══ 全体配色（黒背景・80%黒タイル・枠なし）═══ */
-body { background:#000 !important; }
-.page-body { background:#000; }
-.kpi-card { background:#333 !important; border:none !important; border-radius:12px; }
-.ktile { background:#333 !important; border:none !important; }
-.deadline { background:#333 !important; border:none !important; border-radius:12px; }
-.card { background:#333 !important; border:none !important; }
-.card-header { background:#2a2a2a !important; }
-.card-body { background:#333 !important; }
-.brief-section { background:#1a1a1a !important; border:1px solid #222 !important; }
-.brief-item { background:#333 !important; border:1px solid #2a2a2a !important; }
-.calendar { background:#1a1a1a !important; }
-.content-map { background:#333 !important; border:none !important; }
-.acc-todo { background:#333 !important; border:none !important; }
-.kpi-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-/* ブリーフ CAT区切り */
-.brief-cat-header { margin:16px 0 8px; padding:10px 14px; background:#222; border-radius:8px; }
-.brief-cat-label { font-size:11px; font-weight:bold; color:#3DCFC2; letter-spacing:1px; display:block; margin-bottom:6px; }
-.brief-cat-quote { font-size:12px; color:#ccc; font-style:italic; line-height:1.5; }
-.brief-cat-who { font-size:10px; color:#888; margin-left:8px; font-style:normal; }
-/* 用語解説 */
-.brief-glossary { margin-top:10px; background:#1e1e1e; border-radius:6px; padding:8px 10px; }
-.brief-gloss-head { font-size:10px; color:#f59e0b; font-weight:bold; display:block; margin-bottom:6px; }
-.brief-gloss-item { display:flex; gap:8px; margin-bottom:5px; align-items:flex-start; }
-.brief-gloss-term { font-size:10px; font-weight:bold; color:#3DCFC2; background:rgba(61,207,194,0.1); border-radius:4px; padding:1px 6px; flex-shrink:0; margin-top:2px; }
-.brief-gloss-def { font-size:11px; color:#aaa; line-height:1.5; }
-/* ═══ 6タイル KPI グリッド ═══ */
-.kpi-tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
-@media(max-width:700px){ .kpi-tiles { grid-template-columns:repeat(2,1fr); } }
-.ktile { background:#161616; border:1px solid #252525; border-radius:14px; padding:18px 16px 14px; position:relative; overflow:hidden; transition:transform .15s; }
-.ktile:hover { transform:translateY(-2px); }
-.ktile::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:14px 14px 0 0; }
-.ktile-note::before  { background:linear-gradient(90deg,#7c3aed,#c084fc); }
-.ktile-watch::before { background:linear-gradient(90deg,#3DCFC2,#22d3ee); }
-.ktile-merc::before  { background:linear-gradient(90deg,#f97316,#fbbf24); }
-.ktile-fin::before   { background:linear-gradient(90deg,#22c55e,#4ade80); }
-.ktile-race::before  { background:linear-gradient(90deg,#d4a017,#fde68a); }
-.ktile-castle::before{ background:linear-gradient(90deg,#f59e0b,#fb923c); }
-.ktile-label { font-size:10px; color:#777; letter-spacing:1px; text-transform:uppercase; font-weight:bold; margin-bottom:8px; }
-.ktile-main { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
-.ktile-num { font-size:30px; font-weight:800; color:#fff; line-height:1; font-variant-numeric:tabular-nums; }
-.ktile-unit { font-size:12px; color:#888; margin-top:4px; }
-.ktile-ring { flex-shrink:0; }
-.ktile-bar-wrap { height:4px; background:#2a2a2a; border-radius:2px; overflow:hidden; margin-top:6px; }
-.ktile-bar-fill { height:100%; border-radius:2px; transition:width .8s cubic-bezier(.4,0,.2,1); }
-.ktile-sub { font-size:11px; color:#666; margin-top:6px; display:flex; align-items:center; gap:6px; }
-.ktile-badge { font-size:9px; padding:2px 7px; border-radius:8px; font-weight:bold; }
-.badge-g1 { background:rgba(212,160,23,0.15); color:#d4a017; border:1px solid rgba(212,160,23,0.3); }
-.badge-ok { background:rgba(34,197,94,0.12); color:#22c55e; }
-.badge-warn { background:rgba(249,115,22,0.12); color:#f97316; }
-.badge-red { background:rgba(239,68,68,0.12); color:#ef4444; }
-.ktile-fin-pos .ktile-num { color:#22c55e; }
-.ktile-fin-neg .ktile-num { color:#ef4444; }
+/* ━━━━━━━━━━━ PROPOSAL ━━━━━━━━━━━ */
+.proposal-card { background: linear-gradient(135deg, #0d1a2a, #1a0a2a); border: 1px solid rgba(168,85,247,0.3); border-left: 3px solid var(--accent-purple); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.proposal-header { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; }
+.proposal-label { font-size: 13px; color: var(--accent-purple); font-weight: 700; letter-spacing: 1px; }
+.proposal-badge { font-size: 10px; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); color: var(--accent-purple); border-radius: 10px; padding: 2px 8px; }
+.proposal-body { padding: 14px 20px; font-size: 12px; color: #c0b8d0; line-height: 1.8; max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
+.proposal-body.expanded { max-height: none; }
+.proposal-footer { padding: 10px 20px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.btn-approve { flex: 1; min-width: 100px; background: rgba(0,212,170,0.08); border: 1px solid var(--accent-green); color: var(--accent-green); border-radius: 7px; padding: 9px 0; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s; }
+.btn-approve:hover { background: rgba(0,212,170,0.15); }
+.btn-reject { flex: 1; min-width: 100px; background: rgba(239,68,68,0.08); border: 1px solid #ef4444; color: #ef4444; border-radius: 7px; padding: 9px 0; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s; }
+.btn-reject:hover { background: rgba(239,68,68,0.15); }
+.proposal-expand { font-size: 11px; color: #666; cursor: pointer; padding: 2px 8px; border: 1px solid #333; border-radius: 4px; background: none; }
+.proposal-expand:hover { color: #aaa; }
+
+/* ━━━━━━━━━━━ MISC ━━━━━━━━━━━ */
+.data-ts { font-size: 11px; color: var(--text-secondary); text-align: right; margin-bottom: 8px; font-family: var(--font-num); }
+.loading { color: #555; font-size: 13px; }
+.action-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.action-flag { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 18px; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 5px; transition: all .15s; position: relative; overflow: hidden; }
+.action-flag.has-work { border-top: 2px solid var(--accent-cyan); }
+.action-flag.has-work:hover { background: var(--bg-card-alt); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,188,212,0.15); }
+.action-flag.no-work { opacity: 0.3; pointer-events: none; }
+.af-icon { font-size: 20px; }
+.af-label { font-size: 13px; font-weight: 700; color: #fff; }
+.af-status.active { font-size: 12px; color: var(--accent-cyan); }
+.af-status.done { font-size: 12px; color: #444; }
+.af-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--accent-cyan); transition: right .15s; }
+.action-flag.has-work:hover .af-arrow { right: 10px; }
+.read-btn { font-size: 10px; padding: 2px 8px; background: none; border: 1px solid #333; border-radius: 3px; color: #444; cursor: pointer; transition: all .15s; flex-shrink: 0; }
+.read-btn.done { border-color: var(--accent-green); color: var(--accent-green); background: rgba(0,212,170,0.07); }
+#quizFloat { position: fixed; bottom: 32px; right: 28px; z-index: 400; background: linear-gradient(135deg, var(--accent-green), #00a884); color: #000; border: none; border-radius: 50px; padding: 13px 22px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 7px; box-shadow: 0 6px 0 #006655, 0 8px 20px rgba(0,0,0,0.5); transition: transform .15s, box-shadow .15s, opacity .3s; user-select: none; }
+#quizFloat:hover { transform: translateY(2px); box-shadow: 0 4px 0 #006655, 0 6px 15px rgba(0,0,0,0.5); }
+#quizFloat.hide-float { opacity: 0; pointer-events: none; }
+.footer { text-align: center; padding: 24px 0 16px; color: var(--text-secondary); font-size: 11px; }
+.footer-quiz { display: inline-block; background: linear-gradient(135deg, var(--accent-green), #00a884); color: #000; border-radius: 50px; padding: 10px 20px; font-size: 13px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 0 #006655, 0 6px 12px rgba(0,0,0,0.4); margin-top: 10px; }
+.nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 600; }
+.nav-overlay.open { display: block; }
+.nav-sidebar { position: fixed; top: 0; left: -290px; width: 290px; height: 100vh; background: #0d0d1a; border-right: 1px solid var(--border-color); z-index: 700; transition: left .22s ease; padding: 22px 0; }
+.nav-sidebar.open { left: 0; }
+.nav-x { position: absolute; top: 14px; right: 16px; cursor: pointer; color: #666; font-size: 19px; }
+.nav-head { padding: 0 20px 16px; border-bottom: 1px solid var(--border-color); font-size: 13px; font-weight: 700; color: var(--accent-cyan); letter-spacing: 2px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 14px 20px; color: #ddd; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background .15s; }
+.nav-item:hover { background: rgba(255,255,255,0.04); }
+.nav-item.active { color: var(--accent-cyan); border-left: 3px solid var(--accent-cyan); padding-left: 17px; }
+.nav-divider { height: 1px; background: var(--border-color); margin: 6px 0; }
+.nav-ic { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; flex-shrink:0; }
+@media(max-width:768px){
+  .action-bar { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr; }
+  .news-section { margin: 0 -16px 20px; padding: 20px 16px; }
+  .page-body { padding: 16px; }
+}
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav class="gnav">
   <span class="gnav-logo">電脳会社</span>
-  <div class="gnav-links">
-    <a href="./dashboard.html" class="active"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg> ダッシュ</a>
-    <a href="./kyun.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
-    <a href="./keiba.html"><svg class="nav-ic" viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
-    <a href="./mercari.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ</a>
-    <a href="./kassenjo.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
-  </div>
-  <a class="gnav-ext" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
-  <button class="gnav-ham" onclick="toggleNav()">☰</button>
+  <a href="./dashboard.html" class="gnav-tab gnav-tab-dashboard active">ダッシュボード</a>
+  <a href="./kyun.html" class="gnav-tab gnav-tab-kyun">自動キュン売機</a>
+  <a href="./keiba.html" class="gnav-tab gnav-tab-fire">FIREスコア</a>
+  <a href="./kassenjo.html" class="gnav-tab gnav-tab-castle">決算城</a>
+  <a href="./mercari.html" class="gnav-tab gnav-tab-mercari">メルカリ</a>
+  <a href="#newsSection" class="gnav-tab gnav-tab-news">今日のニュース</a>
+  <a href="./00_ダッシュボード/quiz.html" class="gnav-tab gnav-tab-quiz">CEOクイズ</a>
+  <span class="gnav-clock" id="navClock">--:--:--</span>
+  <button class="gnav-tab gnav-tab-news" onclick="toggleNav()" style="margin-left:4px;display:none" id="gnav-ham">☰</button>
 </nav>
 
 <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
@@ -568,145 +493,94 @@ body { background:#000 !important; }
   <div class="nav-head">メニュー</div>
   <a class="nav-item active" href="./dashboard.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1"/><rect x="9.5" y="1.5" width="5" height="5" rx="1"/><rect x="1.5" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/></svg> ダッシュボード</a>
   <div class="nav-divider"></div>
-  <a class="nav-item" href="./kyun.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M8 13C5.5 11 2 8.5 2 5.5a3 3 0 015-2.2A3 3 0 0114 5.5C14 8.5 10.5 11 8 13z"/></svg> 自キュン</a>
-  <a class="nav-item" href="./keiba.html"><svg class="nav-ic" viewBox="0 0 16 16"><line x1="3.5" y1="1.5" x2="3.5" y2="14.5"/><path d="M3.5 3h9l-2.5 3.5 2.5 3.5H3.5"/></svg> 競馬</a>
-  <a class="nav-item" href="./mercari.html"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg> メルカリ</a>
-  <a class="nav-item" href="./kassenjo.html"><svg class="nav-ic" viewBox="0 0 16 16"><rect x="2.5" y="9.5" width="11" height="5"/><path d="M5.5 9.5v-2h5v2"/><path d="M5.5 7.5V5.5H7v2M9 7.5V5.5h1.5v2"/></svg> 決算城</a>
+  <a class="nav-item" href="./kyun.html">💕 自キュン</a>
+  <a class="nav-item" href="./keiba.html">🏇 競馬</a>
+  <a class="nav-item" href="./mercari.html">🛍 メルカリ</a>
+  <a class="nav-item" href="./kassenjo.html">🏯 決算城</a>
   <div class="nav-divider"></div>
-  <a class="nav-item" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M9 2.5h4.5v4.5M13.5 2.5L7 9M6.5 3.5H3A1.5 1.5 0 001.5 5v8A1.5 1.5 0 003 14.5h8a1.5 1.5 0 001.5-1.5v-3.5"/></svg> 出品一覧</a>
-  <div class="nav-divider"></div>
-  <a class="nav-item" href="./00_ダッシュボード/quiz.html" style="color:#3DCFC2;font-weight:bold;"><svg class="nav-ic" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6 6a2 2 0 114 0c0 1-1 1.5-2 2.5V10"/><circle cx="8" cy="12.5" r=".5" fill="currentColor"/></svg> 今日のクイズ</a>
-  <a class="nav-item" href="#" onclick="showTodoMobile();closeNav();return false;" style="color:#d4a017;font-weight:bold;"><svg class="nav-ic" viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10"/></svg> 宿題リスト</a>
+  <a class="nav-item" href="./00_ダッシュボード/quiz.html" style="color:var(--accent-green);font-weight:700;">🎯 今日のクイズ</a>
+  <a class="nav-item" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
 </div>
-
-<script>
-function toggleNav(){document.getElementById('navOverlay').classList.toggle('open');document.getElementById('navSidebar').classList.toggle('open');}
-function closeNav(){document.getElementById('navOverlay').classList.remove('open');document.getElementById('navSidebar').classList.remove('open');}
-function showTodoMobile(){
-  const el = document.querySelector('.acc-todo');
-  if (!el) return;
-  el.style.display = 'block';
-  el.style.position = 'fixed';
-  el.style.inset = '0';
-  el.style.zIndex = '800';
-  el.style.overflowY = 'auto';
-  el.style.background = '#0f0f0f';
-  el.style.padding = '20px';
-  // 閉じるボタン追加
-  if (!document.getElementById('todoCloseBtn')) {
-    const btn = document.createElement('button');
-    btn.id = 'todoCloseBtn';
-    btn.textContent = '✕ 閉じる';
-    btn.style.cssText = 'position:sticky;top:0;display:block;width:100%;padding:12px;background:#1a1a1a;border:1px solid #3DCFC2;color:#3DCFC2;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;margin-bottom:16px;';
-    btn.onclick = function(){ el.style.display = 'none'; el.style.position = ''; el.style.inset = ''; el.style.zIndex = ''; el.style.background = ''; el.style.padding = ''; document.getElementById('todoCloseBtn').remove(); };
-    el.prepend(btn);
-  }
-}
-</script>
 
 <div class="page-body">
 
-<div class="header">
-  <h1>電脳会社 ダッシュボード</h1>
-  <div class="date" id="dashDate">読み込み中…</div>
-</div>
+<!-- ━━━━━━━━━━━ 上部3カラム ━━━━━━━━━━━ -->
+<div class="top-grid">
 
-<!-- ═══ 6タイル KPI ═══ -->
-<div class="kpi-tiles">
-
-  <!-- 1: note配信本数 -->
-  <div class="ktile ktile-note">
-    <div class="ktile-label">💕 note配信本数</div>
-    <div class="ktile-main">
-      <div class="ktile-ring" id="tileNoteRing"></div>
-      <div>
-        <div class="ktile-num"><span id="tileNoteNum">—</span></div>
-        <div class="ktile-unit">/ 100本</div>
+  <!-- note事業カード -->
+  <div class="dash-card">
+    <div class="card-title card-title-cyan">note事業</div>
+    <div class="badge-row">
+      <span class="pill pill-green">自動キュン売機 <span id="badgeKyunCount">—</span></span>
+      <span class="pill pill-pink">FIREスコア <span id="badgeFireCount">—</span></span>
+      <span class="pill pill-gray" id="badgeOtherNote">— —</span>
+    </div>
+    <div class="gauge-row">
+      <div class="gauge-stats">
+        <div class="stat-row"><span class="stat-label">総ウォッチ数</span><span class="stat-value" id="tileWatchNum">—</span></div>
+        <div class="stat-row"><span class="stat-label">総スキ数</span><span class="stat-value" id="noteSkiNum">—</span></div>
+        <div class="stat-row"><span class="stat-label">総売上</span><span class="stat-value" id="noteSalesNum">¥0</span></div>
+      </div>
+      <div class="donut-wrap" id="tileNoteRing" style="width:90px;height:90px;">
+        <div class="donut-center">
+          <div class="donut-num"><span id="tileNoteNum">—</span></div>
+          <div class="donut-sub">/ 100</div>
+        </div>
       </div>
     </div>
-    <div class="ktile-bar-wrap"><div class="ktile-bar-fill" id="tileNoteBar" style="width:0%;background:linear-gradient(90deg,#7c3aed,#c084fc)"></div></div>
-    <div class="ktile-sub" id="tileNoteSub">読み込み中…</div>
+    <div class="ktile-bar-wrap" style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">
+      <div id="tileNoteBar" style="height:100%;border-radius:2px;background:linear-gradient(90deg,#a855f7,#c084fc);width:0%;transition:width .8s;"></div>
+    </div>
+    <div style="font-size:11px;color:var(--text-secondary)" id="tileNoteSub"></div>
+    <div style="font-size:11px;color:var(--text-secondary)" id="tileWatchSub"></div>
+    <a href="./kyun.html" class="card-btn card-btn-green">投稿する →</a>
   </div>
 
-  <!-- 2: 総ウォッチ数 -->
-  <div class="ktile ktile-watch">
-    <div class="ktile-label">👁 総ウォッチ数</div>
-    <div class="ktile-main">
-      <div>
-        <div class="ktile-num"><span id="tileWatchNum">—</span></div>
-        <div class="ktile-unit">view</div>
+  <!-- メルカリ事業カード -->
+  <div class="dash-card">
+    <div class="card-title card-title-white">メルカリ事業</div>
+    <div class="gauge-row" style="align-items:flex-start;">
+      <div class="big-stat-row" style="flex:1;">
+        <div class="big-stat"><span class="big-stat-label">出品数</span><span class="pill pill-blue" id="tileMercNum">—</span></div>
+        <div class="big-stat"><span class="big-stat-label">売却累計</span><span class="pill pill-blue" id="mercSoldCount">—</span></div>
+        <div class="big-stat"><span class="big-stat-label">再出品候補</span><span class="pill pill-gray" id="mercariRelist">—</span></div>
+      </div>
+      <div class="donut-wrap" style="width:96px;height:96px;" id="tileMercGauge">
+        <div class="donut-center">
+          <div style="font-size:11px;color:var(--text-secondary);">仕入れまで</div>
+          <div class="donut-num" style="font-size:18px;" id="tileFinNum">—</div>
+          <div style="font-size:10px;color:var(--text-secondary);" id="tileFinUnit">万円</div>
+        </div>
       </div>
     </div>
-    <div class="ktile-sub" id="tileWatchSub"><span class="ktile-badge badge-warn">毎日17時更新</span></div>
+    <div class="big-stat-row">
+      <div class="big-stat"><span class="big-stat-label">総仕入額</span><span class="big-stat-num" id="mercTotalCost">—</span></div>
+      <div class="big-stat"><span class="big-stat-label">総売上</span><span class="big-stat-num" id="mercTotalRev">—</span></div>
+      <div class="big-stat"><span class="big-stat-label">総利益</span><span class="big-stat-num" id="kpiMercProfit">—</span></div>
+    </div>
+    <div style="font-size:11px;color:var(--text-secondary)" id="kpiMercProfitSub"></div>
+    <a href="./mercari.html" class="card-btn card-btn-blue">出品する →</a>
   </div>
 
-  <!-- 3: メルカリ出品数 -->
-  <div class="ktile ktile-merc">
-    <div class="ktile-label">🛍 メルカリ出品中</div>
-    <div class="ktile-main">
-      <div>
-        <div class="ktile-num"><span id="tileMercNum">—</span></div>
-        <div class="ktile-unit">点</div>
+  <!-- タスクと進捗カード -->
+  <div class="dash-card">
+    <div class="card-title card-title-white">タスクと進捗</div>
+    <div class="task-list" id="dashTaskList">
+      <div class="task-row">
+        <span class="task-time">—</span>
+        <span class="task-text">読み込み中…</span>
+        <span class="task-badge tbadge-todo">—</span>
       </div>
     </div>
-    <div class="ktile-bar-wrap"><div class="ktile-bar-fill" id="tileMercBar" style="width:0%;background:linear-gradient(90deg,#f97316,#fbbf24)"></div></div>
-    <div class="ktile-sub" id="tileMercSub">読み込み中…</div>
-  </div>
-
-  <!-- 4: 差額（回収余力） -->
-  <div class="ktile ktile-fin" id="ktileFin">
-    <div class="ktile-label">💰 仕入れ差額</div>
-    <div class="ktile-main">
-      <div>
-        <div class="ktile-num"><span id="tileFinNum">—</span></div>
-        <div class="ktile-unit" id="tileFinUnit">読み込み中</div>
-      </div>
-    </div>
-    <div class="ktile-sub" id="tileFinSub"></div>
-  </div>
-
-  <!-- 5: 今週のメインレース -->
-  <div class="ktile ktile-race">
-    <div class="ktile-label">🏇 今週メインレース</div>
-    <div class="ktile-main">
-      <div>
-        <div class="ktile-num" style="font-size:18px;line-height:1.3;" id="tileRaceName">安田記念</div>
-        <div class="ktile-unit" id="tileRaceDate">6/7（日）東京11R</div>
-      </div>
-    </div>
-    <div class="ktile-sub"><span class="ktile-badge badge-g1">GⅠ</span> <span id="tileRaceInfo">芝1600m</span></div>
-  </div>
-
-  <!-- 6: 決算城 -->
-  <div class="ktile ktile-castle">
-    <div class="ktile-label">🏯 決算城</div>
-    <div class="ktile-main">
-      <div>
-        <div class="ktile-num"><span id="tileCastleNum">—</span></div>
-        <div class="ktile-unit">/ 100話</div>
-      </div>
-    </div>
-    <div class="ktile-bar-wrap"><div class="ktile-bar-fill" id="tileCastleBar" style="width:0%;background:linear-gradient(90deg,#f59e0b,#fb923c)"></div></div>
-    <div class="ktile-sub" id="tileCastleSub">読み込み中…</div>
+    <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;" id="tileRaceInfo">今週：安田記念 G1 6/7（日）芝1600m</div>
+    <div style="font-size:11px;color:var(--text-secondary)" id="kpiExecWho"></div>
+    <div style="font-size:11px;color:#ccc;font-style:italic;line-height:1.6;margin-top:4px;" id="kpiExecQuote"></div>
+    <a href="#accTodoList" class="card-btn card-btn-gray">宿題一覧を見る →</a>
   </div>
 
 </div>
 
-<!-- ブリーフ（最上部） -->
-<div class="brief-section">
-  <div class="brief-section-header">
-    <span class="label">📡 今日のインテリジェンス</span>
-    <span class="meta" id="briefMeta">接続中…</span>
-  </div>
-  <div class="brief-body" id="briefBody"><div class="brief-empty loading">読み込み中…</div></div>
-  <div class="brief-actions">
-    <a class="brief-action-btn" href="./kyun.html">💕 自キュンを作る →</a>
-    <a class="brief-action-btn" href="./keiba.html">🏇 競馬記事を作る →</a>
-    <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn">✓ 読了</button>
-  </div>
-</div>
-
-<!-- 今日のアクション（シンプルフラグ） -->
+<!-- アクション -->
 <div class="action-bar">
   <a class="action-flag has-work" href="./mercari.html" id="flagMercari">
     <span class="af-icon">🛍️</span>
@@ -728,59 +602,66 @@ function showTodoMobile(){
   </a>
 </div>
 
-<!-- ブリーフ2つ目は削除済み -->
+<!-- ━━━━━━━━━━━ ニュースセクション ━━━━━━━━━━━ -->
+<div class="news-section" id="newsSection">
+  <div class="news-section-title">今日のニュース</div>
+  <div class="brief-section">
+    <div class="brief-section-header">
+      <span class="label">📡 インテリジェンス・ブリーフ</span>
+      <span class="meta" id="briefMeta">接続中…</span>
+    </div>
+    <div class="brief-body" id="briefBody"><div class="brief-empty loading">読み込み中…</div></div>
+    <div class="brief-actions">
+      <a class="brief-action-btn" href="./kyun.html">💕 自キュンを作る →</a>
+      <a class="brief-action-btn" href="./keiba.html">🏇 競馬記事を作る →</a>
+      <button class="brief-action-btn" onclick="markBriefRead()" id="briefReadBtn">✓ 読了</button>
+    </div>
+  </div>
+</div>
 
-
-<!-- メルカリ計測ログ -->
-<div class="section-label" style="margin-top:28px;">メルカリ 計測ログ</div>
+<!-- ━━━━━━━━━━━ メルカリ計測 ━━━━━━━━━━━ -->
+<div class="section-label" style="margin-top:8px;">メルカリ 計測ログ</div>
 <div class="mercari-tracker">
   <div class="tracker-head">
-    <span class="tracker-title">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><path d="M5 6.5V5a3 3 0 016 0v1.5"/><rect x="2" y="6.5" width="12" height="8" rx="2"/></svg>
-      出品中の反応 — アルゴリズム判定
-    </span>
+    <span class="tracker-title">🛍 出品中の反応 — アルゴリズム判定</span>
     <span class="tracker-ts" id="trackerTs">—</span>
   </div>
   <div style="overflow-x:auto">
     <table class="tracker-table">
-      <thead><tr>
-        <th>商品</th><th>価格</th><th>閲覧増</th><th>いいね</th><th>判定</th>
-      </tr></thead>
+      <thead><tr><th>商品</th><th>価格</th><th>閲覧増</th><th>いいね</th><th>判定</th></tr></thead>
       <tbody id="trackerBody"><tr><td colspan="5" style="text-align:center;color:#555;padding:20px">読み込み中…</td></tr></tbody>
     </table>
   </div>
   <div class="tracker-footer" id="trackerFooter"></div>
 </div>
 
-<div class="section-label" style="margin-top:28px;">KPI</div>
-<!-- 締め切り -->
+<!-- ━━━━━━━━━━━ KPI ━━━━━━━━━━━ -->
+<div class="section-label" style="margin-top:8px;">KPI</div>
 <div class="deadline">
   <div class="label">直近ゴール</div>
   <div class="target">6/15 までに ¥3,500 回収</div>
   <div class="sub">楽天証券アフィリ 1件（約¥3,000）が最短ルート</div>
 </div>
-
-<!-- KPI 新3タイル -->
 <div class="kpi-bar">
   <div class="kpi-card">
     <div class="label">🛍 メルカリ利益</div>
-    <div class="value" id="kpiMercProfit" style="font-size:22px;font-weight:800;">…</div>
-    <div class="sub" id="kpiMercProfitSub">5/15〜集計中</div>
+    <div class="value" id="kpiMercariDisp" style="font-size:22px;font-weight:800;">…</div>
+    <div class="sub" id="kpiMercProfitSubB">5/15〜集計中</div>
   </div>
   <div class="kpi-card">
     <div class="label">📝 note収益</div>
-    <div class="value" style="font-size:22px;font-weight:800;color:#3DCFC2;">¥ 0</div>
+    <div class="value" style="font-size:22px;font-weight:800;color:var(--accent-cyan);">¥ 0</div>
     <div class="sub">有料記事 設定後に更新</div>
   </div>
   <div class="kpi-card" id="kpiExecCard">
     <div class="label">💬 経営者の言葉</div>
-    <div class="value" id="kpiExecQuote" style="font-size:12px;line-height:1.6;color:#ddd;font-weight:normal;">読み込み中…</div>
-    <div class="sub" id="kpiExecWho" style="color:#888;font-size:10px;margin-top:6px;"></div>
+    <div class="value" id="kpiExecQuoteB" style="font-size:12px;line-height:1.6;color:#ddd;font-weight:normal;">読み込み中…</div>
+    <div class="sub" id="kpiExecWhoB" style="color:#888;font-size:10px;margin-top:6px;"></div>
   </div>
 </div>
 
-<div class="section-label" style="margin-top:28px;">コンテンツ</div>
-<!-- コンテンツ全体図 -->
+<!-- ━━━━━━━━━━━ コンテンツ ━━━━━━━━━━━ -->
+<div class="section-label" style="margin-top:8px;">コンテンツ</div>
 <div class="content-map">
   <div class="content-map-header">
     <span class="label">NOTE コンテンツ全体図</span>
@@ -789,8 +670,8 @@ function showTodoMobile(){
   <div class="content-map-body" id="contentMapBody"><div class="content-type-cell"><div class="ct-name">読み込み中</div><div class="ct-count">…</div></div></div>
 </div>
 
-<div class="section-label" style="margin-top:28px;">チーム状況</div>
-<!-- チームカード -->
+<!-- ━━━━━━━━━━━ チーム ━━━━━━━━━━━ -->
+<div class="section-label" style="margin-top:8px;">チーム状況</div>
 <div id="dataTs" class="data-ts"></div>
 <div class="grid">
   <div class="card">
@@ -808,14 +689,14 @@ function showTodoMobile(){
       <div class="kpi-row"><span class="key">ステータス</span><span class="val green-text">稼働中</span></div>
       <div class="kpi-row"><span class="key">X</span><span class="val gold">@FIRE1173Go（凍結中）</span></div>
       <div class="kpi-row"><span class="key">FIREスコア</span><span class="val green-text">¥980 完成済み</span></div>
-      <div class="kpi-row"><span class="key">今週メインレース</span><span class="val gold">安田記念 G1</span></div>
+      <div class="kpi-row"><span class="key">今週メインレース</span><span class="val gold" id="tileRaceName">安田記念 G1</span></div>
     </div>
   </div>
   <div class="card">
     <div class="card-header"><div class="status-dot green"></div><div class="team-name">03 メルカリチーム</div></div>
     <div class="card-body">
       <div class="kpi-row"><span class="key">出品中</span><span class="val" id="mercariListed">…</span></div>
-      <div class="kpi-row"><span class="key">再出品候補</span><span class="val gold" id="mercariRelist">…</span></div>
+      <div class="kpi-row"><span class="key">再出品候補</span><span class="val gold" id="mercariRelistB">…</span></div>
       <div class="kpi-row"><span class="key">月次目標</span><span class="val">¥50,000</span></div>
     </div>
   </div>
@@ -829,11 +710,11 @@ function showTodoMobile(){
   </div>
 </div>
 
-<!-- PDCA 承認カード -->
+<!-- PDCA -->
 <div id="proposalSection"></div>
 
-<div class="section-label" style="margin-top:28px;">宿題（タップで詳細）</div>
-<!-- アコーディオン宿題 -->
+<!-- 宿題 -->
+<div class="section-label" style="margin-top:8px;">宿題</div>
 <div class="acc-todo">
   <div class="acc-todo-title">📋 宿題リスト（タップで理由と手順を表示）</div>
   <div id="accTodoList"></div>
@@ -845,18 +726,29 @@ function showTodoMobile(){
 </div>
 </div>
 
-<!-- フローティング クイズボタン -->
 <a href="./00_ダッシュボード/quiz.html" id="quizFloat">🎯 クイズ</a>
 
 <script>
+// ━━━━━━━━━━━ CLOCK ━━━━━━━━━━━
+function updateClock(){
+  const n=new Date();
+  const h=String(n.getHours()).padStart(2,'0');
+  const m=String(n.getMinutes()).padStart(2,'0');
+  const s=String(n.getSeconds()).padStart(2,'0');
+  const el=document.getElementById('navClock');
+  if(el) el.textContent=h+':'+m+':'+s;
+}
+setInterval(updateClock,1000);
+updateClock();
+
+// ━━━━━━━━━━━ NAV ━━━━━━━━━━━
+function toggleNav(){document.getElementById('navOverlay').classList.toggle('open');document.getElementById('navSidebar').classList.toggle('open');}
+function closeNav(){document.getElementById('navOverlay').classList.remove('open');document.getElementById('navSidebar').classList.remove('open');}
+
+// ━━━━━━━━━━━ SUPABASE ━━━━━━━━━━━
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-document.getElementById('dashDate').textContent =
-  'CEO：青柳 ／ ' + new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit'}) + ' 取得';
-
-let mercariPriceData = [];
-
-// ── ユーティリティ ──
+// ━━━━━━━━━━━ UTILS ━━━━━━━━━━━
 function countUp(el, target, dur, fmt) {
   if (!el) return;
   const s = performance.now();
@@ -867,165 +759,48 @@ function countUp(el, target, dur, fmt) {
     if (p < 1) requestAnimationFrame(tick);
   })(performance.now());
 }
-function svgRing(pct, color) {
-  const r=22,cx=28,cy=28,circ=2*Math.PI*r,dash=(pct/100)*circ;
-  return `<svg width="56" height="56" viewBox="0 0 56 56" style="transform:rotate(-90deg)">
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2a2a2a" stroke-width="4"/>
-    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="4"
-      stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
-    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central"
-      fill="${color}" font-size="11" font-weight="bold" transform="rotate(90,${cx},${cy})">${pct}%</text>
+
+function svgDonut(pct, color, size, trackColor) {
+  size = size || 90;
+  trackColor = trackColor || 'rgba(255,255,255,0.08)';
+  const r = size/2 - 8, cx = size/2, cy = size/2;
+  const circ = 2*Math.PI*r;
+  const dash = (pct/100)*circ;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${trackColor}" stroke-width="7"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="7"
+      stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
+      style="transition:stroke-dasharray 1s cubic-bezier(.4,0,.2,1)"/>
   </svg>`;
 }
 
-async function init() {
-  const now = new Date().toISOString().slice(0,10);
-  try {
-    const [mercariCount, mercariData, relistRes, castleRes, briefRes, noteRes, novelRes,
-           noteKyunCount, mercariFinRes] = await Promise.all([
-      sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed'),
-      sb.from('mercari_items').select('item_no,name,price,recommended_price,cost,shipping').eq('status','listed').order('item_no'),
-      sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed').lt('last_relisted_at', new Date(Date.now()-2*24*60*60*1000).toISOString()),
-      sb.from('castle_articles').select('id',{count:'exact',head:true}).not('body','is',null),
-      sb.from('meeting_notes').select('id,date,title,content').eq('category','daily_intelligence_brief').order('date',{ascending:false}).limit(1).maybeSingle(),
-      sb.from('note_articles').select('category,status'),
-      sb.from('novel_stories').select('status'),
-      sb.from('note_articles').select('id',{count:'exact',head:true}).eq('category','自キュン').eq('status','published'),
-      sb.from('mercari_items').select('price,cost,status')
-    ]);
+function _set(id,v,c){const e=document.getElementById(id);if(e){e.textContent=v;if(c)e.className=c;}}
 
-    // メルカリ
-    const listed = mercariCount.count ?? 0;
-    const _set = (id,v,c)=>{ const e=document.getElementById(id); if(e){e.textContent=v; if(c)e.className=c;} };
-    _set('kpiMercari', listed + ' 点');
-    _set('mercariListed', listed + ' 点', 'val ' + (listed >= 20 ? 'green-text' : 'gold'));
-    _set('mercariRelist', (relistRes.count ?? 0) > 0 ? (relistRes.count) + ' 点（要再出品）' : 'なし');
-    // メルカリフラグ更新
-    if (mercariData.data) {
-      const needsWork = mercariData.data.filter(it => it.recommended_price && it.recommended_price !== it.price);
-      const fEl = document.getElementById('mercariFlag');
-      const fCard = document.getElementById('flagMercari');
-      if (fEl) {
-        if (needsWork.length) { fEl.textContent = needsWork.length + '件 価格変更あり'; fEl.className = 'af-status active'; }
-        else { fEl.textContent = '作業なし ✓'; fEl.className = 'af-status done'; fCard.classList.remove('has-work'); fCard.classList.add('no-work'); }
-      }
-    }
-
-    // ── 6タイル更新 ──
-    // Tile1: note配信
-    const noteCount = noteKyunCount.count ?? 0;
-    const notePct = Math.round(noteCount);
-    document.getElementById('tileNoteRing').innerHTML = svgRing(notePct, '#c084fc');
-    countUp(document.getElementById('tileNoteNum'), noteCount, 800);
-    document.getElementById('tileNoteBar').style.width = notePct + '%';
-    document.getElementById('tileNoteSub').innerHTML = `<span class="ktile-badge badge-ok">自キュン ${noteCount}本</span> 公開済み`;
-
-    // Tile2: ウォッチ（localStorage保持・手動更新）
-    const watchVal = parseInt(localStorage.getItem('noteWatchCount') || '1043');
-    countUp(document.getElementById('tileWatchNum'), watchVal, 1000, v => v.toLocaleString());
-    document.getElementById('tileWatchSub').innerHTML = `<span class="ktile-badge badge-warn">毎日17時更新</span> <span style="font-size:10px;color:#555;">最終: ${localStorage.getItem('noteWatchDate')||'—'}</span>`;
-
-    // Tile3: メルカリ出品
-    const soldCount = (mercariFinRes.data||[]).filter(i=>i.status==='sold').length;
-    countUp(document.getElementById('tileMercNum'), listed, 700);
-    const mercPct = Math.round(listed / (listed + soldCount) * 100) || 0;
-    document.getElementById('tileMercBar').style.width = (100 - mercPct) + '%';
-    document.getElementById('tileMercSub').innerHTML = `売済 ${soldCount}件 ／ 出品中 ${listed}件`;
-
-    // Tile4: 差額
-    const allItems = mercariFinRes.data || [];
-    const totalCost = allItems.reduce((s,i)=>s+(i.cost||0),0);
-    const totalRev  = allItems.filter(i=>i.status==='sold').reduce((s,i)=>s+(i.price||0),0);
-    const diff = totalRev - totalCost;
-    const finEl = document.getElementById('tileFinNum');
-    const finTile = document.getElementById('ktileFin');
-    if (diff >= 0) {
-      finEl.textContent = '+¥' + diff.toLocaleString();
-      finTile.classList.add('ktile-fin-pos');
-    } else {
-      finEl.textContent = '−¥' + Math.abs(diff).toLocaleString();
-      finTile.classList.add('ktile-fin-neg');
-    }
-    document.getElementById('tileFinUnit').textContent = `仕入¥${Math.round(totalCost/1000)}K → 売上¥${Math.round(totalRev/1000)}K`;
-    document.getElementById('tileFinSub').innerHTML = diff >= 0
-      ? `<span class="ktile-badge badge-ok">黒字</span>`
-      : `<span class="ktile-badge badge-red">回収まで ¥${Math.abs(diff).toLocaleString()}</span>`;
-
-    // Tile6: 決算城
-    const cc = castleRes.count ?? 0;
-    const castlePct = cc;
-    countUp(document.getElementById('tileCastleNum'), cc, 600);
-    document.getElementById('tileCastleBar').style.width = castlePct + '%';
-    document.getElementById('tileCastleSub').innerHTML = `<span class="ktile-badge" style="background:rgba(245,158,11,0.12);color:#f59e0b;">ステージング済 ${cc}話</span>`;
-
-    // ── 新KPIタイル ──
-    // メルカリ利益（5/15以降・手数料10%控除）
-    const soldItems = allItems.filter(i=>i.status==='sold');
-    const mercProfit = Math.round(soldItems.reduce((s,i)=>s+(i.price||0)*0.9-(i.cost||0),0));
-    const kmpEl = document.getElementById('kpiMercProfit');
-    if(kmpEl){
-      kmpEl.textContent = (mercProfit>=0?'+':'')+'¥'+Math.abs(mercProfit).toLocaleString();
-      kmpEl.style.color = mercProfit>=0?'#22c55e':'#ef4444';
-    }
-    const kmpSub = document.getElementById('kpiMercProfitSub');
-    if(kmpSub) kmpSub.textContent = `${soldItems.length}件売却 / 手数料10%控除後`;
-
-    // 経営者の言葉（日付でローテーション）
-    const todayQ = EXEC_QUOTES[new Date().getDate() % EXEC_QUOTES.length];
-    const qEl=document.getElementById('kpiExecQuote'), wEl=document.getElementById('kpiExecWho');
-    if(qEl) qEl.textContent = '「' + todayQ.text + '」';
-    if(wEl) wEl.textContent = '— ' + todayQ.who + '（' + todayQ.role + '）';
-
-    // 既存KPI参照（null安全）
-    _set('kpiCastle', cc + ' / 100');
-    _set('castleArticles', cc + ' / 100本');
-    const cbEl=document.getElementById('castleBar'); if(cbEl) cbEl.style.width=cc+'%';
-
-    // ブリーフ
-    if (briefRes.data) {
-      const b = briefRes.data;
-      const isToday = b.date === now;
-      _set('kpiBrief', isToday ? '✓ 収集済' : b.date, isToday ? 'val green-text' : 'val gold');
-      _set('briefMeta', b.date + ' 収集');
-      renderBrief(b);
-    } else {
-      _set('kpiBrief', '未収集');
-      document.getElementById('briefBody').innerHTML = '<div class="brief-empty">「更新して」で今日のブリーフを収集できます。</div>';
-    }
-
-    // noteコンテンツ
-    renderContentMap(noteRes.data||[], novelRes.data||[]);
-
-    // 自キュンフラグ更新
-    const kyunPending = (novelRes.data||[]).filter(s => s.status !== 'published').length;
-    const kyunEl = document.getElementById('kyunFlag');
-    const kyunCard = document.getElementById('flagKyun');
-    if (kyunEl) {
-      if (kyunPending > 0) { kyunEl.textContent = kyunPending + '本 下書きあり'; kyunEl.className = 'af-status active'; }
-      else { kyunEl.textContent = '作業なし ✓'; kyunEl.className = 'af-status done'; kyunCard.classList.remove('has-work'); kyunCard.classList.add('no-work'); }
-    }
-
-    // 競馬フラグ（今週レースあり）
-    const ka = (noteRes.data||[]).filter(a=>a.category==='競馬' && a.status==='draft');
-    const keibaEl = document.getElementById('keibaFlag');
-    if (keibaEl) {
-      keibaEl.textContent = ka.length > 0 ? '安田記念 記事あり' : '安田記念 6/7';
-    }
-
-    document.getElementById('dataTs').textContent = 'データ取得: ' + new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
-    restoreReadStates();
-
-  } catch(e) {
-    console.error(e);
-    document.getElementById('briefBody').innerHTML = '<div class="brief-empty" style="color:#ef4444">接続エラー: ' + e.message + '</div>';
-  }
+// ━━━━━━━━━━━ TASK LIST (static + dynamic) ━━━━━━━━━━━
+const TASK_ITEMS = [
+  { time:'今日', text:'安田記念 枠順確定→記事最終チェック', badge:'tbadge-hw', label:'宿題' },
+  { time:'16時〜', text:'7-10R 出馬表確認→馬名入力', badge:'tbadge-todo', label:'未対応' },
+  { time:'土曜', text:'追い切り確認→FIREスコア最終値入力', badge:'tbadge-todo', label:'未対応' },
+  { time:'6/7', text:'安田記念 note公開', badge:'tbadge-todo', label:'未対応' },
+  { time:'随時', text:'PORTER GIRL NAKED サムネ見直し', badge:'tbadge-error', label:'アラート' },
+  { time:'随時', text:'Supreme×Jordan タイトル強化', badge:'tbadge-error', label:'アラート' },
+  { time:'6/15', text:'¥3,500回収 → 楽天証券アフィリ', badge:'tbadge-hw', label:'締切' },
+  { time:'随時', text:'決算城 NTT記事 (本多×大多喜城)', badge:'tbadge-todo', label:'次のタスク' },
+];
+function renderTaskList() {
+  const el = document.getElementById('dashTaskList');
+  if (!el) return;
+  el.innerHTML = TASK_ITEMS.map(t =>
+    `<div class="task-row">
+      <span class="task-time">${t.time}</span>
+      <span class="task-text">${t.text}</span>
+      <span class="task-badge ${t.badge}">${t.label}</span>
+    </div>`
+  ).join('');
 }
+renderTaskList();
 
-// ── ブリーフ 理解度トラッキング ──
-const BRIEF_U_KEY = 'brief_understand_' + new Date().toISOString().slice(0,10);
-let briefU = JSON.parse(localStorage.getItem(BRIEF_U_KEY) || '{}');
-
-// ── 用語辞典 ──
+// ━━━━━━━━━━━ GLOSSARY ━━━━━━━━━━━
 const GLOSSARY = {
   'LLM':'大規模言語モデル。GPT・Claude・Geminiのように大量テキストで学習したAI。人間のように文章を生成・理解する。',
   'MCP':'Model Context Protocol。AIとGmail・GitHubなどの外部ツールを繋ぐ接続規格。AnthropicのClaude向けに開発され業界標準化。',
@@ -1039,17 +814,12 @@ const GLOSSARY = {
   'ファインチューニング':'既存AIモデルに追加学習させて特定用途に特化させること。',
   'エージェンティック':'AIが代理で行動・判断・購入なども行う性質のこと。「エージェンティックコマース」＝AI代理購入。',
   'ステーブルコイン':'価格が安定した暗号資産。米ドルに連動するUSDTなど。決済インフラとして普及が加速中。',
-  'AI for Science':'科学研究にAIを活用する動き。脳イメージング・行動実験の効率化が目的。',
-  'アンビエント':'「環境」という意味。アンビエントヘルスケア＝意識せずに健康管理される仕組み。',
 };
-
 function extractGlossary(text) {
-  return Object.entries(GLOSSARY)
-    .filter(([k]) => text.includes(k))
-    .slice(0, 3);
+  return Object.entries(GLOSSARY).filter(([k]) => text.includes(k)).slice(0,3);
 }
 
-// ── 経営者の言葉ローテーション ──
+// ━━━━━━━━━━━ EXEC QUOTES ━━━━━━━━━━━
 const EXEC_QUOTES = [
   { text:'完璧を目指すより、まず終わらせろ。', who:'Mark Zuckerberg', role:'Meta CEO' },
   { text:'失敗はオプションだ。失敗していないなら、十分に革新的ではない。', who:'Elon Musk', role:'Tesla / X CEO' },
@@ -1062,15 +832,17 @@ const EXEC_QUOTES = [
   { text:'小さく考えるな。大きく夢を描き、今すぐ行動しろ。', who:'Grant Cardone', role:'起業家' },
   { text:'知識は経験によって完成する。読むだけでなく、動け。', who:'Napoleon Hill', role:'Think and Grow Rich 著者' },
 ];
-
-// ── CAT別 関連金言 ──
 const CAT_QUOTES = [
   { text:'AIと一緒に働くことを学んだ人間が、AIを恐れる人間に取って代わる。', who:'Sam Altman (OpenAI CEO)', cat:'AI/エージェント' },
   { text:'人々はあなたが何を言ったかではなく、どう感じさせたかを覚えている。', who:'Maya Angelou', cat:'コンテンツマーケ' },
   { text:'データは新しい石油だ。だが精製されて初めて価値を持つ。', who:'Clive Humby', cat:'AI×認知科学' },
-  { text:'情報を持つ者が富を持つ。自動化した者が自由を持つ。', who:'Tim Ferriss (「週4時間」の仕事術 著者)', cat:'個人起業' },
-  { text:'速く動け、モノを壊せ。', who:'Mark Zuckerberg (Meta CEO) - 創業期の信条', cat:'トレンド' },
+  { text:'情報を持つ者が富を持つ。自動化した者が自由を持つ。', who:'Tim Ferriss', cat:'個人起業' },
+  { text:'速く動け、モノを壊せ。', who:'Mark Zuckerberg (Meta CEO)', cat:'トレンド' },
 ];
+
+// ━━━━━━━━━━━ BRIEF PARSING & RENDER ━━━━━━━━━━━
+const BRIEF_U_KEY = 'brief_understand_' + new Date().toISOString().slice(0,10);
+let briefU = JSON.parse(localStorage.getItem(BRIEF_U_KEY) || '{}');
 
 function parseBriefItems(text) {
   const items=[], lines=text.split('\n');
@@ -1081,7 +853,6 @@ function parseBriefItems(text) {
       if(cur) items.push(cur);
       cur={num:m[1],title:m[2].trim(),summary:'',source:'',shisa:''};
     } else if (cur) {
-      // ダッシュあり・なし両対応
       const sm=ln.match(/^(?:[-‐]\s*)?一言要約[:：]\s*(.+)/);
       const so=ln.match(/^(?:[-‐]\s*)?ソース[:：]\s*(.+)/);
       const sh=ln.match(/^(?:[-‐]\s*)?真平への示唆[:：]\s*(.+)/);
@@ -1096,19 +867,15 @@ function parseBriefItems(text) {
 
 function renderBriefItem(item) {
   const sp=item.source.split('|'), sn=sp[0]?.trim()||'', su=sp[1]?.trim()||'';
-  const srcH=su?`<a href="${su}" target="_blank" rel="noopener" style="color:#3DCFC2">${sn} ↗</a>`:sn;
+  const srcH=su?`<a href="${su}" target="_blank" rel="noopener" style="color:var(--accent-cyan)">${sn} ↗</a>`:sn;
   const st=briefU[item.num];
-
-  // 用語解説：タイトル＋要約から最大3語を抽出
   const searchText = item.title + ' ' + item.summary;
   const glossTerms = extractGlossary(searchText);
   const glossHtml = glossTerms.length
     ? `<div class="brief-glossary">
         <span class="brief-gloss-head">📖 用語解説</span>
         ${glossTerms.map(([k,v])=>`<div class="brief-gloss-item"><span class="brief-gloss-term">${k}</span><span class="brief-gloss-def">${v}</span></div>`).join('')}
-       </div>`
-    : '';
-
+       </div>` : '';
   return `<div class="brief-item">
     <div class="brief-item-head">
       <span class="brief-item-num">No.${item.num}</span>
@@ -1143,33 +910,6 @@ function updateUBar() {
   if(txt)txt.textContent=`${got}/${total} わかった（${pct}%）`;
 }
 
-function renderBrief(b) {
-  const content=b.content||'';
-  const items=parseBriefItems(content);
-  const container=document.getElementById('briefBody');
-  if (!items.length) {
-    const prev=content.substring(0,500).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    container.innerHTML='<div class="brief-title-line">'+((b.title||'').replace(/</g,'&lt;'))+'</div>'+
-      '<div class="brief-preview" id="bPreview">'+prev.replace(/\n/g,'<br>')+'…</div>'+
-      '<div class="brief-full" id="bFull">'+content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
-      '<button class="brief-toggle" onclick="toggleBrief(this)">全文を見る ▼</button>';
-    return;
-  }
-
-  const got=Object.values(briefU).filter(v=>v==='got').length;
-  const pct=items.length?Math.round(got/items.length*100):0;
-  container.innerHTML=
-    `<div class="brief-title-line">${(b.title||'').replace(/</g,'&lt;')}</div>`+
-    `<div class="brief-understanding-bar"><span>${got}/${items.length} わかった（${pct}%）</span><div class="ub-fill"><div class="ub-got" style="width:${pct}%"></div></div></div>`+
-    renderBriefWithCat(items);
-  Object.entries(briefU).forEach(([num,val])=>{
-    const g=document.getElementById('bg-'+num), l=document.getElementById('bl-'+num);
-    if(g&&val==='got')g.classList.add('active');
-    if(l&&val==='lost')l.classList.add('active');
-  });
-}
-
-// CAT区切り（グローバルスコープ）
 const CAT_LABELS = ['CAT-1 AI/LLM/MCPエージェント','CAT-2 コンテンツマーケ/SNS','CAT-3 AI×認知科学/脳科学','CAT-4 個人起業/収益化','CAT-5 今日のトレンド'];
 function catIndex(num){ return Math.floor((parseInt(num)-1)/5); }
 
@@ -1192,6 +932,31 @@ function renderBriefWithCat(items) {
   return html;
 }
 
+function renderBrief(b) {
+  const content=b.content||'';
+  const items=parseBriefItems(content);
+  const container=document.getElementById('briefBody');
+  if (!items.length) {
+    const prev=content.substring(0,500).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    container.innerHTML='<div class="brief-title-line">'+((b.title||'').replace(/</g,'&lt;'))+'</div>'+
+      '<div class="brief-preview" id="bPreview">'+prev.replace(/\n/g,'<br>')+'…</div>'+
+      '<div class="brief-full" id="bFull">'+content.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>'+
+      '<button class="brief-toggle" onclick="toggleBrief(this)">全文を見る ▼</button>';
+    return;
+  }
+  const got=Object.values(briefU).filter(v=>v==='got').length;
+  const pct=items.length?Math.round(got/items.length*100):0;
+  container.innerHTML=
+    `<div class="brief-title-line">${(b.title||'').replace(/</g,'&lt;')}</div>`+
+    `<div class="brief-understanding-bar"><span>${got}/${items.length} わかった（${pct}%）</span><div class="ub-fill"><div class="ub-got" style="width:${pct}%"></div></div></div>`+
+    renderBriefWithCat(items);
+  Object.entries(briefU).forEach(([num,val])=>{
+    const g=document.getElementById('bg-'+num), l=document.getElementById('bl-'+num);
+    if(g&&val==='got')g.classList.add('active');
+    if(l&&val==='lost')l.classList.add('active');
+  });
+}
+
 function toggleBrief(btn) {
   const p=document.getElementById('bPreview'), f=document.getElementById('bFull');
   if(!f||!p) return;
@@ -1199,43 +964,13 @@ function toggleBrief(btn) {
   else{f.style.display='none';p.style.display='block';btn.textContent='全文を見る ▼';}
 }
 
-function renderPriceAction(items) {
-  mercariPriceData = items.filter(it=>it.recommended_price && it.recommended_price!==it.price);
-  const el = document.getElementById('priceActionBody');
-  if (!mercariPriceData.length) { el.innerHTML='<span style="color:#22c55e">✓ 全商品 推奨価格と一致</span>'; return; }
-  const rows = mercariPriceData.slice(0,6).map(it=>{
-    const d=it.recommended_price-it.price, cls=d>0?'p-up':'p-down', sym=d>0?'▲':'▼';
-    return `<tr><td title="${it.name}">${it.name.substring(0,14)}…</td><td>¥${it.price.toLocaleString()}</td><td class="${cls}">¥${it.recommended_price.toLocaleString()}</td><td class="${cls}">${sym}${Math.abs(d).toLocaleString()}</td></tr>`;
-  }).join('');
-  el.innerHTML=`<table class="price-table"><tr><th>商品</th><th>現在</th><th>推奨</th><th>差</th></tr>${rows}</table>${mercariPriceData.length>6?`<div style="font-size:10px;color:#555;margin-top:3px;">他${mercariPriceData.length-6}件</div>`:''}`;
+function markBriefRead() {
+  const b=document.getElementById('briefReadBtn');
+  b.textContent='✓ 読了済み'; b.style.borderColor='var(--accent-green)'; b.style.color='var(--accent-green)'; b.disabled=true;
+  localStorage.setItem('brief_read_'+new Date().toISOString().slice(0,10),'1');
 }
 
-function copyPriceList() {
-  const lines=mercariPriceData.map(it=>`No.${it.item_no} ${it.name.substring(0,22)}\n  ¥${it.price.toLocaleString()} → ¥${it.recommended_price.toLocaleString()}`).join('\n');
-  navigator.clipboard.writeText(`■ メルカリ価格変更 ${new Date().toLocaleDateString('ja-JP')}\n\n${lines}`).then(()=>{
-    const b=document.getElementById('copyPriceBtn'); b.textContent='✅ コピー済み'; setTimeout(()=>{b.textContent='📋 全商品リストをコピー';},2000);
-  });
-}
-
-function copyComment() {
-  navigator.clipboard.writeText('【値下げしました】この価格が最終底値です。ご検討中の方はお早めにどうぞ。').then(()=>{
-    alert('コピーしました');
-  });
-}
-
-function markRead(id) {
-  const b=document.getElementById(id); if(!b)return;
-  b.textContent='✓ 確認済み'; b.classList.add('done');
-  localStorage.setItem('read_'+id+'_'+new Date().toISOString().slice(0,10),'1');
-}
-
-function restoreReadStates() {
-  const t=new Date().toISOString().slice(0,10);
-  ['rbMercari','rbKeiba','rbKyun'].forEach(id=>{
-    if(localStorage.getItem('read_'+id+'_'+t)){const b=document.getElementById(id);if(b){b.textContent='✓ 確認済み';b.classList.add('done');}}
-  });
-}
-
+// ━━━━━━━━━━━ CONTENT MAP ━━━━━━━━━━━
 function renderContentMap(noteArticles, novelStories) {
   const cats=[
     {key:'競馬',label:'競馬',cls:'active',note:'毎週水曜¥100'},
@@ -1254,152 +989,226 @@ function renderContentMap(noteArticles, novelStories) {
   document.getElementById('contentMapTs').textContent=noteArticles.length+'本 + 自キュン'+nc+'本';
 }
 
-function markBriefRead() {
-  const b=document.getElementById('briefReadBtn');
-  b.textContent='✓ 読了済み'; b.style.borderColor='#22c55e'; b.style.color='#22c55e'; b.disabled=true;
-  localStorage.setItem('brief_read_'+new Date().toISOString().slice(0,10),'1');
+// ━━━━━━━━━━━ MAIN INIT ━━━━━━━━━━━
+async function init() {
+  const now = new Date().toISOString().slice(0,10);
+  try {
+    const [mercariCount, mercariData, relistRes, castleRes, briefRes, noteRes, novelRes,
+           noteKyunCount, noteFireCount, mercariFinRes] = await Promise.all([
+      sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed'),
+      sb.from('mercari_items').select('item_no,name,price,recommended_price,cost,shipping').eq('status','listed').order('item_no'),
+      sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed').lt('last_relisted_at', new Date(Date.now()-2*24*60*60*1000).toISOString()),
+      sb.from('castle_articles').select('id',{count:'exact',head:true}).not('body','is',null),
+      sb.from('meeting_notes').select('id,date,title,content').eq('category','daily_intelligence_brief').order('date',{ascending:false}).limit(1).maybeSingle(),
+      sb.from('note_articles').select('category,status'),
+      sb.from('novel_stories').select('status'),
+      sb.from('note_articles').select('id',{count:'exact',head:true}).eq('category','自キュン').eq('status','published'),
+      sb.from('note_articles').select('id',{count:'exact',head:true}).eq('category','競馬').eq('status','published'),
+      sb.from('mercari_items').select('price,cost,status')
+    ]);
+
+    const listed = mercariCount.count ?? 0;
+    const soldItems = (mercariFinRes.data||[]).filter(i=>i.status==='sold');
+    const allItems  = mercariFinRes.data || [];
+    const totalCost = allItems.reduce((s,i)=>s+(i.cost||0),0);
+    const totalRev  = soldItems.reduce((s,i)=>s+(i.price||0),0);
+    const diff = totalRev - totalCost;
+    const mercProfit = Math.round(soldItems.reduce((s,i)=>s+(i.price||0)*0.9-(i.cost||0),0));
+
+    // ── note事業カード ──
+    const kyunCount = noteKyunCount.count ?? 0;
+    const fireCount = noteFireCount.count ?? 0;
+    const otherCount = (noteRes.data||[]).filter(a=>a.category!=='自キュン'&&a.category!=='競馬').length;
+    _set('badgeKyunCount', kyunCount);
+    _set('badgeFireCount', fireCount);
+    _set('badgeOtherNote', `他 ${otherCount}本`);
+    const noteTotalCount = (noteRes.data||[]).length + (novelRes.data||[]).length;
+    const notePct = Math.min(noteTotalCount, 100);
+    document.getElementById('tileNoteRing').innerHTML =
+      svgDonut(notePct, '#a855f7', 90) +
+      `<div class="donut-center"><div class="donut-num"><span id="tileNoteNum2">${noteTotalCount}</span></div><div class="donut-sub">/ 100</div></div>`;
+    const tileBar = document.getElementById('tileNoteBar');
+    if (tileBar) { setTimeout(()=>{ tileBar.style.width = notePct + '%'; }, 100); }
+    _set('tileNoteSub', `自キュン ${kyunCount}本・競馬 ${fireCount}本`);
+    const watchVal = parseInt(localStorage.getItem('noteWatchCount') || '1154');
+    countUp(document.getElementById('tileWatchNum'), watchVal, 1000, v => v.toLocaleString());
+    _set('noteSkiNum', '20');
+    _set('noteSalesNum', '¥0');
+
+    // ── メルカリ事業カード ──
+    _set('tileMercNum', listed);
+    _set('mercSoldCount', soldItems.length);
+    _set('mercariRelist', (relistRes.count??0) > 0 ? relistRes.count + '件' : 'なし');
+    _set('mercariRelistB', (relistRes.count??0) > 0 ? relistRes.count + '件（要再出品）' : 'なし');
+    _set('mercariListed', listed + ' 点');
+
+    // ゲージ（仕入れまで¥90,000目標）
+    const targetRev = 90000;
+    const revPct = Math.min(Math.round(totalRev/targetRev*100), 100);
+    const gaugeSvg = svgDonut(revPct, 'var(--accent-blue)', 96, 'rgba(77,159,255,0.12)');
+    const gaugeEl = document.getElementById('tileMercGauge');
+    if (gaugeEl) {
+      const remain = Math.max(targetRev - totalRev, 0);
+      gaugeEl.innerHTML = gaugeSvg +
+        `<div class="donut-center">
+          <div style="font-size:10px;color:var(--text-secondary);">仕入れまで</div>
+          <div class="donut-num" style="font-size:18px;">${remain > 0 ? '¥'+(Math.round(remain/10000)*10000/10000).toFixed(1)+'万' : 'GOAL!'}</div>
+          <div style="font-size:10px;color:var(--text-secondary);">${revPct}%達成</div>
+        </div>`;
+    }
+    _set('mercTotalCost', '¥'+totalCost.toLocaleString());
+    _set('mercTotalRev', '¥'+totalRev.toLocaleString());
+    const mpEl = document.getElementById('kpiMercProfit');
+    if (mpEl) { mpEl.textContent = (mercProfit>=0?'+':'')+'¥'+Math.abs(mercProfit).toLocaleString(); mpEl.className='big-stat-num'+(mercProfit<0?' big-stat-neg':''); }
+    _set('kpiMercProfitSub', `${soldItems.length}件売却 / 手数料10%控除後`);
+
+    // KPI section
+    const kmpEl2 = document.getElementById('kpiMercariDisp');
+    if(kmpEl2){kmpEl2.textContent=(mercProfit>=0?'+':'')+'¥'+Math.abs(mercProfit).toLocaleString();kmpEl2.style.color=mercProfit>=0?'#22c55e':'#ef4444';}
+    const kmpSub2 = document.getElementById('kpiMercProfitSubB');
+    if(kmpSub2)kmpSub2.textContent=`${soldItems.length}件売却 / 手数料10%控除後`;
+
+    // メルカリフラグ
+    if (mercariData.data) {
+      const needsWork = mercariData.data.filter(it => it.recommended_price && it.recommended_price !== it.price);
+      const fEl = document.getElementById('mercariFlag');
+      const fCard = document.getElementById('flagMercari');
+      if (fEl) {
+        if (needsWork.length) { fEl.textContent = needsWork.length + '件 価格変更あり'; fEl.className = 'af-status active'; }
+        else { fEl.textContent = '作業なし ✓'; fEl.className = 'af-status done'; if(fCard){fCard.classList.remove('has-work');fCard.classList.add('no-work');} }
+      }
+    }
+
+    // 決算城
+    const cc = castleRes.count ?? 0;
+    _set('castleArticles', cc + ' / 100本');
+    _set('tileCastleNum', cc);
+    const cbEl=document.getElementById('castleBar'); if(cbEl) cbEl.style.width=cc+'%';
+
+    // ブリーフ
+    if (briefRes.data) {
+      const b = briefRes.data;
+      _set('briefMeta', b.date + ' 収集');
+      renderBrief(b);
+    } else {
+      document.getElementById('briefBody').innerHTML = '<div class="brief-empty">「更新して」で今日のブリーフを収集できます。</div>';
+    }
+
+    // note
+    renderContentMap(noteRes.data||[], novelRes.data||[]);
+
+    // 自キュンフラグ
+    const kyunPending = (novelRes.data||[]).filter(s=>s.status!=='published').length;
+    const kyunEl = document.getElementById('kyunFlag');
+    const kyunCard = document.getElementById('flagKyun');
+    if (kyunEl) {
+      if (kyunPending > 0) { kyunEl.textContent = kyunPending + '本 下書きあり'; kyunEl.className = 'af-status active'; }
+      else { kyunEl.textContent = '作業なし ✓'; kyunEl.className = 'af-status done'; if(kyunCard){kyunCard.classList.remove('has-work');kyunCard.classList.add('no-work');} }
+    }
+
+    // 競馬フラグ
+    const ka = (noteRes.data||[]).filter(a=>a.category==='競馬'&&a.status==='draft');
+    const keibaEl = document.getElementById('keibaFlag');
+    if (keibaEl) keibaEl.textContent = ka.length > 0 ? '安田記念 記事あり' : '安田記念 6/7';
+
+    // 経営者の言葉
+    const todayQ = EXEC_QUOTES[new Date().getDate() % EXEC_QUOTES.length];
+    const qEl=document.getElementById('kpiExecQuote'), wEl=document.getElementById('kpiExecWho');
+    const qEl2=document.getElementById('kpiExecQuoteB'), wEl2=document.getElementById('kpiExecWhoB');
+    const qt='「'+todayQ.text+'」', wt='— '+todayQ.who+'（'+todayQ.role+'）';
+    if(qEl)qEl.textContent=qt; if(wEl)wEl.textContent=wt;
+    if(qEl2)qEl2.textContent=qt; if(wEl2)wEl2.textContent=wt;
+
+    document.getElementById('dataTs').textContent = 'データ取得: ' + new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+    restoreReadStates();
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('briefBody').innerHTML = '<div class="brief-empty" style="color:#ef4444">接続エラー: ' + e.message + '</div>';
+  }
 }
 
-init();
-setInterval(init, 3*60*1000);
-loadMercariTracker();
-setInterval(loadMercariTracker, 3*60*1000);
+function restoreReadStates() {
+  const t=new Date().toISOString().slice(0,10);
+  ['rbMercari','rbKeiba','rbKyun'].forEach(id=>{
+    if(localStorage.getItem('read_'+id+'_'+t)){const b=document.getElementById(id);if(b){b.textContent='✓ 確認済み';b.classList.add('done');}}
+  });
+}
 
+// ━━━━━━━━━━━ MERCARI TRACKER ━━━━━━━━━━━
+let mercariPriceData = [];
 async function loadMercariTracker() {
   try {
-    // 直近スナップショットを多めに取得（商品20 × 最大4計測 = 80件）
-    const { data: snaps } = await sb
-      .from('market_snapshots')
+    const { data: snaps } = await sb.from('market_snapshots')
       .select('item_no, name, price, views, likes_count, snapshot_date, created_at')
-      .order('created_at', { ascending: false })
-      .limit(100);
+      .order('created_at', { ascending: false }).limit(100);
     if (!snaps || !snaps.length) return;
-
-    // 商品ごとに最新2件を取得
     const byItem = {};
     snaps.forEach(s => {
       if (!byItem[s.item_no]) byItem[s.item_no] = [];
       if (byItem[s.item_no].length < 2) byItem[s.item_no].push(s);
     });
-
     const items = Object.values(byItem).map(g => {
-      const cur = g[0], prv = g[1];
+      const cur=g[0], prv=g[1];
       const delta = prv != null ? cur.views - prv.views : null;
       const likes = cur.likes_count || 0;
-      // 判定
       let status = 'ok';
-      if (likes === 0) {
-        if (delta === null) status = 'watch';
-        else if (delta <= 1) status = 'warn';
-        else if (delta <= 3) status = 'warn';
-        else if (delta <= 5) status = 'watch';
-      }
+      if (likes===0) { if(delta===null)status='watch'; else if(delta<=3)status='warn'; else if(delta<=5)status='watch'; }
       return { ...cur, delta, likes, status };
     });
-
-    // 🔴→🟡→🟢の順
-    const order = { warn:0, watch:1, ok:2 };
-    items.sort((a,b) => order[a.status] - order[b.status]);
-
-    const warn  = items.filter(i=>i.status==='warn').length;
-    const watch = items.filter(i=>i.status==='watch').length;
-    const ok    = items.filter(i=>i.status==='ok').length;
-
-    document.getElementById('trackerTs').textContent =
-      new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}) + ' 更新';
-
+    const order={warn:0,watch:1,ok:2};
+    items.sort((a,b)=>order[a.status]-order[b.status]);
+    const warn=items.filter(i=>i.status==='warn').length;
+    const watch=items.filter(i=>i.status==='watch').length;
+    const ok=items.filter(i=>i.status==='ok').length;
+    document.getElementById('trackerTs').textContent = new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+' 更新';
     document.getElementById('trackerBody').innerHTML = items.map(it => {
-      const d = it.delta;
-      const dCls = d === null ? '' : d <= 1 ? 'td-delta-zero' : d <= 3 ? 'td-delta-low' : d <= 5 ? 'td-delta-mid' : 'td-delta-up';
-      const dTxt = d === null ? '—' : (d >= 0 ? '+' : '') + d;
-      const lCls = it.likes > 0 ? 'td-like' : 'td-like-zero';
-      const lTxt = it.likes > 0 ? '♥' + it.likes : '0';
-      const badge = it.status === 'warn'
-        ? '<span class="badge-warn">値下げ候補</span>'
-        : it.status === 'watch'
-        ? '<span class="badge-watch">要注意</span>'
-        : '<span class="badge-ok">OK</span>';
-      return `<tr>
-        <td class="td-name" title="${it.name}">No.${it.item_no} ${it.name}</td>
-        <td class="td-price">¥${(it.price||0).toLocaleString()}</td>
-        <td class="${dCls}">${dTxt}</td>
-        <td class="${lCls}">${lTxt}</td>
-        <td>${badge}</td>
-      </tr>`;
+      const d=it.delta;
+      const dCls=d===null?'':d<=1?'td-delta-zero':d<=3?'td-delta-low':d<=5?'td-delta-mid':'td-delta-up';
+      const dTxt=d===null?'—':(d>=0?'+':'')+d;
+      const lCls=it.likes>0?'td-like':'td-like-zero';
+      const lTxt=it.likes>0?'♥'+it.likes:'0';
+      const badge=it.status==='warn'?'<span class="badge-warn">値下げ候補</span>':it.status==='watch'?'<span class="badge-watch">要注意</span>':'<span class="badge-ok">OK</span>';
+      return `<tr><td class="td-name" title="${it.name}">No.${it.item_no} ${it.name}</td><td class="td-price">¥${(it.price||0).toLocaleString()}</td><td class="${dCls}">${dTxt}</td><td class="${lCls}">${lTxt}</td><td>${badge}</td></tr>`;
     }).join('');
-
     document.getElementById('trackerFooter').innerHTML =
-      `<span>🔴 値下げ候補 <strong style="color:#ef4444">${warn}件</strong></span>` +
-      `<span>🟡 要注意 <strong style="color:#f59e0b">${watch}件</strong></span>` +
-      `<span>🟢 OK <strong style="color:#3DCFC2">${ok}件</strong></span>` +
-      `<span style="margin-left:auto;color:#555">データを貼るたびに自動更新</span>`;
-
+      `<span>🔴 値下げ候補 <strong style="color:#ef4444">${warn}件</strong></span>`+
+      `<span>🟡 要注意 <strong style="color:#f59e0b">${watch}件</strong></span>`+
+      `<span>🟢 OK <strong style="color:var(--accent-green)">${ok}件</strong></span>`+
+      `<span style="margin-left:auto;color:#555">データ貼るたびに自動更新</span>`;
   } catch(e) { console.error('tracker:', e); }
 }
 
-// ── フローティングボタン：スクロールでフッターに消える ──
+// ━━━━━━━━━━━ QUIZ FLOAT ━━━━━━━━━━━
 window.addEventListener('scroll', () => {
-  const footer = document.getElementById('pageFooter');
-  const btn = document.getElementById('quizFloat');
-  if (!footer || !btn) return;
-  const footerTop = footer.getBoundingClientRect().top;
-  if (footerTop < window.innerHeight + 300) {
-    btn.classList.add('hide-float');
-  } else {
-    btn.classList.remove('hide-float');
-  }
-}, { passive: true });
+  const footer=document.getElementById('pageFooter');
+  const btn=document.getElementById('quizFloat');
+  if(!footer||!btn)return;
+  if(footer.getBoundingClientRect().top < window.innerHeight+300) btn.classList.add('hide-float');
+  else btn.classList.remove('hide-float');
+}, {passive:true});
 
-// ── アコーディオン宿題 ──
+// ━━━━━━━━━━━ ACCORDION TODO ━━━━━━━━━━━
 const TODO_DATA = [
-  {
-    id: 'github-token', badge: 'CEO',
-    title: 'GitHub Personal Access Token 取得',
-    context: 'GitHub Pages で電脳会社サイトを全世界に公開するために必要なパスワードのようなもの。これを庵野に渡すと、記事を書くたびにサイトが自動更新される仕組みになる。1回やれば以降は完全自動。',
-    manual: '手順書：04_手順書/01_GitHub_Token取得.txt を開いて操作するだけ（約10分）'
-  },
-  {
-    id: 'a8-rakuten', badge: 'CEO',
-    title: 'A8.net 登録・楽天証券に提携申請',
-    context: '6/15の¥3,500回収目標の最短ルート。楽天証券のアフィリエイトリンク1件のCV（口座開設完了）で約¥3,000入る。A8.netに登録して楽天証券プログラムに申請するだけ。竹中がリンク管理をする。',
-    manual: '手順書：04_手順書/02_A8net登録.txt / 所要時間：15分'
-  },
-  {
-    id: 'kassenjo-sns', badge: 'CEO',
-    title: '決算城 SNSアカウント取得（X / インスタ / スレッズ）',
-    context: '風雲！決算城の4コマをSNSで配信するためのアカウント。今すぐ名前だけ取っておけばOK（無料・各5分）。後から本格運用。名前を取り忘れると他の人に取られる可能性がある。',
-    manual: '手順書：04_手順書/04_SNSアカウント取得_決算城.txt / 3アカウント計15分'
-  },
-  {
-    id: 'kassenjo-articles', badge: '自動',
-    title: '決算城 記事002〜100作成',
-    context: '決算城サイトの企業解説記事を100本揃える作業。庵野が代行するので青柳さんは何もしなくていい。「続きをやって」と言うだけで次の記事が自動生成される。現在001（Alphabet）のみ完成。',
-    manual: '「続きをやって」と言うだけ。庵野が記事を生成してSupabaseに保存する'
-  },
-  {
-    id: 'makecom', badge: '自動',
-    title: 'Make.com スケジュール設定（競馬チーム）',
-    context: '競馬の予想記事・解説記事を毎週水〜土に自動投稿するための設定。現在は手動。設定すると寝ている間に記事が公開される。庵野が設計書を作ってから着手予定。',
-    manual: '庵野が設計書を先出しする。その後CEOがMake.comで設定（約30分）'
-  }
+  { id:'github-token', badge:'CEO', title:'GitHub Personal Access Token 取得', context:'GitHub Pages で電脳会社サイトを全世界に公開するために必要なパスワードのようなもの。これを庵野に渡すと、記事を書くたびにサイトが自動更新される仕組みになる。1回やれば以降は完全自動。', manual:'手順書：04_手順書/01_GitHub_Token取得.txt を開いて操作するだけ（約10分）' },
+  { id:'a8-rakuten', badge:'CEO', title:'A8.net 登録・楽天証券に提携申請', context:'6/15の¥3,500回収目標の最短ルート。楽天証券のアフィリエイトリンク1件のCV（口座開設完了）で約¥3,000入る。A8.netに登録して楽天証券プログラムに申請するだけ。竹中がリンク管理をする。', manual:'手順書：04_手順書/02_A8net登録.txt / 所要時間：15分' },
+  { id:'kassenjo-sns', badge:'CEO', title:'決算城 SNSアカウント取得（X / インスタ / スレッズ）', context:'風雲！決算城の4コマをSNSで配信するためのアカウント。今すぐ名前だけ取っておけばOK（無料・各5分）。後から本格運用。名前を取り忘れると他の人に取られる可能性がある。', manual:'手順書：04_手順書/04_SNSアカウント取得_決算城.txt / 3アカウント計15分' },
+  { id:'kassenjo-articles', badge:'自動', title:'決算城 記事002〜100作成', context:'決算城サイトの企業解説記事を100本揃える作業。庵野が代行するので青柳さんは何もしなくていい。「続きをやって」と言うだけで次の記事が自動生成される。現在001（Alphabet）のみ完成。', manual:'「続きをやって」と言うだけ。庵野が記事を生成してSupabaseに保存する' },
+  { id:'makecom', badge:'自動', title:'Make.com スケジュール設定（競馬チーム）', context:'競馬の予想記事・解説記事を毎週水〜土に自動投稿するための設定。現在は手動。設定すると寝ている間に記事が公開される。庵野が設計書を作ってから着手予定。', manual:'庵野が設計書を先出しする。その後CEOがMake.comで設定（約30分）' }
 ];
-
-const SKIP_KEY = 'todo_skipped';
-const DO_KEY = 'todo_doing';
-const skipped = JSON.parse(localStorage.getItem(SKIP_KEY) || '[]');
-const doing = JSON.parse(localStorage.getItem(DO_KEY) || '[]');
-
-function renderAccTodos() {
-  const container = document.getElementById('accTodoList');
-  container.innerHTML = TODO_DATA.map(t => {
-    const isDoing = doing.includes(t.id);
-    const isSkipped = skipped.includes(t.id);
-    if (isSkipped) return '';
-    const bc = t.badge === 'CEO' ? 'badge-ceo' : 'badge-auto';
-    return `<div class="acc-item ${isDoing ? 'done-item' : ''}" id="acc-${t.id}">
+const SKIP_KEY='todo_skipped', DO_KEY='todo_doing';
+const skipped=JSON.parse(localStorage.getItem(SKIP_KEY)||'[]');
+const doing=JSON.parse(localStorage.getItem(DO_KEY)||'[]');
+function renderAccTodos(){
+  const container=document.getElementById('accTodoList');
+  container.innerHTML=TODO_DATA.map(t=>{
+    if(skipped.includes(t.id))return'';
+    const isDoing=doing.includes(t.id);
+    const bc=t.badge==='CEO'?'badge-ceo':'badge-auto';
+    return `<div class="acc-item ${isDoing?'done-item':''}" id="acc-${t.id}">
       <div class="acc-head" onclick="toggleAcc('${t.id}')">
         <span class="acc-badge ${bc}">${t.badge}</span>
-        <span class="acc-head-title">${isDoing ? '✓ ' : ''}${t.title}</span>
+        <span class="acc-head-title">${isDoing?'✓ ':''}${t.title}</span>
         <span class="acc-arrow" id="arr-${t.id}">▼</span>
       </div>
       <div class="acc-body" id="body-${t.id}">
@@ -1413,53 +1222,30 @@ function renderAccTodos() {
     </div>`;
   }).join('');
 }
-
-function toggleAcc(id) {
-  const body = document.getElementById('body-' + id);
-  const arr = document.getElementById('arr-' + id);
-  const isOpen = body.classList.contains('open');
-  // 他を全部閉じる
-  document.querySelectorAll('.acc-body.open').forEach(b => b.classList.remove('open'));
-  document.querySelectorAll('.acc-arrow.open').forEach(a => a.classList.remove('open'));
-  if (!isOpen) {
-    body.classList.add('open');
-    arr.classList.add('open');
-  }
+function toggleAcc(id){
+  const body=document.getElementById('body-'+id), arr=document.getElementById('arr-'+id);
+  const isOpen=body.classList.contains('open');
+  document.querySelectorAll('.acc-body.open').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('.acc-arrow.open').forEach(a=>a.classList.remove('open'));
+  if(!isOpen){body.classList.add('open');arr.classList.add('open');}
 }
-
-function markDoing(id) {
-  if (!doing.includes(id)) { doing.push(id); localStorage.setItem(DO_KEY, JSON.stringify(doing)); }
-  renderAccTodos();
-}
-
-function markSkip(id) {
-  if (!skipped.includes(id)) { skipped.push(id); localStorage.setItem(SKIP_KEY, JSON.stringify(skipped)); }
-  renderAccTodos();
-}
-
+function markDoing(id){if(!doing.includes(id)){doing.push(id);localStorage.setItem(DO_KEY,JSON.stringify(doing));}renderAccTodos();}
+function markSkip(id){if(!skipped.includes(id)){skipped.push(id);localStorage.setItem(SKIP_KEY,JSON.stringify(skipped));}renderAccTodos();}
 renderAccTodos();
-loadProposal();
 
-// ── PDCA 提案カード ──
+// ━━━━━━━━━━━ PDCA ━━━━━━━━━━━
 async function loadProposal() {
-  const approved = JSON.parse(localStorage.getItem('proposal_approved') || '[]');
-  const rejected = JSON.parse(localStorage.getItem('proposal_rejected') || '[]');
+  const approved=JSON.parse(localStorage.getItem('proposal_approved')||'[]');
+  const rejected=JSON.parse(localStorage.getItem('proposal_rejected')||'[]');
   try {
-    const { data } = await sb.from('meeting_notes')
-      .select('id, title, content, created_at')
-      .eq('category', 'pdca_proposal')
-      .order('created_at', { ascending: false })
-      .limit(3);
-    const pending = (data || []).filter(p => !approved.includes(p.id) && !rejected.includes(p.id));
-    const section = document.getElementById('proposalSection');
-    if (!pending.length) { section.innerHTML = ''; return; }
-    section.innerHTML = pending.map(p => {
-      const preview = (p.content||'').substring(0, 400) + '…';
+    const {data}=await sb.from('meeting_notes').select('id,title,content,created_at').eq('category','pdca_proposal').order('created_at',{ascending:false}).limit(3);
+    const pending=(data||[]).filter(p=>!approved.includes(p.id)&&!rejected.includes(p.id));
+    const section=document.getElementById('proposalSection');
+    if(!pending.length){section.innerHTML='';return;}
+    section.innerHTML=pending.map(p=>{
+      const preview=(p.content||'').substring(0,400)+'…';
       return `<div class="proposal-card" id="prop-${p.id}">
-        <div class="proposal-header">
-          <span class="proposal-label">📊 PDCA提案 — 承認待ち</span>
-          <span class="proposal-badge">${p.title.substring(0,30)}</span>
-        </div>
+        <div class="proposal-header"><span class="proposal-label">📊 PDCA提案 — 承認待ち</span><span class="proposal-badge">${p.title.substring(0,30)}</span></div>
         <div class="proposal-body" id="pbody-${p.id}">${preview}</div>
         <div class="proposal-footer">
           <button class="btn-approve" onclick="approveP(${p.id})">✓ 承認して実施</button>
@@ -1468,35 +1254,32 @@ async function loadProposal() {
         </div>
       </div>`;
     }).join('');
-  } catch(e) {}
+  } catch(e){}
 }
+function expandP(id,btn){
+  const body=document.getElementById('pbody-'+id);if(!body)return;
+  if(body.classList.contains('expanded')){body.classList.remove('expanded');btn.textContent='全文を見る';}
+  else{sb.from('meeting_notes').select('content').eq('id',id).single().then(({data})=>{if(data)body.textContent=data.content;body.classList.add('expanded');btn.textContent='閉じる';});}
+}
+function approveP(id){
+  const arr=JSON.parse(localStorage.getItem('proposal_approved')||'[]');
+  arr.push(id);localStorage.setItem('proposal_approved',JSON.stringify(arr));
+  const card=document.getElementById('prop-'+id);
+  if(card)card.querySelector('.proposal-footer').innerHTML='<span style="color:var(--accent-green);font-size:12px;font-weight:700;">✓ 承認済み — 庵野が次の記事から新方針を適用します</span>';
+}
+function rejectP(id){
+  const arr=JSON.parse(localStorage.getItem('proposal_rejected')||'[]');
+  arr.push(id);localStorage.setItem('proposal_rejected',JSON.stringify(arr));
+  const card=document.getElementById('prop-'+id);
+  if(card){card.style.opacity='0';card.style.transition='.3s';setTimeout(()=>card.remove(),300);}
+}
+loadProposal();
 
-function expandP(id, btn) {
-  const body = document.getElementById('pbody-' + id);
-  if (!body) return;
-  if (body.classList.contains('expanded')) {
-    body.classList.remove('expanded'); btn.textContent = '全文を見る';
-  } else {
-    sb.from('meeting_notes').select('content').eq('id', id).single().then(({data}) => {
-      if (data) body.textContent = data.content;
-      body.classList.add('expanded'); btn.textContent = '閉じる';
-    });
-  }
-}
-
-function approveP(id) {
-  const arr = JSON.parse(localStorage.getItem('proposal_approved') || '[]');
-  arr.push(id); localStorage.setItem('proposal_approved', JSON.stringify(arr));
-  const card = document.getElementById('prop-' + id);
-  if (card) card.querySelector('.proposal-footer').innerHTML = '<span style="color:#22c55e;font-size:12px;font-weight:bold;">✓ 承認済み — 庵野が次の記事から新方針を適用します</span>';
-}
-
-function rejectP(id) {
-  const arr = JSON.parse(localStorage.getItem('proposal_rejected') || '[]');
-  arr.push(id); localStorage.setItem('proposal_rejected', JSON.stringify(arr));
-  const card = document.getElementById('prop-' + id);
-  if (card) { card.style.opacity = '0'; card.style.transition = '.3s'; setTimeout(() => card.remove(), 300); }
-}
+// ━━━━━━━━━━━ START ━━━━━━━━━━━
+init();
+setInterval(init, 3*60*1000);
+loadMercariTracker();
+setInterval(loadMercariTracker, 3*60*1000);
 </script>
 </body>
 </html>
