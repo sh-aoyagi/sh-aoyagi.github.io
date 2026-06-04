@@ -1,0 +1,67 @@
+========================================
+青柳さんの宿題リスト
+作成：2026-05-25 13:09
+========================================
+
+【今日中】
+
+□ A8.net登録（最優先・30分）
+   → https://www.a8.net/ でアカウント作成
+   → 登録後「楽天証券」で検索してアフィリリンクを取得
+   → リンクを庵野に渡す（コピペするだけ）
+   → これが完了すると¥3,000/CVの導線が初めて生まれる
+
+□ Make.comアカウント作成（5分）
+   → https://make.com にアクセス
+   → 「Get started free」→ Gmailで登録するだけ
+   → 作成したらパスワードを手順書と一緒に保管
+
+□ Twitter（X）アプリのAPIキー取得（15分）
+   → https://developer.twitter.com にアクセス
+   → @FIRE1173Go でログイン
+   → 「Developer Portal」→「New App」→「kassenjo_auto」で作成
+   → 以下の4つをメモ帳にコピーして庵野に渡す：
+      ・API Key
+      ・API Key Secret
+      ・Access Token
+      ・Access Token Secret
+   → App permissions は「Read and Write」に変更すること（重要）
+
+----------------------------------------
+
+【今週中】
+
+□ GitHub Personal Access Token取得（1回だけ）
+   → 手順書：C:\Users\user\Desktop\電脳会社\04_手順書\Personal access tokens (classic).txt
+   → 庵野がパワポで手順を追加予定
+
+□ 決算城SNSアカウント取得（5分×3）
+   → X（Twitter）: 「風雲決算城」または「kassen_shiro」など
+   → Instagram: 同上
+   → Threads: 同上
+   → 名前だけ取っておけばOK（投稿は後でいい）
+
+□ GA4プロパティ作成・測定ID取得
+   → https://analytics.google.com にアクセス
+   → 「管理」→「プロパティを作成」→ サイト名：風雲！決算城
+   → 測定ID（G-XXXXXXXXXX）を庵野に渡す
+
+----------------------------------------
+
+【庵野がやる（青柳さんは待つだけ）】
+
+✅ 001〜005記事 HTML完成済み
+✅ Make.com手順書作成済み
+   → C:\Users\user\Desktop\電脳会社\04_手順書\05_Make_X自動配信.txt
+□ A8アフィリリンクが来たら5記事に一括挿入
+□ GitHub Pagesに001〜005を公開
+□ Make.com × Xの自動配信シナリオ設定
+
+----------------------------------------
+
+【直近ゴール】
+6/15（月）までに¥3,500回収
+→ 楽天証券アフィリ1件（約¥3,000）が最短ルート
+→ 今日のA8.net登録が全ての起点
+
+========================================

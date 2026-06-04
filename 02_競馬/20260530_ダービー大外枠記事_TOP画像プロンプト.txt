@@ -1,0 +1,35 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+note TOP画像プロンプト
+対象記事：日本ダービー2026｜ロブチェンと17番枠、大外から歴史を変えた馬たちへ
+サイズ：横1280×670px（note推奨・16:9バナー）
+生成ツール：Gemini（Imagen）推奨 / DALL-E 3 代替
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【プロンプト（Gemini / DALL-E 3 共通・英語版）】
+
+A lone racehorse charging powerfully down the final straight of a prestigious turf racing course, running from the far outside lane. Shot from a low cinematic angle, looking up slightly at the horse and jockey. The horse is slightly ahead, isolated from the pack which appears blurred in the far background near the inner rails. Dramatic golden sunset backlighting creates a strong silhouette and rim light on the horse's body and the jockey crouched low. Motion blur on the legs conveys explosive speed. The sky is deep amber and orange. The left one-third of the image has a semi-transparent dark gradient overlay — this area is reserved for Japanese text placement. Wide horizontal banner format, 1280x670 pixels. Film photography grain, high contrast, cinematic. No text, no watermarks, no logos.
+
+━━━━━━━━━━━━━━━━━━━
+
+【プロンプト（日本語版・Gemini向け）】
+
+横長バナー形式（1280×670px）。競馬場のゴール前直線、最も外側のレーンを走る一頭の競走馬を低い視点から見上げる構図。馬と騎手のシルエットに夕日のリムライトが当たり、脚には躍動感のあるモーションブラー。内ラチ付近に他の馬が遠くぼかして見える。空は深いオレンジと金色。画像左側1/3はテキスト配置用に半透明のダークグラデーションを入れる。フィルム写真風・高コントラスト・シネマティック。文字・ロゴなし。
+
+━━━━━━━━━━━━━━━━━━━
+
+【構図メモ（永徳より）】
+- メインモチーフ：外から突き放す一頭 → 孤独と強さの対比
+- 光源：夕日逆光（シルエット×リムライト）→ 歴史的な記憶を呼び起こす色温度
+- テキストエリア：左1/3に確保（タイトル＋サブタイトルを白抜きで乗せる想定）
+- 他馬はぼかして遠景→「大外だけが見えている」視点を演出
+- 内枠・外枠の空間差を構図で語る
+
+【入れるテキスト（画像生成後に合成）】
+メインコピー：大外から、歴史は始まった。
+サブコピー：日本ダービー2026 前日考察
+
+【Gemini使用時の注意】
+→ アスペクト比は「1280x670」または「16:9 horizontal banner」で指定
+→ 馬の顔・騎手の顔がはっきり写ると特定馬に見えてしまうのでシルエット優先で再生成
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━

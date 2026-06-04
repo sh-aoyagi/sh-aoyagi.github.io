@@ -1,0 +1,101 @@
+=====================================
+楽天競馬LP 画像生成メモ（Gemini用）
+作成：2026-05-28
+=====================================
+
+LPファイル場所：
+C:\Users\user\Desktop\電脳会社\02_競馬\lp_rakuten_keiba.html
+（GitHub Pages公開後はindex.htmlとして差し替え）
+
+画像の置き場所：
+C:\denno\lp_staging\images\（フォルダを作ってここに入れる）
+
+=====================================
+【画像①】 ファイル名：hero-horse.jpg
+=====================================
+用途：ヒーローセクションの背景画像（半透明オーバーレイあり）
+サイズ：1600×900px 以上（横長）
+重要：テキストを重ねるので暗めのトーンでOK
+
+--- Gemini（Imagen）プロンプト ---
+Horizontal banner photo, 1600x900 pixels.
+A dark bay thoroughbred racehorse galloping at full speed
+on the final straight at Tokyo Racecourse at golden hour.
+Dramatic sunset with deep orange and crimson sky.
+Tokyo grandstand silhouette in background, slightly out of focus.
+Slight motion blur on hooves and mane conveying explosive power.
+Dust rising from turf. Cinematic lighting.
+Color palette: deep orange, gold, dark brown, shadow black.
+Photorealistic. No text, no watermark.
+Dark overall tone (the image will have a dark overlay applied).
+
+--- 補足 ---
+夕焼け・ゴール直前・ドラマチックが必須。
+明るすぎると文字が読めなくなるので暗めで生成する。
+
+
+=====================================
+【画像②】 ファイル名：author-avatar.jpg
+=====================================
+用途：著者紹介セクションの丸アイコン（80×80px表示）
+サイズ：400×400px（正方形）
+重要：青柳さんの実際の写真があればそちらを優先
+
+--- 実写がない場合のGeminiプロンプト ---
+Square portrait photo, 400x400 pixels.
+A Japanese man in his 30s, casual smart attire,
+slight smile, looking directly at camera.
+Clean neutral background.
+Warm, trustworthy expression.
+High quality portrait photography.
+No text, no watermark.
+
+--- 補足 ---
+実写があれば差し替え推奨。
+アイコンは丸くクリッピングされる（border-radius:50%）。
+
+
+=====================================
+【画像③】 ファイル名：ogp.jpg
+=====================================
+用途：SNSシェア時・LINEプレビュー用OGP画像
+サイズ：1200×630px（横長・OGP標準サイズ）
+重要：タイトルテキストを画像内に入れる
+
+--- Gemini（Imagen）プロンプト ---
+Horizontal OGP banner image, 1200x630 pixels.
+Background: Tokyo Racecourse main straight, golden hour,
+dark cinematic tone.
+Overlay text in large bold Japanese serif font:
+  Main: 「馬券を買うなら楽天ポイントが貯まる方がいい」（白・大）
+  Sub:  「楽天競馬 無料登録はこちら」（金・小）
+  Badge: 「FIREスコア開発者推薦」（ゴールドバッジ）
+Clean composition. Text must be clearly readable.
+Color palette: dark red #1a0000, gold #c8a84b, white.
+
+--- 補足 ---
+noteのリンクカードにも使われる。
+文字が小さいと潰れるので大きめに設定する。
+
+
+=====================================
+【画像④】 ファイル名：fire-logo.png（オプション）
+=====================================
+用途：LPにFIREスコアのロゴ・バッジを入れる場合
+サイズ：400×120px（横長・透過PNG）
+
+--- Geminiプロンプト ---
+Horizontal logo badge, 400x120 pixels, transparent background.
+Text: 「FIREスコア」in bold gold serif Japanese font.
+Subtitle: 「Final Insight Racing Evaluation」in small gold sans-serif.
+Minimalist design. Dark red and gold color scheme.
+Clean, professional. PNG with transparent background.
+
+=====================================
+作業完了後
+=====================================
+① 画像をC:\denno\lp_staging\images\に保存
+② git add images/ && git commit -m "Add LP images"
+③ git push（GitHub PAT設定後）
+
+=====================================

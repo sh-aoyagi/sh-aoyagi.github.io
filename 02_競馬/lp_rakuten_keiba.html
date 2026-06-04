@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>馬券を買うなら楽天ポイントが貯まる方がいい｜楽天競馬</title>
+  <meta name="description" content="地方競馬の馬券がスマホで買えて、楽天ポイントまで貯まる。無料で始められる楽天競馬を、競馬予想家FIREスコアが推薦します。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rakuten-red: #bf0000;
+      --rakuten-red-dark: #8a0000;
+      --rakuten-red-light: #ff4444;
+      --gold: #c8a84b;
+      --text-dark: #1a1a1a;
+      --text-mid: #444;
+      --text-light: #777;
+      --bg-light: #fafafa;
+      --bg-section: #f5f0eb;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      color: var(--text-dark);
+      line-height: 1.7;
+      background: #fff;
+    }
+
+    /* ============ HERO ============ */
+    .hero {
+      background: linear-gradient(135deg, #1a0000 0%, #3d0000 50%, #1a0000 100%);
+      color: #fff;
+      text-align: center;
+      padding: 60px 20px 50px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: #1a0000;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+      letter-spacing: 0.08em;
+    }
+    .hero h1 {
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(22px, 5vw, 36px);
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .hero h1 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+    .hero-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 32px;
+      position: relative;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--rakuten-red);
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 16px 40px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      transition: background 0.2s;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .btn-primary:hover { background: var(--rakuten-red-dark); }
+    .btn-primary.large { font-size: 18px; padding: 20px 52px; }
+    .hero-note {
+      margin-top: 12px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      position: relative;
+    }
+
+    /* ============ SECTION BASE ============ */
+    section { padding: 56px 20px; }
+    .container { max-width: 720px; margin: 0 auto; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--rakuten-red);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+
+    /* ============ PAIN ============ */
+    .pain { background: var(--bg-section); }
+    .pain-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .pain-list li {
+      background: #fff;
+      border-left: 3px solid #ddd;
+      padding: 14px 16px;
+      font-size: 15px;
+      color: var(--text-mid);
+    }
+    .pain-list li::before { content: '─　'; color: #bbb; }
+    .pain-answer {
+      background: var(--rakuten-red);
+      color: #fff;
+      padding: 20px 24px;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+      font-family: 'Noto Serif JP', serif;
+    }
+
+    /* ============ COMPARISON TABLE ============ */
+    .comparison { background: #fff; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table {
+      width: 100%;
+      min-width: 540px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    thead th {
+      background: var(--text-dark);
+      color: #fff;
+      padding: 12px 14px;
+      text-align: center;
+      font-weight: 700;
+    }
+    thead th.highlight { background: var(--rakuten-red); }
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody td:first-child { text-align: left; font-weight: 700; color: var(--text-mid); }
+    tbody td.highlight { background: #fff5f5; font-weight: 700; color: var(--rakuten-red); }
+    .badge-free {
+      display: inline-block;
+      background: var(--rakuten-red);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+    .check { color: var(--rakuten-red); font-size: 18px; }
+    .cross { color: #bbb; }
+    .triangle { color: #f0a500; }
+    .table-note {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 10px;
+    }
+
+    /* ============ STRENGTHS ============ */
+    .strengths { background: var(--bg-section); }
+    .strength-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .strength-card {
+      background: #fff;
+      border-radius: 4px;
+      padding: 20px;
+      border-top: 3px solid var(--rakuten-red);
+    }
+    .strength-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--rakuten-red);
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+    .strength-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .strength-desc { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+
+    /* ============ AUTHOR ============ */
+    .author { background: #1a0000; color: #fff; }
+    .author-inner {
+      border-left: 3px solid var(--gold);
+      padding-left: 20px;
+    }
+    .author-label {
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+    }
+    .author-text {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 16px;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.9);
+    }
+    .author-name {
+      margin-top: 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ============ STEPS ============ */
+    .steps { background: #fff; }
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      background: var(--rakuten-red);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-content h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .step-content p { font-size: 14px; color: var(--text-mid); }
+
+    /* ============ FAQ ============ */
+    .faq { background: var(--bg-section); }
+    .faq-list { display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { background: #fff; border-radius: 4px; padding: 18px 20px; }
+    .faq-q {
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+    }
+    .faq-q::before { content: 'Q. '; color: var(--rakuten-red); }
+    .faq-a { font-size: 14px; color: var(--text-mid); }
+    .faq-a::before { content: 'A. '; font-weight: 700; color: var(--text-dark); }
+
+    /* ============ CTA BOTTOM ============ */
+    .cta-bottom {
+      background: linear-gradient(135deg, #1a0000, #3d0000);
+      color: #fff;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .cta-bottom .section-title { color: #fff; }
+    .cta-bottom .section-title em { color: var(--gold); font-style: normal; }
+    .cta-bottom p { color: rgba(255,255,255,0.7); margin-bottom: 32px; font-size: 15px; }
+
+    /* ============ DISCLAIMER ============ */
+    .disclaimer {
+      background: #f5f5f5;
+      padding: 24px 20px;
+      font-size: 11px;
+      color: #999;
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 480px) {
+      .strength-grid { grid-template-columns: 1fr; }
+      table { font-size: 13px; }
+      thead th, tbody td { padding: 10px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">FIREスコア開発者 推薦</div>
+    <h1>馬券を買うなら、<br><em>楽天ポイントが貯まる方がいい。</em></h1>
+    <p class="hero-sub">地方競馬もオンラインで。無料で始められる。</p>
+    <a href="AFFILIATE_LINK_HERE" class="btn-primary large" target="_blank" rel="noopener noreferrer">楽天競馬に無料登録する</a>
+    <p class="hero-note">※登録無料・月額料金なし</p>
+  </div>
+</section>
+
+<!-- PAIN -->
+<section class="pain">
+  <div class="container">
+    <p class="section-label">Before</p>
+    <h2 class="section-title">こんな経験、ありませんか</h2>
+    <ul class="pain-list">
+      <li>競馬場・WINSまで行く時間がとれない</li>
+      <li>馬券を買いたいのに、どのサービスを使えばいいかわからない</li>
+      <li>月額料金を払うのは続けられるか不安</li>
+      <li>地方競馬も楽しみたいけど、どこで買えるか知らなかった</li>
+    </ul>
+    <div class="pain-answer">スマホで買えて、ポイントも貯まる。それが楽天競馬です。</div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="comparison">
+  <div class="container">
+    <p class="section-label">Comparison</p>
+    <h2 class="section-title">主要サービスと比べてみました</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left;">比較項目</th>
+            <th class="highlight">楽天競馬</th>
+            <th>JRA-VAN</th>
+            <th>netkeiba</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>月額料金</td>
+            <td class="highlight"><span class="badge-free">無料</span></td>
+            <td>880円〜</td>
+            <td>640円〜</td>
+          </tr>
+          <tr>
+            <td>馬券購入</td>
+            <td class="highlight"><span class="check">●</span> 可能</td>
+            <td><span class="cross">✕</span> 不可</td>
+            <td><span class="cross">✕</span> 不可</td>
+          </tr>
+          <tr>
+            <td>地方競馬対応</td>
+            <td class="highlight"><span class="check">●</span> 対応</td>
+            <td><span class="cross">✕</span> JRAのみ</td>
+            <td><span class="triangle">△</span> 一部</td>
+          </tr>
+          <tr>
+            <td>ポイント還元</td>
+            <td class="highlight"><span class="check">●</span> 楽天ポイント</td>
+            <td><span class="cross">✕</span> なし</td>
+            <td><span class="cross">✕</span> なし</td>
+          </tr>
+          <tr>
+            <td>スマホアプリ</td>
+            <td class="highlight"><span class="check">●</span> 無料</td>
+            <td><span class="check">●</span> 有料込み</td>
+            <td><span class="check">●</span> あり</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">※各サービスの料金は公式情報を基に記載（2026年5月時点）</p>
+    <br>
+    <a href="AFFILIATE_LINK_HERE" class="btn-primary" target="_blank" rel="noopener noreferrer">無料で楽天競馬を始める</a>
+  </div>
+</section>
+
+<!-- STRENGTHS -->
+<section class="strengths">
+  <div class="container">
+    <p class="section-label">Features</p>
+    <h2 class="section-title">楽天競馬を選ぶ4つの理由</h2>
+    <div class="strength-grid">
+      <div class="strength-card">
+        <p class="strength-num">01</p>
+        <h3 class="strength-title">完全無料で使える</h3>
+        <p class="strength-desc">登録料・月額料金なし。スマホアプリも無料。試してみるコストがゼロ。</p>
+      </div>
+      <div class="strength-card">
+        <p class="strength-num">02</p>
+        <h3 class="strength-title">楽天ポイントが貯まる</h3>
+        <p class="strength-desc">馬券購入でポイントが貯まり、貯まったポイントで馬券も買える。損がない設計。</p>
+      </div>
+      <div class="strength-card">
+        <p class="strength-num">03</p>
+        <h3 class="strength-title">地方競馬にも対応</h3>
+        <p class="strength-desc">JRA（中央）だけでなく、地方競馬の馬券もオンラインで購入可能。</p>
+      </div>
+      <div class="strength-card">
+        <p class="strength-num">04</p>
+        <h3 class="strength-title">楽天IDでそのまま登録</h3>
+        <p class="strength-desc">楽天会員なら新しいIDは不要。手続きがシンプルで5分で始められる。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTHOR -->
+<section class="author">
+  <div class="container">
+    <div class="author-inner">
+      <p class="author-label">FIREスコア開発者より</p>
+      <p class="author-text">
+        私がFIREスコアで予想した後、馬券を買う場所として使っているのが楽天競馬です。<br>
+        予想に時間をかけるなら、買い方は一番シンプルでいい。月額を払わず、ポイントが貯まる。それだけで十分な理由になります。<br>
+        無料で始めて、ダービーの結果を見てから続けるか決めればいい。
+      </p>
+      <p class="author-name">競馬予想 / FIREスコア開発者</p>
+    </div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="steps">
+  <div class="container">
+    <p class="section-label">How to Start</p>
+    <h2 class="section-title">3ステップで今日から始められる</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>楽天競馬に登録</h3>
+          <p>楽天IDでそのままログイン。なければ無料で作成できます。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>馬券購入口座を開設</h3>
+          <p>銀行口座と連携するだけ。審査は自動で完了します。</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>馬券を買ってポイントを貯める</h3>
+          <p>購入するたびに楽天ポイントが貯まります。ポイントで再購入もOK。</p>
+        </div>
+      </div>
+    </div>
+    <br>
+    <a href="AFFILIATE_LINK_HERE" class="btn-primary" target="_blank" rel="noopener noreferrer">無料で登録する（所要5分）</a>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="container">
+    <p class="section-label">FAQ</p>
+    <h2 class="section-title">よくある質問</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <p class="faq-q">本当に月額無料ですか？</p>
+        <p class="faq-a">はい。登録費・月額費・アプリ料金はすべて無料です。馬券を買った分だけ支払いが発生します。</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">楽天会員でないと使えませんか？</p>
+        <p class="faq-a">楽天IDがあれば利用できます。楽天会員でない方も、無料で楽天IDを取得してから登録できます。</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">地方競馬とはどれが対象ですか？</p>
+        <p class="faq-a">大井・浦和・川崎・名古屋・園田などのNAR地方競馬が対象です。レースによって対応状況が異なります。</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">ポイントはいつ付きますか？</p>
+        <p class="faq-a">購入後のポイント付与タイミングは楽天競馬の利用規約に準じます。詳細は公式サイトをご確認ください。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BOTTOM -->
+<section class="cta-bottom">
+  <div class="container">
+    <h2 class="section-title">予想を終えたら、<br><em>あとは買うだけ。</em></h2>
+    <p>FIREスコアで分析した本命馬を、無料のアプリで買う。<br>それが一番シンプルな競馬の楽しみ方です。</p>
+    <a href="AFFILIATE_LINK_HERE" class="btn-primary large" target="_blank" rel="noopener noreferrer">楽天競馬に無料登録する</a>
+    <p style="margin-top:12px; font-size:11px; color:rgba(255,255,255,0.4);">※登録無料・月額料金なし</p>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <p>本ページは楽天競馬のアフィリエイトプログラムに参加しています。</p>
+  <p>サービスの料金・機能は予告なく変更される場合があります。最新情報は各公式サイトでご確認ください。</p>
+  <p>馬券の購入は必ずご自身の判断と責任のもとで行ってください。</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+========================================
+風雲！決算城　ヒーロー画像 生成指示書
+作成：伊達（アートディレクター）
+版数：v1.0（2026-05-25）
+========================================
+
+■ 伊達からサイズ仕様の回答
+----------------------------------------
+記事ヒーロー画像：1280×720px（16:9・HD品質）
+  → article-hero-imgが全幅表示。800×450では粗くなるためHDに格上げ。
+
+OGP（SNSシェア用）：1200×630px（16:9）
+  → og:imageに使用。SNSカード表示時にクリップされない最適サイズ。
+
+インスタ用（将来）：1080×1350px（4:5）
+  → 記事公開告知投稿用。記事ヒーローを縦トリミングで流用可能。
+
+【保存ルール】
+記事ヒーロー：images/001_hero_new.jpg（〜005）
+ファイル形式：JPG品質85%（PNG不可・重すぎる）
+命名規則：NNN_hero_new.jpg（既存と区別するため_new付き）
+HTML反映：article-hero-imgのsrc属性を置き換え
+
+----------------------------------------
+■ コンセプト：ポータルとして「クリックしたくなる」基準
+----------------------------------------
+
+NG：
+  × 城の写真だけ（どれも同じに見える）
+  × 会社のロゴや製品写真（著作権問題）
+  × テキストが入りすぎて煩雑
+  × 明るく爽やかなストック写真（サイトのトーンと合わない）
+
+OK：
+  ○ 城と「現代テクノロジー」の組み合わせ（融合・対比・コラージュ感）
+  ○ 夜景・炎・光・煙などドラマチックな要素
+  ○ 武将のシルエット＋企業の象徴的なビジュアルの組み合わせ
+  ○ 黒・金・朱の色調に統一（サイトCSS基調色と合わせる）
+  ○ 余白と緊張感（全面を埋めない）
+
+クリックを生む構図の原則：
+  1. 「何が起きているのか気になる」絵であること
+  2. 武将（人物要素）が必ず入ること（顔・シルエットどちらでも）
+  3. 企業の「規模感・勢い」が視覚的に伝わること
+
+========================================
+001　Alphabet（Google）× 織田信長　安土城
+========================================
+
+【コンセプト】
+「炎の城と検索の光」
+天守閣の炎に照らされた信長のシルエット。
+彼の足元にはデータの光の波が広がる。
+「支配」と「テクノロジー」の交差点。
+
+【ChatGPT / DALL-E 3用プロンプト】
+Cinematic digital painting, 1280x720px, dark atmospheric style.
+A silhouette of a samurai warlord (Oda Nobunaga type — tall, commanding, in full armor)
+standing at the top of Azuchi Castle at night.
+Below and around him: golden data streams and glowing search result lines
+cascade down the castle walls like flowing lava.
+The sky is deep black with one beam of bright white light cutting diagonally.
+Color palette: black, deep gold, crimson red. No text. No logos.
+Cinematic, moody, high contrast. Sharp silhouette against dramatic backlighting.
+
+【Gemini（Imagen）用プロンプト（日本語）】
+シネマティックなデジタル絵画・1280×720px・ダークな雰囲気。
+夜の安土城の最上階に立つ鎧武将のシルエット（信長・背が高く威圧的）。
+城壁を伝って黄金のデータストリームと光の波が流れ落ちる。
+空は深い黒。斜めに白い光の柱が一本走る。
+カラー：黒・深い金・深紅。文字なし・ロゴなし。
+映画的・高コントラスト・逆光シルエット。
+
+【保存ファイル名】images/001_hero_new.jpg
+
+========================================
+002　Apple × 北条氏康　小田原城
+========================================
+
+【コンセプト】
+「堀の深さと静寂の支配」
+夜明け前、深い霧に包まれた小田原城の堀。
+水面に城が映り込み、その倒影が微かにデジタル回路のように見える。
+氏康は城の欄干から堀を見下ろしている。
+
+【ChatGPT / DALL-E 3用プロンプト】
+Cinematic painting, 1280x720px. Pre-dawn mist over a Japanese castle moat (Odawara Castle style).
+A samurai in court attire (calm, dignified — Hojo Ujiyasu type) leans against a railing,
+looking down at the deep moat.
+The moat water reflects the castle perfectly. In the reflection: faint circuit board patterns
+dissolve into the water.
+Colors: deep navy blue, silver white mist, pale gold reflections.
+Extremely calm, elegant, minimal. The sense of impenetrable stillness.
+No text. Ultra-wide cinematic composition.
+
+【Gemini（Imagen）用プロンプト（日本語）】
+シネマティック絵画・1280×720px・夜明け前の霧。
+小田原城風の日本城郭と深い堀。霧が水面を覆う。
+欄干にもたれた公家風武将（氏康・穏やかで威厳ある）が堀を見下ろす。
+水面に城の完璧な倒影。その倒影の中に微かな回路基板のパターン。
+色調：深い紺色・白い霧・淡い金の反射。
+極限まで静かで優雅。「難攻不落」の静寂。文字なし。
+
+【保存ファイル名】images/002_hero_new.jpg
+
+========================================
+003　Microsoft × 諸葛亮孔明　荊州の城
+========================================
+
+【コンセプト】
+「羽扇と三つの天体」
+孔明が羽扇を広げた瞬間、夜空に三つの光の球体（Azure・Office・Windows）が
+それぞれ異なる軌道で輝く。
+星図を読む軍師のドラマ。
+
+【ChatGPT / DALL-E 3用プロンプト】
+Cinematic digital painting, 1280x720px. Night sky, ancient Chinese military advisor
+(Zhuge Liang — wearing white robes, feather fan open) stands on a cliff overlooking a vast dark plain.
+Above him: three luminous orbs float in different orbits, connected by golden light threads
+forming a triangular constellation.
+Stars fill the dark sky. The advisor's white robe catches the light of the orbs.
+Colors: deep black, pure white, gold, faint blue.
+Epic scale, philosophical mood. The sense of grand strategy across time.
+No text. Widescreen.
+
+【Gemini（Imagen）用プロンプト（日本語）】
+シネマティック絵画・1280×720px・夜空。
+崖の上に立つ白衣の古代中国軍師（孔明・羽扇を開く）。
+頭上に三つの光の球体が異なる軌道に浮かび、金の光の糸で三角形をつくる。
+満天の星空。白い衣が光に照らされる。
+色調：深い黒・純白・金・淡い青。壮大なスケール・哲学的な雰囲気。
+文字なし。
+
+【保存ファイル名】images/003_hero_new.jpg
+
+========================================
+004　Amazon × 豊臣秀吉　大坂城
+========================================
+
+【コンセプト】
+「一夜にして現れた城と積み上がる金貨」
+夜明けに突然聳え立つ大坂城。
+その城壁の下から無数の物流の光が広がり、
+城の周囲に金貨と荷箱が山積みになっている。
+秀吉は城の最上階から笑って見下ろしている。
+
+【ChatGPT / DALL-E 3用プロンプト】
+Epic digital painting, 1280x720px. Dawn light. An enormous Japanese castle (Osaka-style)
+dramatically rises from mist, as if it appeared overnight.
+Below the walls: streams of glowing delivery boxes and gold coins flood outward in all directions
+like rivers of light.
+At the very top: a small triumphant samurai figure (monkey-like grin, arms wide — Toyotomi Hideyoshi type)
+laughs facing outward.
+Colors: dawn orange and gold, deep shadow, brilliant amber light.
+Sense of explosive growth and energy. Action, movement, abundance.
+Heroic scale. No text.
+
+【Gemini（Imagen）用プロンプト（日本語）】
+叙事詩的デジタル絵画・1280×720px・夜明け。
+霧の中から突然そびえ立つ大坂城風の巨大な城。一夜で建ったような威容。
+城壁の下から輝く荷箱と金貨の流れが四方に広がる（光の川）。
+最上階に小さな武将のシルエット（秀吉・両手を広げて大笑い）。
+色調：夜明けのオレンジと金・深い影・輝くアンバー。
+爆発的な成長エネルギー・動き・豊かさ。スケール感。文字なし。
+
+【保存ファイル名】images/004_hero_new.jpg
+
+========================================
+005　Meta × 明智光秀　坂本城
+========================================
+
+【コンセプト】
+「琵琶湖の倒影と消えゆく境界線」
+夕暮れの琵琶湖。水面と空の境界が消えかかっている。
+光秀は湖面を覗き込み、そこに映る「別の世界」（Metaverse）に気づく。
+現実と仮想の境界線が溶けていく瞬間。
+
+【ChatGPT / DALL-E 3用プロンプト】
+Cinematic digital painting, 1280x720px. Twilight over a vast lake (Lake Biwa style).
+The horizon between water and sky is barely visible — both are the same deep violet-gold.
+A lone samurai (beautiful, melancholic — Akechi Mitsuhide type) crouches at the water's edge,
+staring into the reflection.
+In the reflection: a glowing digital city of geometric shapes (Metaverse aesthetic)
+replaces the castle that should appear.
+Colors: deep violet, amber gold, pale pink of fading sunset.
+Melancholic, cinematic, mysterious. The boundary between two worlds.
+No text. Ultra-wide.
+
+【Gemini（Imagen）用プロンプト（日本語）】
+シネマティック絵画・1280×720px・夕暮れの琵琶湖。
+水面と空の境界が消えかかる。どちらも深い紫と金。
+水辺にしゃがむ孤独な武将（明智光秀・美しく哀愁のある顔）が水面を覗き込む。
+水面の倒影：城ではなく幾何学的なデジタル都市（Metaverse的）が光る。
+色調：深い紫・琥珀の金・夕焼けの淡いピンク。
+哀愁・神秘・二つの世界の境界。文字なし。
+
+【保存ファイル名】images/005_hero_new.jpg
+
+========================================
+■ 伊達から永徳へ（生成後の確認チェックリスト）
+========================================
+
+□ 各記事の「城名」「武将の雰囲気」が画像から伝わるか
+□ 1280×720px（JPG品質85%）で保存されているか
+□ 黒・金・朱の色調に近いか（明るすぎないか）
+□ 文字・ロゴが画像内に入っていないか（著作権・清潔感）
+□ 5話並べたとき、各話で表情が異なるか（同じ構図を繰り返さない）
+□ 人物（武将シルエット等）が必ず入っているか
+
+生成完了後：
+1. images/NNN_hero_new.jpg で保存
+2. 各記事HTMLの article-hero-img > img の src を更新
+3. 伊達に報告 → 確認後にプッシュ
+
+========================================
+以上。質問は伊達まで。
+========================================

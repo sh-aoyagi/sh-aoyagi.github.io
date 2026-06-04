@@ -1,0 +1,316 @@
+========================================
+風雲！決算城　4コマ漫画 生成指示書
+作成：伊達（アートディレクター）
+版数：v1.0（2026-05-25）
+========================================
+
+■ 共通仕様（全5話）
+----------------------------------------
+・生成ツール：ChatGPT（DALL-E 3）またはGemini（Imagen）
+  ※Midjourneyのパラメータ（--ar, --style, --q）は一切使用しない
+・1枚の画像に4コマを収める（各コマを別々に生成しない）
+・縦長：横900px × 縦1600px（9:16比率）
+・白黒・墨絵タッチ＋金色の効果線
+・コマ割り：四角だけでなく斜め・台形・横長・枠なしを混在させる
+・必須演出：効果線・スピード線・集中線のいずれかを最低1か所入れる
+・緩急設計：コマ1（静）→ コマ2（動）→ コマ3（爆発）→ コマ4（静）
+
+■ コマ1共通ルール
+----------------------------------------
+すべての1コマ目に縦書きの状況説明ボックスを入れること
+形式：四角い枠（縦長）に縦書きで
+「2024年、[城名]・城主 [武将名]——」
+配置：コマ左上または右上のどちらかに固定
+
+■ 吹き出しと「ト書き」の使い分けルール
+----------------------------------------
+・吹き出し（漫画の中のセリフ）= キャラクターの「声に出た言葉」
+・ト書き（黒バックに白文字のキャプション）= 状況や心理の「ナレーション」
+→ 同じセリフを両方に使わない。吹き出しで言ったことはト書きで繰り返さない
+→ 吹き出し：短く・感情を爆発させる一言
+→ ト書き：吹き出しでは言えない「状況」「心理」「数字」「歴史的文脈」を補う
+
+========================================
+001　Alphabet（Google）× 織田信長　安土城
+========================================
+
+【ト書き（黒バックキャプション）→ HTML掲載済み】
+コマ1：2024年12月——。売上3,503億ドル。検索という城で天下を獲ったAlphabet。
+　　　信長は巻物をそっと閉じた。
+コマ2：「YouTube・Cloud・検索…三方に陣を張ったわ！」三事業が絡み合い、
+　　　一つの帝国を成していた。信長の目に長篠の炎が宿った。
+コマ3：2022年、ChatGPTという黒船が世界を揺らした。
+　　　検索90%の王国が、初めて脅威に晒された日。
+コマ4：信長は振り返らなかった。炎を背に遠くを見据えたまま呟いた。
+
+【漫画内吹き出し（ト書きと別の言葉）】
+コマ1：「……3,500億ドルの城か」（信長が巻物を見て呟く）
+コマ2：「YouTube、Cloud、検索——三方陣じゃ！！」（信長が立ち上がり叫ぶ）
+コマ3：信長の吹き出しなし。ChatGPTの黒船のシルエットに「ChatGPT」の文字
+コマ4：「……Geminiで、次の天下を獲る」（信長、静かに一言）
+
+【画像生成プロンプト（ChatGPT / DALL-E 3用）】
+A vertical Japanese manga comic strip (9:16 aspect ratio, 900x1600px),
+black and white ink style with dramatic lighting.
+4 panels in one image with mixed panel shapes (diagonal cuts, irregular borders).
+
+Panel 1 (calm, establishing): A samurai warlord in Sengoku armor (Nobunaga type — sharp eyes,
+aggressive posture) sitting at a low table, reading a scroll. A vertical text box in the upper-left reads
+vertically: "2024年、安土城・城主 織田信長——". Speech bubble: "……3,500億ドルの城か".
+Quiet, detailed, fine linework.
+
+Panel 2 (dynamic, action): Same samurai leaping to his feet, arms spread wide,
+triumphant expression. Speed lines emanate from his body. Three banners behind him
+labeled "YouTube" "Cloud" "検索". Diagonal panel border. Bold brushstroke style.
+Speech bubble (large, bold): "YouTube、Cloud、検索——三方陣じゃ！！"
+
+Panel 3 (dramatic tension): A giant black warship silhouette rises from dark ocean on the horizon,
+labeled "ChatGPT". The samurai's eyes widen in shock, visible only from behind at an angle.
+Concentration lines (集中線) radiating from the ship. No speech bubble — just visual impact.
+High contrast.
+
+Panel 4 (calm resolution): Close-up of the samurai's profile, flames reflected in one eye,
+staring into the distance. Borderless panel bleeding into white. Speech bubble (small, quiet):
+"……Geminiで、次の天下を獲る"
+
+【Gemini（Imagen）用プロンプト（日本語）】
+縦長9:16・白黒墨絵タッチの日本語マンガ4コマ（1枚に収める）。
+コマ形は斜め・台形を混ぜる。効果線・集中線を使う。
+登場人物：戦国時代の鎧武将（鋭い目・攻撃的な表情・信長イメージ）。
+
+1コマ目（静・細かいペン画）：武将が文机で巻物を読む。左上に縦書き枠「2024年、安土城・城主 織田信長——」。吹き出し：「……3,500億ドルの城か」
+
+2コマ目（動・太い筆線・斜めコマ）：武将が立ち上がり両腕を広げる。後ろに三本の旗「YouTube」「Cloud」「検索」。スピード線。吹き出し（大きく太字）：「YouTube、Cloud、検索——三方陣じゃ！！」
+
+3コマ目（爆発・集中線）：地平線から黒い大型船「ChatGPT」が迫る。武将の後姿と見開いた目のアップ。吹き出しなし。集中線。
+
+4コマ目（静・枠なし）：武将の横顔クローズアップ。炎が瞳に映る。小さい吹き出し：「……Geminiで、次の天下を獲る」
+
+========================================
+002　Apple × 北条氏康　小田原城
+========================================
+
+【ト書き（黒バックキャプション）→ HTML掲載済み】
+コマ1：2024年9月——。売上3,911億ドル。北条氏康は巻物を静かに閉じ、呟いた。
+コマ2：Androidという大軍が堀の前で立ちすくんでいた。エコシステムという堀はどこまでも深かった。
+コマ3：「FCF1,120億ドル——この堀の水は、どれだけ汲んでも涸れぬ」
+　　　氏康は深い堀を眺めながら、河越夜戦を思い出していた。
+コマ4：「サービス部門が961億ドル！第二の城門が開いた！」
+　　　静かに扇子を広げ、氏康は言い切った。
+
+【漫画内吹き出し（ト書きと別の言葉）】
+コマ1：「……攻めにくい城じゃ」（氏康、扇子を持ち静かに）
+コマ2：吹き出しなし（Androidの大軍シルエットが城の前でたじろぐ絵）
+コマ3：「この堀……涸れんな」（氏康が堀を見下ろして独り言）
+コマ4：「小田原城と認める！」（氏康、扇子をピシャリと閉じる）
+
+【画像生成プロンプト（ChatGPT / DALL-E 3用）】
+A vertical Japanese manga comic strip (9:16, 900x1600px), black and white ink style.
+4 panels with mixed shapes including one trapezoidal panel.
+Character: Sengoku lord in formal court attire, fan in hand (Hojo Ujiyasu type — calm, dignified).
+
+Panel 1 (calm): Lord seated formally, closing a scroll.
+Vertical text box upper-right: "2024年、小田原城・城主 北条氏康——".
+Speech bubble (small, calm): "……攻めにくい城じゃ"
+
+Panel 2 (wide establishing shot): Aerial view of a great castle with a massive moat.
+A vast army silhouetted (labeled "Android") stands at the moat edge, frozen in place.
+No speech bubble. Quiet, detailed cross-hatching.
+
+Panel 3 (close detail, horizontal panel): The lord gazes down at the deep moat water.
+Reflection of countless coins/data in the water surface.
+Small speech bubble: "この堀……涸れんな"
+
+Panel 4 (dynamic finale): Lord snaps his fan shut sharply — speed lines.
+Confident expression, strong stance.
+Speech bubble (bold): "小田原城と認める！"
+
+【Gemini（Imagen）用プロンプト（日本語）】
+縦長9:16・白黒墨絵タッチ4コマ（1枚）。斜め台形コマを1か所入れる。
+登場人物：公家風の落ち着いた戦国武将・扇子持ち（北条氏康イメージ）。
+
+1コマ目（静）：武将が正座で巻物を閉じる。右上に縦書き枠「2024年、小田原城・城主 北条氏康——」。吹き出し（小）：「……攻めにくい城じゃ」
+
+2コマ目（俯瞰）：城と深い堀の俯瞰図。堀の前に「Android」の軍勢シルエット（立ちすくんでいる）。吹き出しなし。
+
+3コマ目（横長・台形コマ）：武将が堀を見下ろすアングル。水面に数字・コインが映る。吹き出し（小）：「この堀……涸れんな」
+
+4コマ目（動・スピード線）：武将が扇子をピシャリと閉じる。スピード線。吹き出し（大・太字）：「小田原城と認める！」
+
+========================================
+003　Microsoft × 諸葛亮孔明　荊州の城
+========================================
+
+【ト書き（黒バックキャプション）→ HTML掲載済み】
+コマ1：2024年6月——。決算書を開いた孔明の眼が止まった。
+　　　かつて隆中の庵で劉備に説いた布陣と、寸分違わぬ形だった。
+コマ2：「三位一体の計——荊州・益州・漢中の三地を押さえよ」
+　　　あの策がデジタルの世界に蘇っていた。
+コマ3：ナデラが就任した2014年、Microsoftは時代遅れと笑われた。
+　　　しかしWindowsを捨てず、Officeを活かし、Azureに全てを賭けた。
+コマ4：孔明は羽扇を静かに収め、遠くを見つめた。
+
+【漫画内吹き出し（ト書きと別の言葉）】
+コマ1：「……この配陣、知っておる」（孔明、目が鋭く光る）
+コマ2：「Azure・Office・Windows——三位一体！」（孔明、羽扇を広げる）
+コマ3：「Azureに全てを賭けた男か……」（孔明、独り言）
+コマ4：「……30年後の決算書に、答えが出る」（孔明、静かに）
+
+【画像生成プロンプト（ChatGPT / DALL-E 3用）】
+Vertical Japanese manga strip (9:16, 900x1600px), black and white ink,
+classical Chinese brushwork aesthetic mixed with manga linework.
+Character: Ancient Chinese military strategist with feather fan (Zhuge Liang type — wise, intense eyes).
+
+Panel 1 (calm, detailed): Strategist unrolls a scroll, eyes suddenly sharp.
+Vertical text box: "2024年、荊州の城・城主 諸葛亮孔明——".
+Speech bubble (small, sharp): "……この配陣、知っておる"
+
+Panel 2 (dynamic): Strategist opens feather fan wide.
+A war map appears behind him with three glowing nodes labeled "Azure" "Office" "Windows".
+Speed lines and dramatic lighting. Diagonal panel border.
+Speech bubble (confident, medium size): "Azure・Office・Windows——三位一体！"
+
+Panel 3 (contemplative): Close-up of strategist's face, half in shadow.
+Small figure of Nadella (modern suit) visible in thought bubble.
+Speech bubble (quiet): "Azureに全てを賭けた男か……"
+
+Panel 4 (borderless, fading): Strategist's silhouette with feather fan closed,
+looking into endless distance. White space around him.
+Speech bubble (very small, whisper): "……30年後の決算書に、答えが出る"
+
+【Gemini（Imagen）用プロンプト（日本語）】
+縦長9:16・白黒・中国風水墨画タッチ＋マンガペン画4コマ（1枚）。
+登場人物：羽扇を持つ古代中国の軍師（諸葛亮孔明）。
+
+1コマ目（静）：軍師が巻物を広げた瞬間、目が光る。左上縦書き枠「2024年、荊州の城・城主 諸葛亮孔明——」。吹き出し（小）：「……この配陣、知っておる」
+
+2コマ目（動・斜めコマ）：羽扇を大きく広げる。後ろに三点の光「Azure」「Office」「Windows」が地図に浮かぶ。スピード線。吹き出し（中）：「Azure・Office・Windows——三位一体！」
+
+3コマ目（クローズアップ）：軍師の横顔、半分影。吹き出し（静）：「Azureに全てを賭けた男か……」
+
+4コマ目（枠なし・余白）：軍師のシルエット、遠くを見る。白い余白に溶け込む。吹き出し（極小）：「……30年後の決算書に、答えが出る」
+
+========================================
+004　Amazon × 豊臣秀吉　大坂城
+========================================
+
+【ト書き（黒バックキャプション）→ HTML掲載済み】
+コマ1：2024年12月——。売上6,201億ドル。秀吉は決算書をひと目見て立ち上がった。
+コマ2：「AWS売上1,076億ドル！クラウドの兵站が天下の要衝を制した！」
+　　　秀吉の目が炯々と輝いた。
+コマ3：「ECで土地、AWSで空、広告で金——三位どころか十位一体じゃ！」
+コマ4：「一夜で建て、天下人の規模で守る——これが真の天下人Amazonの城じゃ！」
+
+【漫画内吹き出し（ト書きと別の言葉）】
+コマ1：「！！！」（秀吉が決算書を見て飛び上がる・驚きの表情）
+コマ2：「AWSが！！地下に金山があったんか！！」（秀吉、興奮MAX）
+コマ3：「ECで土地、空でAWS、広告で銭——完璧すぎるわ！」（秀吉、笑い転げる）
+コマ4：「大坂城認定じゃ！！」（秀吉、天守閣の上で高らかに宣言）
+
+【画像生成プロンプト（ChatGPT / DALL-E 3用）】
+Vertical Japanese manga strip (9:16, 900x1600px), black and white ink,
+energetic manga style with thick confident lines.
+Character: Sengoku general with energetic, comedic expression (Hideyoshi type — cunning grin,
+exaggerated reactions, monkey-like quickness).
+
+Panel 1 (explosive start): General leaps from seated position — dramatic pose mid-air.
+Papers flying everywhere. Vertical text box: "2024年、大坂城・城主 豊臣秀吉——".
+Big speed lines. Speech bubble (huge impact font): "！！！"
+
+Panel 2 (manic energy, diagonal panel): General pointing excitedly at a glowing underground tunnel
+labeled "AWS". Gold coins pouring up from below. Expression: wild eyes, huge grin.
+Speech bubble: "AWSが！！地下に金山があったんか！！"
+
+Panel 3 (comedic): General with THREE flags — "EC" "AWS" "広告" —
+laughing wildly, rolling on the ground, tears of joy. Comic exaggeration.
+Speech bubble: "ECで土地、空でAWS、広告で銭——完璧すぎるわ！"
+
+Panel 4 (triumphant, borderless): Silhouette of general standing atop a massive castle
+against a sunrise. Arms spread wide.
+Speech bubble (large, triumphant): "大坂城認定じゃ！！"
+
+【Gemini（Imagen）用プロンプト（日本語）】
+縦長9:16・白黒・太い線のコミカルなマンガ4コマ（1枚）。
+登場人物：ひょうきんでずる賢い戦国武将（豊臣秀吉・サルっぽい素早さ）。
+
+1コマ目（爆発的スタート）：武将が椅子から飛び上がる。書類が舞う。右上縦書き枠「2024年、大坂城・城主 豊臣秀吉——」。スピード線。吹き出し（巨大）：「！！！」
+
+2コマ目（斜めコマ・マニアック興奮）：地下に「AWS」と書かれた金山が光る。武将が指差す。目がギラギラ。吹き出し：「AWSが！！地下に金山があったんか！！」
+
+3コマ目（コミカル・笑い）：三本の旗「EC」「AWS」「広告」を抱えて笑い転げる武将。漫符（汗・☆）。吹き出し：「ECで土地、空でAWS、広告で銭——完璧すぎるわ！」
+
+4コマ目（枠なし・勝利）：大坂城の天守閣のシルエット。武将の影が両手を広げる。朝日。吹き出し（大）：「大坂城認定じゃ！！」
+
+========================================
+005　Meta × 明智光秀　坂本城
+========================================
+
+【ト書き（黒バックキャプション）→ HTML掲載済み】
+コマ1：2024年12月——。MetaのDAP（日活人口）が33.5億人を超えた。
+　　　明智光秀は琵琶湖の湖面を眺めながら呟いた。
+コマ2：「営業利益率42%！琵琶湖より澄み切った利益率じゃ」
+　　　——だが規制当局という「信長」が、常に城の外で虎視眈々と構えていた。
+コマ3：分岐路の前に光秀は立った。一方にSNS帝国、もう一方にMetaverseへの道。
+コマ4：夕暮れの坂本城。光秀は静かに微笑んだ。
+
+【漫画内吹き出し（ト書きと別の言葉）】
+コマ1：「……世界の40%が毎日集まる城か」（光秀、静かに）
+コマ2：「42%……だが、信長が来る」（光秀、背後の影に気づく）
+コマ3：「Metaverse……か。謀反か、革命か」（光秀、分岐路で立ち止まる）
+コマ4：「……坂本城と認める。天才の証」（光秀、夕日を背に）
+
+【画像生成プロンプト（ChatGPT / DALL-E 3用）】
+Vertical Japanese manga strip (9:16, 900x1600px), black and white ink,
+melancholic and beautiful linework — philosophical, literary feel.
+Character: Refined, intelligent Sengoku lord with an air of tragic genius (Akechi Mitsuhide type —
+beautiful face, sad eyes, always slightly apart from others).
+
+Panel 1 (still, contemplative): Lord standing by a vast lake at dusk, looking at the reflection.
+Vertical text box: "2024年、坂本城・城主 明智光秀——".
+Speech bubble (small, reflective): "……世界の40%が毎日集まる城か"
+
+Panel 2 (tension): Lord turns slightly — a massive shadow looms behind him (labeled "規制").
+Fine detail cross-hatching creates a sense of dread.
+Speech bubble (quiet, conflicted): "42%……だが、信長が来る"
+
+Panel 3 (symbolic): Lord stands at a literal fork in the road.
+Left path: glowing "SNS帝国". Right path: dark, unknown "Metaverse".
+Contemplative pose, fist at chin. No speed lines — stillness.
+Speech bubble (philosophical): "Metaverse……か。謀反か、革命か"
+
+Panel 4 (beautiful, borderless): Silhouette of lord against a sunset over the lake.
+Small, serene smile. Fading into white.
+Speech bubble (tiny, tender): "……坂本城と認める。天才の証"
+
+【Gemini（Imagen）用プロンプト（日本語）】
+縦長9:16・白黒・繊細な細線マンガ（哀愁・文学的）4コマ（1枚）。
+登場人物：聡明で悲劇的な美しさを持つ戦国武将（明智光秀）。
+
+1コマ目（静・夕景）：武将が琵琶湖の畔に立ち、湖面を眺める。右上縦書き枠「2024年、坂本城・城主 明智光秀——」。吹き出し（小）：「……世界の40%が毎日集まる城か」
+
+2コマ目（緊張）：武将の背後に巨大な影「規制」が迫る。振り返る武将。細い集中線。吹き出し（静・葛藤）：「42%……だが、信長が来る」
+
+3コマ目（象徴的・枠なし気味）：分岐路に立つ武将。左に光の道「SNS帝国」、右に暗い道「Metaverse」。静止画。吹き出し：「Metaverse……か。謀反か、革命か」
+
+4コマ目（枠なし・夕日）：琵琶湖の夕焼けシルエット。武将の影。微笑み。吹き出し（極小）：「……坂本城と認める。天才の証」
+
+========================================
+■ 伊達から永徳へ（使用上の注意）
+========================================
+
+・各話のト書きと吹き出しを混同しない
+・吹き出しは短く・感情的・漫画的に。ト書きは説明と文脈
+
+・プロンプトはChatGPT・Geminiに一度に貼り付けてOK
+・生成後の確認ポイント：
+  1. 1コマ目に縦書きの状況説明ボックスが入っているか
+  2. 吹き出しとト書きの内容が重複していないか
+  3. 全コマ同じトーンになっていないか（緩急があるか）
+  4. 四角以外のコマ形が入っているか
+
+・生成した画像は articles/images/ に保存（ファイル名：001_yonkoma.png 等）
+・伊達の最終確認を通してからHTMLに反映すること
+
+========================================
+以上。質問は伊達まで。
+========================================
