@@ -778,14 +778,14 @@ function _set(id,v,c){const e=document.getElementById(id);if(e){e.textContent=v;
 
 // ━━━━━━━━━━━ TASK LIST (static + dynamic) ━━━━━━━━━━━
 const TASK_ITEMS = [
-  { time:'今日', text:'安田記念 枠順確定→記事最終チェック', badge:'tbadge-hw', label:'宿題' },
-  { time:'16時〜', text:'7-10R 出馬表確認→馬名入力', badge:'tbadge-todo', label:'未対応' },
-  { time:'土曜', text:'追い切り確認→FIREスコア最終値入力', badge:'tbadge-todo', label:'未対応' },
-  { time:'6/7', text:'安田記念 note公開', badge:'tbadge-todo', label:'未対応' },
+  { time:'木(今日)', text:'安田記念2026 記事差し替え版 制作中', badge:'tbadge-hw', label:'作業中' },
+  { time:'木(今日)', text:'HUF Cap・Nike Daybreak・Supreme Victory → 21時値下げ判断', badge:'tbadge-todo', label:'今夜' },
+  { time:'金曜', text:'安田記念 枠順確定→FIREスコア最終値更新', badge:'tbadge-todo', label:'未対応' },
+  { time:'6/7(日)', text:'安田記念 note最終公開・追い切り追記', badge:'tbadge-todo', label:'未対応' },
   { time:'随時', text:'PORTER GIRL NAKED サムネ見直し', badge:'tbadge-error', label:'アラート' },
   { time:'随時', text:'Supreme×Jordan タイトル強化', badge:'tbadge-error', label:'アラート' },
   { time:'6/15', text:'¥3,500回収 → 楽天証券アフィリ', badge:'tbadge-hw', label:'締切' },
-  { time:'随時', text:'決算城 NTT記事 (本多×大多喜城)', badge:'tbadge-todo', label:'次のタスク' },
+  { time:'随時', text:'決算城 花王（細川忠興×勝山城）次の1本', badge:'tbadge-todo', label:'次のタスク' },
 ];
 function renderTaskList() {
   const el = document.getElementById('dashTaskList');
