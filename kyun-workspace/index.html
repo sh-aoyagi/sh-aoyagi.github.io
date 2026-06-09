@@ -127,6 +127,26 @@ body { background: #0f0f0f !important; color: #fff !important; }
 .season-badge { background:rgba(61,207,194,0.1) !important; border-color:rgba(61,207,194,0.3) !important; color:#3DCFC2 !important; }
 .prog-bar { background:#2a2a2a !important; }
 textarea.field-body { background:#111 !important; color:#ddd !important; border:none !important; }
+
+/* INSTRUCTION CARDS */
+.make-section-label{font-size:11px;font-weight:bold;color:#c084fc;letter-spacing:1px;margin-bottom:10px;padding:0 2px;display:flex;align-items:center;gap:8px;}
+.make-section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#3a1a5a,transparent);}
+.make-cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+@media(max-width:900px){.make-cards-row{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.make-cards-row{grid-template-columns:1fr;}}
+.make-card{background:#13102a;border:1px solid #3a1a6a;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+.make-card-hd{font-size:10px;font-weight:bold;color:#c084fc;background:#1e1040;padding:5px 14px;border-bottom:1px solid #3a1a6a;display:flex;justify-content:space-between;align-items:center;}
+.make-status{font-size:9px;background:rgba(192,132,252,.12);color:#c084fc;border:1px solid rgba(192,132,252,.3);border-radius:8px;padding:2px 7px;}
+.make-card-title{font-size:11px;font-weight:bold;color:var(--text);padding:10px 12px 6px;line-height:1.5;}
+.make-params{padding:4px 10px 8px;display:flex;gap:4px;flex-wrap:wrap;}
+.param-chip{font-size:9px;background:#1e1040;border:1px solid #3a1a6a;border-radius:6px;padding:2px 7px;color:#b090e0;display:flex;gap:3px;align-items:center;}
+.param-key{color:#c084fc;font-weight:bold;}
+.make-btn{border:none;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:bold;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.make-btn.instr{background:#c084fc;color:#000;}
+.make-btn.instr:hover{background:#d4aaff;}
+.make-btn.skill{background:#FFCC44;color:#000;}
+.make-btn.skill:hover{background:#FFE080;}
+.make-btn.done{background:#22c55e!important;color:#fff!important;}
 </style>
 </head>
 <body>
@@ -171,6 +191,12 @@ function closeNav(){document.getElementById('navOverlay').classList.remove('open
 
   <!-- シリーズ抜け検知アラート -->
   <div id="seriesAlert"></div>
+
+  <!-- 制作指示カード (Series 15・16・17) -->
+  <div id="makeSection" style="margin-bottom:20px;">
+    <div class="make-section-label">▷ 制作指示カード（未執筆 Series 15・16・17）</div>
+    <div class="make-cards-row" id="makeCardsRow"></div>
+  </div>
 
   <!-- 本日完了バナー（非表示→3本消込で表示） -->
   <div id="completedBanner" style="display:none" class="completed-banner">
@@ -315,9 +341,8 @@ function cardHTML(s, i) {
   const tagsArr = Array.isArray(s.tags) ? s.tags : [];
   const tags = tagsArr.join(' ') || '自キュン 恋愛小説 読了5分';
   const price = s.price || 180;
-  // 本文①〜⑤⑥を1ボックスに連結
-  const body = [s.free_content, s.paid_content].filter(Boolean).join('\n\n');
-  const hasBody = body.length > 0;
+  const free = s.free_content || '';
+  const paid = s.paid_content || '';
 
   return `<div class="story-card" id="sc-${s.id}">
     <div class="card-num">
@@ -328,7 +353,7 @@ function cardHTML(s, i) {
 
     <div class="field-block">
       <div class="field-head">
-        <span class="field-label">⑫ TOP画像プロンプト</span>
+        <span class="field-label">① TOP画像プロンプト</span>
         <div style="display:flex;gap:5px;align-items:center;">
           <a href="https://gemini.google.com/app" target="_blank" style="font-size:9px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:2px 6px;">Gemini↗</a>
           ${copyBtn(BTN_IMG, 'TOP用コピー', `fc('${s.id}','img',this)`)}
@@ -347,15 +372,23 @@ function cardHTML(s, i) {
 
     <div class="field-block">
       <div class="field-head">
-        <span class="field-label">③〜⑦ 本文（全文）</span>
-        ${copyBtn('#00CCCC', '本文コピー', `fc('${s.id}','body',this)`)}
+        <span class="field-label">③ 無料パート（本文①〜④ / 約500文字×3）</span>
+        ${copyBtn('#00CCCC', '無料コピー', `fc('${s.id}','free',this)`)}
       </div>
-      <textarea class="field-body tall ${hasBody?'':'empty'}" id="f-body-${s.id}" style="min-height:220px;">${hasBody ? body : '（なし）'}</textarea>
+      <textarea class="field-body tall ${free?'':'empty'}" id="f-free-${s.id}" style="min-height:180px;">${free||'（なし）'}</textarea>
     </div>
 
     <div class="field-block">
       <div class="field-head">
-        <span class="field-label">⑪ タグ</span>
+        <span class="field-label">④ 有料パート（🔒続きは¥${price} / 本文⑤〜⑦）</span>
+        ${copyBtn('#f255b6', '有料コピー', `fc('${s.id}','paid',this)`)}
+      </div>
+      <textarea class="field-body tall ${paid?'':'empty'}" id="f-paid-${s.id}" style="min-height:180px;">${paid||'（なし）'}</textarea>
+    </div>
+
+    <div class="field-block">
+      <div class="field-head">
+        <span class="field-label">⑤ タグ</span>
         ${copyBtn(BTN_TAG, 'タグコピー', `fc('${s.id}','tags',this)`)}
       </div>
       <textarea class="field-body ${tags?'':'empty'}" id="f-tags-${s.id}" rows="2">${tags}</textarea>
@@ -436,6 +469,132 @@ function toggleArchive() {
   list.classList.toggle('open');
   arrow.textContent = isOpen ? '▶' : '▼';
 }
+
+// ─── 制作指示カード ───────────────────────────
+const SKILL_PATH = 'C:\\denno\\skills\\aoyagi-style-fiction\\SKILL.md';
+
+const MAKE_SERIES = [
+  {
+    no: 15,
+    title: '【読了５分】切符に、行き先を。【自キュンシリーズ15】',
+    params: [
+      ['T','切符に、行き先を。'],['S','「どこ行くんですか」'],['D','特急の切符'],
+      ['E','ハッピー（一人旅→二人）'],['F','標準 2000字'],['G','標準'],
+      ['H','H03'],['I','I03'],['J','マスター型（車掌）'],['SP','15%']
+    ],
+    xml: `<episode_design>
+  <series_number>15</series_number>
+  <title>切符に、行き先を。</title>
+  <note_title>【読了５分】切符に、行き先を。【自キュンシリーズ15】</note_title>
+  <kv_text>切符が語る　私の物語</kv_text>
+  <image_keyword>背景/風景：秋の特急電車の車内。窓に流れる山の景色　季節：秋　時間：夕方</image_keyword>
+  <tags>#恋愛 #ショートストーリー #自キュンシリーズ #切符 #一人旅 #読了5分</tags>
+  <era>平成</era>
+  <tool>特急の切符</tool>
+  <opening_line>「どこ行くんですか」</opening_line>
+  <third_person type="マスター型">車掌</third_person>
+  <landing_pattern>ハッピー（一人旅のはずが、二人になった）</landing_pattern>
+  <season>秋</season>
+  <time_of_day>夕方</time_of_day>
+  <sp_rate>15%</sp_rate>
+  <style_xml_path>C:\\denno\\skills\\aoyagi-style-fiction\\references\\青柳真平_文体XML仕様書.xml</style_xml_path>
+</episode_design>`
+  },
+  {
+    no: 16,
+    title: '【読了５分】メールに、太陽を。【自キュンシリーズ16】',
+    params: [
+      ['T','メールに、太陽を。'],['S','「LINE、教えてよ」'],['D','キャリアメール'],
+      ['E','—'],['F','標準 2000字'],['G','標準'],
+      ['H','H03'],['I','I03'],['J','—'],['SP','10%']
+    ],
+    xml: `<episode_design>
+  <series_number>16</series_number>
+  <title>メールに、太陽を。</title>
+  <note_title>【読了５分】メールに、太陽を。【自キュンシリーズ16】</note_title>
+  <kv_text>メールが語る　私の物語</kv_text>
+  <image_keyword>背景/風景：平成の大学の食堂。蛍光灯の白い光。端っこの席　季節：冬　時間：昼</image_keyword>
+  <tags>#恋愛 #ショートストーリー #自キュンシリーズ #メール #平成 #大学生 #読了5分</tags>
+  <era>平成</era>
+  <tool>キャリアメール</tool>
+  <opening_line>「LINE、教えてよ」</opening_line>
+  <season>冬</season>
+  <time_of_day>昼</time_of_day>
+  <sp_rate>10%</sp_rate>
+  <style_xml_path>C:\\denno\\skills\\aoyagi-style-fiction\\references\\青柳真平_文体XML仕様書.xml</style_xml_path>
+</episode_design>`
+  },
+  {
+    no: 17,
+    title: '【読了５分】日経に、予告を。【自キュンシリーズ17】',
+    params: [
+      ['T','日経に、予告を。'],['S','「犯行予告？的な？😛」'],['D','日経の切り抜きメモ'],
+      ['E','—'],['F','標準 2000字'],['G','標準'],
+      ['H','H03'],['I','I03'],['J','—'],['SP','10%']
+    ],
+    xml: `<episode_design>
+  <series_number>17</series_number>
+  <title>日経に、予告を。</title>
+  <note_title>【読了５分】日経に、予告を。【自キュンシリーズ17】</note_title>
+  <kv_text>日経が語る　私の物語</kv_text>
+  <image_keyword>背景/風景：令和のオフィス。総務部の机。引き出しに積まれた封筒　季節：春　時間：夕方</image_keyword>
+  <tags>#恋愛 #ショートストーリー #自キュンシリーズ #日経新聞 #令和 #社会人 #読了5分</tags>
+  <era>令和</era>
+  <tool>日経新聞の切り抜きメモ</tool>
+  <opening_line>「犯行予告？的な？😛　最近来てないじゃないですかー」</opening_line>
+  <season>春</season>
+  <time_of_day>夕方</time_of_day>
+  <sp_rate>10%</sp_rate>
+  <style_xml_path>C:\\denno\\skills\\aoyagi-style-fiction\\references\\青柳真平_文体XML仕様書.xml</style_xml_path>
+</episode_design>`
+  }
+];
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderMakeCards() {
+  const row = document.getElementById('makeCardsRow');
+  if (!row) return;
+  row.innerHTML = MAKE_SERIES.map(s => `
+    <div class="make-card">
+      <div class="make-card-hd">
+        <span>Series ${String(s.no).padStart(2,'0')} 制作指示</span>
+        <span class="make-status">未執筆</span>
+      </div>
+      <div class="make-card-title">${s.title}</div>
+      <div class="make-params">
+        ${s.params.map(([k,v]) => `<div class="param-chip"><span class="param-key">${k}</span><span>${v}</span></div>`).join('')}
+      </div>
+      <div class="field-block">
+        <div class="field-head">
+          <span class="field-label">episode_design XML</span>
+          <div style="display:flex;gap:5px;">
+            <button class="make-btn instr" onclick="copyMake(${s.no},'xml',this)">指示文コピー</button>
+            <button class="make-btn skill" onclick="copyMake(${s.no},'skill',this)">SKILL.mdを読んで制作</button>
+          </div>
+        </div>
+        <div class="field-body" style="font-size:10px;max-height:90px;overflow-y:auto;">${escHtml(s.xml)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyMake(no, type, btn) {
+  const s = MAKE_SERIES.find(x => x.no === no);
+  if (!s) return;
+  const text = type === 'xml'
+    ? s.xml
+    : SKILL_PATH + '\n\n上記 SKILL.md を読んでから、以下のパラメータで制作してください：\n\n' + s.xml;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ コピー済';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 1600);
+  });
+}
+
+renderMakeCards();
+// ─────────────────────────────────────────────
 
 init();
 </script>
