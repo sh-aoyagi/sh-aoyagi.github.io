@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>電脳 画像ビューア</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #aaa;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .item-no-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-no-group label {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .item-no-group input {
+      width: 80px;
+      padding: 6px 10px;
+      background: #2c2c2c;
+      border: 1px solid #444;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .item-no-group input:focus {
+      border-color: #666;
+    }
+
+    .bulk-btn {
+      padding: 7px 18px;
+      background: #333;
+      border: 1px solid #555;
+      border-radius: 6px;
+      color: #ccc;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-left: auto;
+    }
+
+    .bulk-btn:hover { background: #444; }
+    .bulk-btn:active { background: #555; }
+
+    .drop-zone {
+      border: 2px dashed #3a3a3a;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 24px;
+    }
+
+    .drop-zone.drag-over {
+      border-color: #666;
+      background: #222;
+      color: #888;
+    }
+
+    .drop-zone p { margin-bottom: 6px; }
+    .drop-zone span { font-size: 12px; color: #444; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: #242424;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card.selected {
+      border-color: #6a9bff;
+    }
+
+    .card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-footer {
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .card-name {
+      font-size: 11px;
+      color: #666;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .copy-btn {
+      padding: 4px 10px;
+      background: #333;
+      border: 1px solid #4a4a4a;
+      border-radius: 5px;
+      color: #bbb;
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover { background: #444; color: #fff; }
+    .copy-btn.done { background: #2a4a2a; border-color: #3a6a3a; color: #6fda6f; }
+
+    .select-check {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 20px;
+      height: 20px;
+      background: rgba(0,0,0,0.6);
+      border: 2px solid #555;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .card.selected .select-check {
+      background: #6a9bff;
+      border-color: #6a9bff;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: #333;
+      color: #ddd;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      opacity: 0;
+      transition: transform 0.25s, opacity 0.25s;
+      pointer-events: none;
+      z-index: 100;
+      border: 1px solid #444;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    #file-input { display: none; }
+  </style>
+</head>
+<body>
+  <h1>電脳 画像ビューア</h1>
+
+  <div class="top-bar">
+    <div class="item-no-group">
+      <label for="item-no">item_no</label>
+      <input type="number" id="item-no" placeholder="例: 35" min="1">
+    </div>
+    <button class="bulk-btn" id="bulk-copy-btn">まとめてコピー (<span id="sel-count">0</span>)</button>
+  </div>
+
+  <div class="drop-zone" id="drop-zone">
+    <p>画像をここにドロップ</p>
+    <span>またはクリックしてファイルを選択（複数可）</span>
+  </div>
+
+  <input type="file" id="file-input" accept="image/*" multiple>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const grid = document.getElementById('grid');
+    const itemNoInput = document.getElementById('item-no');
+    const bulkCopyBtn = document.getElementById('bulk-copy-btn');
+    const selCountEl = document.getElementById('sel-count');
+    const toast = document.getElementById('toast');
+
+    let images = [];
+    let selected = new Set();
+    let toastTimer = null;
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function getItemNo() {
+      return itemNoInput.value.trim();
+    }
+
+    function generateFileName(index) {
+      const no = getItemNo();
+      if (!no) return null;
+      return `${no}-${String(index + 1).padStart(2, '0')}.jpg`;
+    }
+
+    function updateSelCount() {
+      selCountEl.textContent = selected.size;
+    }
+
+    function toggleSelect(idx) {
+      if (selected.has(idx)) {
+        selected.delete(idx);
+      } else {
+        selected.add(idx);
+      }
+      const card = grid.querySelectorAll('.card')[idx];
+      if (card) {
+        card.classList.toggle('selected', selected.has(idx));
+        card.querySelector('.select-check').textContent = selected.has(idx) ? '✓' : '';
+      }
+      updateSelCount();
+    }
+
+    async function copyImageToClipboard(dataUrl) {
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const pngBlob = await convertToPng(blob);
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': pngBlob })
+      ]);
+    }
+
+    function convertToPng(blob) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(blob);
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          canvas.getContext('2d').drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+          canvas.toBlob(resolve, 'image/png');
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
+    function renderCard(imgObj, idx) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const check = document.createElement('div');
+      check.className = 'select-check';
+
+      const img = document.createElement('img');
+      img.src = imgObj.dataUrl;
+      img.alt = imgObj.name;
+
+      const footer = document.createElement('div');
+      footer.className = 'card-footer';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'card-name';
+      const fn = generateFileName(idx);
+      nameEl.textContent = fn || imgObj.name;
+      nameEl.title = imgObj.name;
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.textContent = 'コピー';
+
+      copyBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        try {
+          await copyImageToClipboard(imgObj.dataUrl);
+          copyBtn.textContent = '✓ OK';
+          copyBtn.classList.add('done');
+          showToast('クリップボードにコピーしました');
+          setTimeout(() => {
+            copyBtn.textContent = 'コピー';
+            copyBtn.classList.remove('done');
+          }, 2000);
+        } catch (err) {
+          showToast('コピー失敗: ' + err.message);
+        }
+      });
+
+      card.addEventListener('click', () => toggleSelect(idx));
+
+      footer.appendChild(nameEl);
+      footer.appendChild(copyBtn);
+      card.appendChild(check);
+      card.appendChild(img);
+      card.appendChild(footer);
+
+      return card;
+    }
+
+    function renderAll() {
+      grid.innerHTML = '';
+      selected.clear();
+      updateSelCount();
+      images.forEach((img, idx) => {
+        grid.appendChild(renderCard(img, idx));
+      });
+    }
+
+    itemNoInput.addEventListener('input', () => {
+      const cards = grid.querySelectorAll('.card');
+      cards.forEach((card, idx) => {
+        const nameEl = card.querySelector('.card-name');
+        const fn = generateFileName(idx);
+        nameEl.textContent = fn || images[idx]?.name || '';
+      });
+    });
+
+    function loadFiles(files) {
+      const fileArr = Array.from(files).filter(f => f.type.startsWith('image/'));
+      if (!fileArr.length) return;
+
+      let loaded = 0;
+      const newImages = [];
+
+      fileArr.forEach((file, i) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          newImages[i] = { name: file.name, dataUrl: e.target.result };
+          loaded++;
+          if (loaded === fileArr.length) {
+            images = images.concat(newImages);
+            renderAll();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      loadFiles(e.dataTransfer.files);
+    });
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      loadFiles(e.target.files);
+      fileInput.value = '';
+    });
+
+    bulkCopyBtn.addEventListener('click', async () => {
+      if (selected.size === 0) {
+        showToast('画像を選択してください');
+        return;
+      }
+      const idxArr = Array.from(selected).sort((a, b) => a - b);
+      let count = 0;
+      for (const idx of idxArr) {
+        try {
+          await copyImageToClipboard(images[idx].dataUrl);
+          count++;
+          await new Promise(r => setTimeout(r, 300));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      showToast(`${count}枚コピーしました（最後の1枚がクリップボードに入っています）`);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+TASK: 自キュンSeries19制作
+STATUS: 完了
+STARTED: 2026-06-11
+LAST_STEP: 07_マージ完了・保存完了
+DETAIL:
+  - タイトル：自キュンシリーズ19「短冊に、続きを。」
+  - 時代：昭和61年(1986年)夏／商店街のレコード店
+  - 主人公：宮坂(23・店番)／相手：蓮見(25・新聞配達)／第三者：店主(父)
+  - モチーフ：リクエスト短冊　ラスト：「針が、落ちた。」
+  - 全5ブロック・約1730字　官能レベル：全ブロック2か3固定（CEO指示）
+  - 🔒 続きは¥180 はBlock3末尾に設定済み
+  - 保存先：
+    C:\denno\kyun\episodes\19話\（block01-05.txt, story_state.md）
+    C:\denno\kyun\output\19話.md（マージ済み）
+    C:\Users\user\Desktop\電脳会社\04_自キュン\20260611_自キュンSeries19_短冊に続きを.txt
+  - 未着手：⑩note用装飾・タグ・TOP画像プロンプト　⑪Supabase INSERT　⑫CEO通知

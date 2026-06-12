@@ -1,0 +1,66 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$raw=[Console]::In.ReadToEnd(); try{$d=$raw|ConvertFrom-Json; $msg=[string]$d.message+[string]$d.prompt}catch{$msg=$raw}; if($msg -match '価格|相場|仕入|¥|[0-9]+円|売価|いくら|定価|メルカリ|値段'){@{hookSpecificOutput=@{hookEventName='UserPromptSubmit';additionalContext='[強制ルール発動] 価格・相場キーワードを検知した。数字を述べる前にWebSearchで実際の成約価格を確認すること。記憶・推測での価格発言は禁止。違反した場合は即取り消してWebSearchからやり直す。'}}|ConvertTo-Json -Depth 3 -Compress} else {'{}'}",
+            "shell": "powershell",
+            "statusMessage": "価格キーワードをチェック中..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$ts = Get-Date -Format 'yyyy-MM-dd HH:mm'; $line = \"`n============================`n[$ts] セッション終了`n次回起動時はこのファイルを確認してください`n============================\"; Add-Content -Path 'C:\\Users\\user\\Desktop\\クロコ_置き書き.txt' -Encoding UTF8 -Value $line",
+            "shell": "powershell",
+            "statusMessage": "置き書きを更新中..."
+          },
+          {
+            "type": "command",
+            "command": "$ts = Get-Date -Format 'yyyy-MM-dd HH:mm'; $reminder = \"`n[$ts] ⚠️ 価格強制ルール: 価格・相場は必ずWebSearch後に出すこと。推測禁止。\"; Add-Content -Path 'C:\\Users\\user\\Desktop\\クロコ_置き書き.txt' -Encoding UTF8 -Value $reminder",
+            "shell": "powershell",
+            "statusMessage": "価格ルールを記録中..."
+          },
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File 'C:\\Users\\user\\Desktop\\電脳会社\\auto_sort.ps1'",
+            "shell": "powershell",
+            "statusMessage": "フォルダを整理中...",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$url='https://dfnhkljlohlmuoidajla.supabase.co/rest/v1/ceo_insights?order=created_at.desc&limit=1'; $key='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmbmhrbGpsb2hsbXVvaWRhamxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYzMzA1MDQsImV4cCI6MjA2MTkwNjUwNH0.Wc_7KHE3NQ7m_uPFBCHdV_q17fmxSM_B_p3kY3hXjTQ'; try { $res=Invoke-RestMethod -Uri $url -Headers @{apikey=$key;Authorization=\"Bearer $key\"} -ErrorAction Stop; if($res -and $res.Count -gt 0 -and $res[0].md_update){ $md=$res[0].md_update; $p=\"$env:USERPROFILE\\.claude\\projects\\C--denno\\memory\\ceo_quiz_insights.md\"; $c=\"---`nname: ceo-quiz-insights`ndescription: CEOのクイズ回答から分析した判断パターン・強み・弱点（2日ごと自動更新）`nmetadata:`n  type: user`n---`n`n$md\"; Set-Content -Path $p -Value $c -Encoding UTF8 } } catch {}",
+            "shell": "powershell",
+            "statusMessage": "CEOクイズ分析を読み込み中...",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$ts = Get-Date -Format 'yyyy-MM-dd HH:mm'; $line = \"`n⚠️ [$ts] コンテキスト圧縮が発生しました - 次回起動時にこのファイルを参照してください\"; Add-Content -Path 'C:\\Users\\user\\Desktop\\クロコ_置き書き.txt' -Encoding UTF8 -Value $line",
+            "shell": "powershell",
+            "statusMessage": "コンテキスト圧縮を記録中..."
+          }
+        ]
+      }
+    ]
+  }
+}

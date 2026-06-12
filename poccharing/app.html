@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>ぽっちゃりんぐ</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink:   #ff6b9d;
+      --rose:   #ff4081;
+      --peach:  #ff9a6c;
+      --purple: #c44dff;
+      --bg:     #120d18;
+      --surf:   #1c1526;
+      --surf2:  #261e33;
+      --border: rgba(255,107,157,0.14);
+      --text:   #f7f0f5;
+      --muted:  rgba(247,240,245,0.45);
+      --muted2: rgba(247,240,245,0.68);
+      --glow:   rgba(255,107,157,0.25);
+    }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Noto Sans JP', -apple-system, sans-serif;
+      display: flex; flex-direction: column;
+    }
+
+    /* ── LAYOUT ── */
+    #app { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+    .view { display: none; min-height: 100%; padding: 1.5rem 1.25rem 6rem; }
+    .view.active { display: block; }
+
+    /* ── BOTTOM NAV ── */
+    #bottom-nav {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(18,13,24,0.92); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: none; justify-content: space-around; align-items: center;
+      padding: 0.5rem 0 0.75rem; z-index: 200;
+    }
+    #bottom-nav.visible { display: flex; }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+      font-size: 0.62rem; color: var(--muted); cursor: pointer;
+      padding: 0.4rem 1rem; border-radius: 12px; transition: color 0.2s;
+      background: none; border: none;
+    }
+    .nav-item .nav-icon { font-size: 1.4rem; }
+    .nav-item.active { color: var(--pink); }
+    .nav-item:hover { color: var(--muted2); }
+    .nav-badge {
+      position: absolute; top: 0; right: 0; background: var(--rose);
+      width: 16px; height: 16px; border-radius: 50%;
+      font-size: 0.55rem; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #fff;
+    }
+    .nav-item-wrap { position: relative; }
+
+    /* ── COMMON UI ── */
+    .page-title {
+      font-size: 1.3rem; font-weight: 900; margin-bottom: 1.5rem;
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .card {
+      background: var(--surf); border: 1px solid var(--border);
+      border-radius: 18px; padding: 1.5rem;
+    }
+    .btn {
+      width: 100%; padding: 0.85rem; border-radius: 100px;
+      font-size: 0.95rem; font-weight: 700; border: none; cursor: pointer;
+      letter-spacing: 0.04em; transition: all 0.22s;
+    }
+    .btn-primary {
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      color: #fff; box-shadow: 0 4px 20px var(--glow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px var(--glow); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-secondary {
+      background: var(--surf2); color: var(--muted2);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--pink); color: var(--pink); }
+    .btn-danger { background: rgba(255,80,80,0.15); color: #ff6060; border: 1px solid rgba(255,80,80,0.2); }
+    .input-group { margin-bottom: 1rem; }
+    .input-label { font-size: 0.78rem; color: var(--muted2); margin-bottom: 0.4rem; display: block; }
+    .input {
+      width: 100%; padding: 0.75rem 1rem; background: var(--surf2);
+      border: 1px solid var(--border); border-radius: 12px;
+      color: var(--text); font-size: 0.95rem; font-family: inherit;
+      transition: border-color 0.2s; outline: none;
+    }
+    .input:focus { border-color: var(--pink); }
+    .input::placeholder { color: var(--muted); }
+    textarea.input { resize: vertical; min-height: 80px; }
+    .err { color: #ff6b6b; font-size: 0.8rem; margin-top: 0.5rem; text-align: center; }
+    .link { color: var(--pink); cursor: pointer; text-decoration: underline; font-size: 0.85rem; }
+    .mt1 { margin-top: 1rem; }
+    .mt2 { margin-top: 1.5rem; }
+    .center { text-align: center; }
+    .muted { color: var(--muted); font-size: 0.82rem; }
+    .loading { text-align: center; padding: 3rem; color: var(--muted); }
+
+    /* ── AUTH VIEW ── */
+    #view-auth {
+      display: flex; flex-direction: column; justify-content: center;
+      min-height: 100vh; max-width: 400px; margin: 0 auto; padding: 2rem 1.5rem;
+    }
+    .auth-logo {
+      font-size: 2rem; font-weight: 900; text-align: center; margin-bottom: 0.5rem;
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .auth-emoji { text-align: center; font-size: 3rem; margin-bottom: 0.75rem; }
+    .auth-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--surf); border-radius: 12px; padding: 0.3rem; }
+    .auth-tab {
+      flex: 1; padding: 0.6rem; border-radius: 9px; border: none;
+      background: none; color: var(--muted); font-size: 0.88rem; cursor: pointer;
+      transition: all 0.2s; font-weight: 600;
+    }
+    .auth-tab.active { background: var(--surf2); color: var(--text); }
+
+    /* ── ONBOARDING ── */
+    #view-onboarding { max-width: 440px; margin: 0 auto; padding-top: 3rem; }
+    .ob-step { display: none; }
+    .ob-step.active { display: block; }
+    .ob-progress { display: flex; gap: 0.4rem; margin-bottom: 2rem; }
+    .ob-dot { flex: 1; height: 3px; border-radius: 100px; background: var(--surf2); transition: background 0.3s; }
+    .ob-dot.done { background: var(--pink); }
+    .ob-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem; }
+    .ob-sub { font-size: 0.85rem; color: var(--muted2); margin-bottom: 2rem; line-height: 1.7; }
+    .role-cards { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+    .role-card {
+      background: var(--surf); border: 2px solid var(--border);
+      border-radius: 16px; padding: 1.25rem; cursor: pointer; transition: all 0.22s;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .role-card:hover, .role-card.selected { border-color: var(--pink); background: rgba(255,107,157,0.07); }
+    .role-card-icon { font-size: 2rem; }
+    .role-card-info {}
+    .role-card-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .role-card-desc { font-size: 0.78rem; color: var(--muted2); line-height: 1.5; }
+    .gender-btns { display: flex; gap: 0.75rem; margin-bottom: 2rem; }
+    .gender-btn {
+      flex: 1; padding: 1rem; border-radius: 14px;
+      background: var(--surf); border: 2px solid var(--border);
+      color: var(--text); font-size: 1rem; cursor: pointer; transition: all 0.22s;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    }
+    .gender-btn.selected { border-color: var(--pink); background: rgba(255,107,157,0.07); }
+    .gender-btn .g-icon { font-size: 2rem; }
+    .gender-btn .g-label { font-size: 0.8rem; font-weight: 700; }
+
+    /* ── PHOTO UPLOAD ── */
+    .photo-upload-area {
+      width: 120px; height: 120px; border-radius: 50%;
+      background: var(--surf2); border: 2px dashed rgba(255,107,157,0.3);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; margin: 0 auto 1.5rem; overflow: hidden; transition: border-color 0.2s;
+    }
+    .photo-upload-area:hover { border-color: var(--pink); }
+    .photo-upload-area img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-upload-area .upload-icon { font-size: 2.5rem; margin-bottom: 0.3rem; }
+    .photo-upload-area .upload-text { font-size: 0.7rem; color: var(--muted); }
+
+    /* ── BROWSE (SWIPE) ── */
+    #view-browse { padding-bottom: 7rem; }
+    .browse-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .swipe-deck {
+      position: relative; width: 100%; height: 420px; max-width: 360px;
+      margin: 0 auto 2rem;
+    }
+    .swipe-card {
+      position: absolute; inset: 0;
+      background: var(--surf); border: 1px solid var(--border);
+      border-radius: 24px; overflow: hidden; cursor: grab;
+      touch-action: none; user-select: none;
+      transition: box-shadow 0.3s;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+    .swipe-card:active { cursor: grabbing; }
+    .swipe-card.back-1 { transform: scale(0.96) translateY(10px); z-index: 1; }
+    .swipe-card.back-2 { transform: scale(0.92) translateY(20px); z-index: 0; }
+    .swipe-card.top { z-index: 2; }
+    .card-photo {
+      width: 100%; height: 280px; object-fit: cover;
+      background: linear-gradient(135deg, #2d1e38, #1e1428);
+      display: flex; align-items: center; justify-content: center; font-size: 5rem;
+    }
+    .card-info { padding: 1rem 1.25rem; }
+    .card-name { font-size: 1.3rem; font-weight: 800; }
+    .card-meta { font-size: 0.82rem; color: var(--muted2); margin-top: 0.2rem; }
+    .card-bio { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .swipe-overlay {
+      position: absolute; top: 1.5rem; padding: 0.35rem 0.9rem;
+      border-width: 3px; border-style: solid; border-radius: 8px;
+      font-size: 1.1rem; font-weight: 900; letter-spacing: 0.1em;
+      opacity: 0; pointer-events: none; transition: opacity 0.1s;
+    }
+    .overlay-like { right: 1.5rem; border-color: var(--pink); color: var(--pink); transform: rotate(15deg); }
+    .overlay-nope { left: 1.5rem; border-color: #ff5050; color: #ff5050; transform: rotate(-15deg); }
+    .swipe-actions {
+      display: flex; justify-content: center; gap: 2rem; align-items: center;
+    }
+    .swipe-btn {
+      width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
+      font-size: 1.6rem; display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .swipe-btn:hover { transform: scale(1.1); }
+    .swipe-btn.nope { background: rgba(255,80,80,0.12); color: #ff6060; box-shadow: 0 4px 16px rgba(255,80,80,0.15); }
+    .swipe-btn.like { background: rgba(255,107,157,0.18); color: var(--pink); box-shadow: 0 4px 16px var(--glow); }
+    .swipe-btn.super { background: rgba(255,200,0,0.12); color: #ffd700; font-size: 1.2rem; width: 48px; height: 48px; }
+    .deck-empty { text-align: center; padding: 3rem; }
+    .deck-empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .deck-empty .empty-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .deck-empty .empty-sub { font-size: 0.83rem; color: var(--muted); }
+
+    /* ── LIKES ── */
+    #view-likes {}
+    .likes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .like-card {
+      background: var(--surf); border: 1px solid var(--border); border-radius: 18px;
+      overflow: hidden;
+    }
+    .like-card-photo {
+      height: 140px; background: linear-gradient(135deg, #2d1e38, #1e1428);
+      display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
+    }
+    .like-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .like-card-info { padding: 0.75rem; }
+    .like-card-name { font-size: 0.95rem; font-weight: 700; }
+    .like-card-age { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .like-card-actions { display: flex; gap: 0.5rem; }
+    .like-btn {
+      flex: 1; padding: 0.45rem; border-radius: 8px; border: none;
+      font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    }
+    .like-btn.accept { background: rgba(255,107,157,0.2); color: var(--pink); }
+    .like-btn.accept:hover { background: rgba(255,107,157,0.35); }
+    .like-btn.decline { background: var(--surf2); color: var(--muted); }
+    .like-btn.decline:hover { color: #ff6060; }
+
+    /* ── MATCHES ── */
+    .match-item {
+      display: flex; gap: 1rem; align-items: center;
+      padding: 1rem 1.25rem; border-radius: 16px; cursor: pointer;
+      transition: background 0.2s; margin-bottom: 0.5rem;
+      background: var(--surf); border: 1px solid var(--border);
+    }
+    .match-item:hover { background: var(--surf2); }
+    .match-avatar {
+      width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #3d2550, #2a1a3e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; overflow: hidden;
+    }
+    .match-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .match-info { flex: 1; min-width: 0; }
+    .match-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.15rem; }
+    .match-preview { font-size: 0.78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .match-meta { font-size: 0.68rem; color: var(--muted); flex-shrink: 0; }
+    .match-item.dissolved { opacity: 0.5; }
+    .dissolved-badge {
+      font-size: 0.65rem; background: rgba(255,80,80,0.12); color: #ff8080;
+      padding: 0.15rem 0.5rem; border-radius: 6px; white-space: nowrap;
+    }
+
+    /* ── CHAT ── */
+    #view-chat { display: none; flex-direction: column; height: 100vh; padding: 0; }
+    #view-chat.active { display: flex; }
+    .chat-header {
+      display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem;
+      background: rgba(18,13,24,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .chat-back { background: none; border: none; color: var(--pink); font-size: 1.2rem; cursor: pointer; padding: 0.25rem; }
+    .chat-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #3d2550, #2a1a3e);
+      display: flex; align-items: center; justify-content: center; font-size: 1.4rem; overflow: hidden;
+    }
+    .chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .chat-partner-name { font-size: 0.95rem; font-weight: 700; }
+    .chat-partner-sub { font-size: 0.72rem; color: var(--muted); }
+    .chat-counter {
+      margin-left: auto; font-size: 0.72rem; color: var(--muted);
+      background: var(--surf); padding: 0.25rem 0.65rem; border-radius: 8px;
+    }
+    .chat-counter.warn { color: var(--peach); }
+    .chat-counter.danger { color: var(--rose); }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .msg { display: flex; gap: 0.5rem; max-width: 80%; }
+    .msg.mine { flex-direction: row-reverse; margin-left: auto; }
+    .msg-bubble {
+      padding: 0.65rem 1rem; border-radius: 18px; font-size: 0.88rem; line-height: 1.55;
+      background: var(--surf2); color: var(--text);
+    }
+    .msg.mine .msg-bubble {
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      color: #fff; border-bottom-right-radius: 4px;
+    }
+    .msg:not(.mine) .msg-bubble { border-bottom-left-radius: 4px; }
+    .msg-time { font-size: 0.62rem; color: var(--muted); align-self: flex-end; margin: 0 0.3rem; }
+    .chat-footer { padding: 0.75rem 1rem; border-top: 1px solid var(--border); background: rgba(18,13,24,0.85); flex-shrink: 0; }
+    .chat-input-row { display: flex; gap: 0.75rem; align-items: flex-end; }
+    .chat-input {
+      flex: 1; background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 0.65rem 1rem;
+      color: var(--text); font-size: 0.9rem; font-family: inherit;
+      outline: none; resize: none; max-height: 100px; overflow-y: auto;
+      transition: border-color 0.2s; line-height: 1.4;
+    }
+    .chat-input:focus { border-color: var(--pink); }
+    .chat-send {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      border: none; cursor: pointer; font-size: 1.1rem; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, opacity 0.2s; flex-shrink: 0;
+    }
+    .chat-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .chat-send:not(:disabled):hover { transform: scale(1.08); }
+    .dissolved-notice {
+      margin: 0.75rem; padding: 0.75rem; background: rgba(255,80,80,0.08);
+      border: 1px solid rgba(255,80,80,0.2); border-radius: 12px; text-align: center;
+      font-size: 0.8rem; color: #ff8080; line-height: 1.6;
+    }
+    .premium-cta {
+      margin: 0.75rem; padding: 0.75rem; background: rgba(255,107,157,0.08);
+      border: 1px solid rgba(255,107,157,0.25); border-radius: 12px; text-align: center;
+    }
+    .premium-cta p { font-size: 0.82rem; color: var(--muted2); margin-bottom: 0.5rem; }
+
+    /* ── PROFILE ── */
+    #view-profile {}
+    .profile-avatar-wrap { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+    .profile-avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, #3d2550, #2a1a3e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; overflow: hidden; cursor: pointer;
+      border: 3px solid rgba(255,107,157,0.3); transition: border-color 0.2s;
+    }
+    .profile-avatar:hover { border-color: var(--pink); }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .premium-badge {
+      display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem;
+      background: linear-gradient(120deg, rgba(255,215,0,0.1), rgba(255,107,157,0.1));
+      border: 1px solid rgba(255,215,0,0.25); border-radius: 14px; margin-bottom: 1.5rem;
+    }
+    .premium-badge .badge-icon { font-size: 1.2rem; }
+    .premium-badge .badge-text { font-size: 0.82rem; color: #ffd700; font-weight: 600; }
+    .premium-badge .badge-sub { font-size: 0.72rem; color: var(--muted); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 500;
+      display: none; align-items: flex-end; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--surf); border: 1px solid var(--border);
+      border-radius: 24px 24px 0 0; padding: 2rem 1.5rem;
+      width: 100%; max-width: 500px; animation: slideUp 0.3s ease;
+    }
+    .modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .modal-sub { font-size: 0.85rem; color: var(--muted2); margin-bottom: 1.5rem; line-height: 1.7; }
+    @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: var(--surf); border: 1px solid var(--border);
+      border-radius: 100px; padding: 0.6rem 1.2rem; font-size: 0.85rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4); z-index: 999;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
+    /* UTIL */
+    .hidden { display: none !important; }
+    .flex-center { display: flex; align-items: center; justify-content: center; }
+    .gap1 { gap: 0.75rem; }
+    .section-empty { text-align: center; padding: 4rem 1rem; }
+    .section-empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .section-empty p { color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── AUTH ── -->
+  <div id="view-auth" class="view active">
+    <div class="auth-emoji">🍑</div>
+    <div class="auth-logo">ぽっちゃりんぐ</div>
+    <p class="muted center mt1" style="margin-bottom:1.5rem;">まるっと、好きになろう。</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">ログイン</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">新規登録</button>
+    </div>
+    <div id="auth-login">
+      <div class="input-group">
+        <label class="input-label">メールアドレス</label>
+        <input id="login-email" type="email" class="input" placeholder="example@mail.com">
+      </div>
+      <div class="input-group">
+        <label class="input-label">パスワード</label>
+        <input id="login-password" type="password" class="input" placeholder="••••••••">
+      </div>
+      <div id="login-err" class="err hidden"></div>
+      <div class="mt1">
+        <button class="btn btn-primary" onclick="doLogin()">ログイン</button>
+      </div>
+    </div>
+    <div id="auth-signup" class="hidden">
+      <div class="input-group">
+        <label class="input-label">メールアドレス</label>
+        <input id="signup-email" type="email" class="input" placeholder="example@mail.com">
+      </div>
+      <div class="input-group">
+        <label class="input-label">パスワード（6文字以上）</label>
+        <input id="signup-password" type="password" class="input" placeholder="••••••••">
+      </div>
+      <div id="signup-err" class="err hidden"></div>
+      <div class="mt1">
+        <button class="btn btn-primary" onclick="doSignup()">アカウントを作成</button>
+      </div>
+    </div>
+    <p class="muted center mt2">
+      登録すると<span class="link">利用規約</span>に同意したことになります
+    </p>
+  </div>
+
+  <!-- ── ONBOARDING ── -->
+  <div id="view-onboarding" class="view">
+    <div class="ob-progress">
+      <div class="ob-dot" id="ob-dot-0"></div>
+      <div class="ob-dot" id="ob-dot-1"></div>
+      <div class="ob-dot" id="ob-dot-2"></div>
+      <div class="ob-dot" id="ob-dot-3"></div>
+    </div>
+
+    <!-- Step 0: Role -->
+    <div class="ob-step active" id="ob-0">
+      <div class="ob-title">どちらで使いますか？</div>
+      <div class="ob-sub">登録後の変更はできません。慎重に選んでください。</div>
+      <div class="role-cards">
+        <div class="role-card" id="rc-pocchary" onclick="selectRole('pocchary')">
+          <div class="role-card-icon">🍑</div>
+          <div class="role-card-info">
+            <div class="role-card-title">ぽっちゃりで登録する</div>
+            <div class="role-card-desc">選ばれる側。プロフィールを公開して、LIKEが来たら承認・拒否を選べます。</div>
+          </div>
+        </div>
+        <div class="role-card" id="rc-browser" onclick="selectRole('browser')">
+          <div class="role-card-icon">🔍</div>
+          <div class="role-card-info">
+            <div class="role-card-title">探す側で登録する</div>
+            <div class="role-card-desc">ぽっちゃりさんのカードをスワイプして気持ちを伝えます。体型は問いません。</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="ob_next(0)" id="ob-0-btn" disabled>次へ</button>
+    </div>
+
+    <!-- Step 1: Gender -->
+    <div class="ob-step" id="ob-1">
+      <div class="ob-title">あなたの性別は？</div>
+      <div class="ob-sub">マッチングの対象が決まります。</div>
+      <div class="gender-btns">
+        <button class="gender-btn" id="gb-male" onclick="selectGender('male')">
+          <span class="g-icon">👨</span><span class="g-label">男性</span>
+        </button>
+        <button class="gender-btn" id="gb-female" onclick="selectGender('female')">
+          <span class="g-icon">👩</span><span class="g-label">女性</span>
+        </button>
+      </div>
+      <button class="btn btn-primary" onclick="ob_next(1)" id="ob-1-btn" disabled>次へ</button>
+    </div>
+
+    <!-- Step 2: Basic Info -->
+    <div class="ob-step" id="ob-2">
+      <div class="ob-title">プロフィールを設定</div>
+      <div class="ob-sub">あとで変更できます。</div>
+      <div class="input-group">
+        <label class="input-label">ニックネーム</label>
+        <input id="ob-name" type="text" class="input" placeholder="みき" maxlength="20">
+      </div>
+      <div class="input-group">
+        <label class="input-label">年齢（25歳以上）</label>
+        <input id="ob-age" type="number" class="input" placeholder="28" min="25" max="99">
+      </div>
+      <div class="input-group">
+        <label class="input-label">自己紹介（任意）</label>
+        <textarea id="ob-bio" class="input" placeholder="好きなことや雰囲気を教えてください..." maxlength="200"></textarea>
+      </div>
+      <div id="ob-2-err" class="err hidden"></div>
+      <button class="btn btn-primary" onclick="ob_next(2)">次へ</button>
+    </div>
+
+    <!-- Step 3: Photo -->
+    <div class="ob-step" id="ob-3">
+      <div class="ob-title">写真をアップロード</div>
+      <div class="ob-sub">プロフィール写真は第一印象を大きく左右します。（任意）</div>
+      <input type="file" id="photo-file" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+      <div class="photo-upload-area" id="photo-area" onclick="document.getElementById('photo-file').click()">
+        <div class="upload-icon">📷</div>
+        <div class="upload-text">タップして選択</div>
+      </div>
+      <div id="ob-3-err" class="err hidden"></div>
+      <button class="btn btn-primary" onclick="finishOnboarding()" id="ob-3-btn">はじめる 🎉</button>
+      <button class="btn btn-secondary mt1" onclick="finishOnboarding(true)">写真はあとで設定</button>
+    </div>
+  </div>
+
+  <!-- ── BROWSE ── -->
+  <div id="view-browse" class="view">
+    <div class="browse-header">
+      <div class="page-title">🍑 探す</div>
+      <span class="muted" id="browse-count-label"></span>
+    </div>
+    <div id="swipe-deck" class="swipe-deck"></div>
+    <div class="swipe-actions" id="swipe-actions">
+      <button class="swipe-btn nope" onclick="triggerSwipe('left')" title="パス">✕</button>
+      <button class="swipe-btn like" onclick="triggerSwipe('right')" title="LIKE">♡</button>
+    </div>
+  </div>
+
+  <!-- ── LIKES ── -->
+  <div id="view-likes" class="view">
+    <div class="page-title">♡ いいね</div>
+    <p class="muted" style="margin-bottom:1.5rem; font-size:0.82rem;">あなたにLIKEした人の一覧です。承認するとマッチが成立します。</p>
+    <div id="likes-grid" class="likes-grid"></div>
+    <div id="likes-empty" class="section-empty hidden">
+      <div class="empty-icon">💌</div>
+      <p>まだLIKEはありません<br>プロフィールを充実させてみましょう</p>
+    </div>
+  </div>
+
+  <!-- ── MATCHES ── -->
+  <div id="view-matches" class="view">
+    <div class="page-title">💬 マッチ</div>
+    <div id="matches-list"></div>
+    <div id="matches-empty" class="section-empty hidden">
+      <div class="empty-icon">🔍</div>
+      <p>まだマッチがありません</p>
+    </div>
+  </div>
+
+  <!-- ── CHAT ── -->
+  <div id="view-chat" class="view">
+    <div class="chat-header">
+      <button class="chat-back" onclick="showView('matches')">‹</button>
+      <div class="chat-avatar" id="chat-partner-avatar">🍑</div>
+      <div>
+        <div class="chat-partner-name" id="chat-partner-name">—</div>
+        <div class="chat-partner-sub" id="chat-partner-sub">マッチ中</div>
+      </div>
+      <div class="chat-counter" id="chat-msg-counter"></div>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div id="dissolved-notice" class="dissolved-notice hidden">
+      このマッチはメッセージ上限に達したため終了しました。<br>
+      素敵な出会いが続きますように 🍑
+    </div>
+    <div id="premium-cta-box" class="premium-cta hidden">
+      <p>残りメッセージが少なくなってきました。<br>プレミアムにアップグレードして続けませんか？</p>
+      <button class="btn btn-primary" style="font-size:0.85rem;padding:0.6rem 1rem;" onclick="showPremiumModal()">プレミアムを見る ✨</button>
+    </div>
+    <div class="chat-footer" id="chat-footer">
+      <div class="chat-input-row">
+        <textarea id="chat-input" class="chat-input" placeholder="メッセージを入力..." rows="1" onkeydown="chatKeydown(event)" oninput="autoResize(this)"></textarea>
+        <button class="chat-send" id="chat-send-btn" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROFILE ── -->
+  <div id="view-profile" class="view">
+    <div class="page-title">👤 プロフィール</div>
+    <div class="profile-avatar-wrap">
+      <input type="file" id="profile-photo-file" accept="image/*" style="display:none" onchange="updateProfilePhoto(this)">
+      <div class="profile-avatar" id="profile-avatar" onclick="document.getElementById('profile-photo-file').click()">🍑</div>
+    </div>
+    <div id="premium-badge-box" class="premium-badge hidden">
+      <span class="badge-icon">✨</span>
+      <div><div class="badge-text">プレミアム会員</div><div class="badge-sub">メッセージ上限30通</div></div>
+    </div>
+    <div class="card mt1">
+      <div class="input-group">
+        <label class="input-label">ニックネーム</label>
+        <input id="profile-name" type="text" class="input" maxlength="20">
+      </div>
+      <div class="input-group">
+        <label class="input-label">自己紹介</label>
+        <textarea id="profile-bio" class="input" maxlength="200"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="saveProfile()">保存する</button>
+    </div>
+    <div class="mt2">
+      <button class="btn btn-secondary" onclick="showPremiumModal()">✨ プレミアムにアップグレード</button>
+    </div>
+    <div class="mt1">
+      <button class="btn btn-danger" onclick="doLogout()">ログアウト</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- BOTTOM NAV -->
+<nav id="bottom-nav">
+  <button class="nav-item" id="nav-browse" onclick="showView('browse')">
+    <span class="nav-icon">🍑</span>探す
+  </button>
+  <div class="nav-item-wrap">
+    <button class="nav-item" id="nav-likes" onclick="showView('likes')">
+      <span class="nav-icon">♡</span>いいね
+    </button>
+    <div class="nav-badge hidden" id="likes-badge">0</div>
+  </div>
+  <button class="nav-item" id="nav-matches" onclick="showView('matches')">
+    <span class="nav-icon">💬</span>マッチ
+  </button>
+  <button class="nav-item" id="nav-profile" onclick="showView('profile')">
+    <span class="nav-icon">👤</span>マイページ
+  </button>
+</nav>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-overlay" id="premium-modal" onclick="closePremiumModal(event)">
+  <div class="modal">
+    <div class="modal-title">✨ プレミアムプラン</div>
+    <div class="modal-sub">
+      メッセージ上限が10通→30通に延長。<br>
+      もっとじっくり話せます。
+    </div>
+    <div class="card" style="margin-bottom:1rem; text-align:center;">
+      <div style="font-size:0.75rem; color:var(--muted); margin-bottom:0.25rem;">月額</div>
+      <div style="font-size:2.5rem; font-weight:900; color:var(--pink);">¥980</div>
+    </div>
+    <button class="btn btn-primary" onclick="closePremiumModal()">アップグレードする（近日対応）</button>
+    <button class="btn btn-secondary mt1" onclick="closePremiumModal()">キャンセル</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ================================================================
+// CONFIG — ここに自分のSupabaseのURLとAnon Keyを入れてください
+// ================================================================
+const SUPABASE_URL  = 'https://wqhqdevrfhatsrzvsivi.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_whTM8mcYt35fuMK0C-5BFQ_kx5aw4mp';
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ─── STATE ───
+let currentUser    = null;
+let currentProfile = null;
+let obRole         = null;
+let obGender       = null;
+let obPhotoFile    = null;
+let swipeProfiles  = [];
+let swipeIdx       = 0;
+let chatMatchId    = null;
+let chatChannel    = null;
+let isDragging     = false, startX = 0, currentDX = 0;
+
+// ─── INIT ───
+async function init() {
+  const hash = location.hash.replace('#', '').split('?')[0];
+  const params = new URLSearchParams(location.hash.split('?')[1] || '');
+
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) {
+    if (params.get('role')) { obRole = params.get('role'); }
+    showView('auth');
+    return;
+  }
+  currentUser = session.user;
+
+  const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (!profile) {
+    if (params.get('role')) obRole = params.get('role');
+    showView('onboarding');
+    return;
+  }
+  currentProfile = profile;
+  showNav();
+  showView(hash || 'browse');
+  loadLikesBadge();
+}
+
+// ─── VIEWS ───
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + name);
+  if (!el) return;
+  el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const navBtn = document.getElementById('nav-' + name);
+  if (navBtn) navBtn.classList.add('active');
+  location.hash = name;
+
+  // Load data for each view
+  if (name === 'browse' && currentProfile?.role === 'browser') loadSwipeDeck();
+  if (name === 'likes'  && currentProfile?.role === 'pocchary') loadLikes();
+  if (name === 'matches') loadMatches();
+  if (name === 'profile') loadProfileView();
+}
+
+function showNav() {
+  const nav = document.getElementById('bottom-nav');
+  nav.classList.add('visible');
+  // Hide browse for pocchary, hide likes for browser
+  if (currentProfile?.role === 'pocchary') {
+    document.getElementById('nav-browse').style.display = 'none';
+  } else {
+    document.getElementById('nav-likes').parentElement.style.display = 'none';
+  }
+}
+
+// ─── AUTH ───
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i===0) === (tab==='login')));
+  document.getElementById('auth-login').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('auth-signup').classList.toggle('hidden', tab !== 'signup');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  const err   = document.getElementById('login-err');
+  err.classList.add('hidden');
+  const { data, error } = await db.auth.signInWithPassword({ email, password: pass });
+  if (error) { err.textContent = 'ログインに失敗しました: ' + error.message; err.classList.remove('hidden'); return; }
+  currentUser = data.user;
+  const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (!profile) { showView('onboarding'); return; }
+  currentProfile = profile;
+  showNav();
+  showView('browse');
+  loadLikesBadge();
+}
+
+async function doSignup() {
+  const email = document.getElementById('signup-email').value.trim();
+  const pass  = document.getElementById('signup-password').value;
+  const err   = document.getElementById('signup-err');
+  err.classList.add('hidden');
+  if (pass.length < 6) { err.textContent = 'パスワードは6文字以上で入力してください'; err.classList.remove('hidden'); return; }
+  const { data, error } = await db.auth.signUp({ email, password: pass });
+  if (error) { err.textContent = '登録に失敗しました: ' + error.message; err.classList.remove('hidden'); return; }
+  currentUser = data.user;
+  showView('onboarding');
+}
+
+async function doLogout() {
+  await db.auth.signOut();
+  currentUser = null; currentProfile = null;
+  document.getElementById('bottom-nav').classList.remove('visible');
+  showView('auth');
+}
+
+// ─── ONBOARDING ───
+let obStep = 0;
+function selectRole(role) {
+  obRole = role;
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('rc-' + role).classList.add('selected');
+  document.getElementById('ob-0-btn').disabled = false;
+}
+function selectGender(g) {
+  obGender = g;
+  document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('gb-' + g).classList.add('selected');
+  document.getElementById('ob-1-btn').disabled = false;
+}
+function ob_next(from) {
+  if (from === 2) {
+    const name = document.getElementById('ob-name').value.trim();
+    const age  = parseInt(document.getElementById('ob-age').value);
+    const err  = document.getElementById('ob-2-err');
+    err.classList.add('hidden');
+    if (!name) { err.textContent = 'ニックネームを入力してください'; err.classList.remove('hidden'); return; }
+    if (!age || age < 25) { err.textContent = '25歳以上である必要があります'; err.classList.remove('hidden'); return; }
+  }
+  document.getElementById('ob-' + from).classList.remove('active');
+  obStep = from + 1;
+  document.getElementById('ob-' + obStep).classList.add('active');
+  document.querySelectorAll('.ob-dot').forEach((d, i) => d.classList.toggle('done', i <= from));
+}
+function previewPhoto(input) {
+  if (!input.files[0]) return;
+  obPhotoFile = input.files[0];
+  const area = document.getElementById('photo-area');
+  const url = URL.createObjectURL(obPhotoFile);
+  area.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+}
+async function finishOnboarding(skipPhoto) {
+  const name = document.getElementById('ob-name').value.trim();
+  const age  = parseInt(document.getElementById('ob-age').value);
+  const bio  = document.getElementById('ob-bio').value.trim();
+  const btn  = document.getElementById('ob-3-btn');
+  btn.disabled = true; btn.textContent = '保存中...';
+
+  let photo_url = '';
+  if (!skipPhoto && obPhotoFile) {
+    const ext = obPhotoFile.name.split('.').pop();
+    const path = `${currentUser.id}/avatar.${ext}`;
+    const { error: upErr } = await db.storage.from('poccharing-avatars').upload(path, obPhotoFile, { upsert: true });
+    if (!upErr) {
+      const { data: urlData } = db.storage.from('poccharing-avatars').getPublicUrl(path);
+      photo_url = urlData.publicUrl;
+    }
+  }
+
+  const { error } = await db.from('profiles').upsert({
+    id: currentUser.id, role: obRole, gender: obGender,
+    display_name: name, age, bio, photo_url
+  });
+  if (error) {
+    document.getElementById('ob-3-err').textContent = '保存に失敗しました。' + error.message;
+    document.getElementById('ob-3-err').classList.remove('hidden');
+    btn.disabled = false; btn.textContent = 'はじめる 🎉';
+    return;
+  }
+  const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+  currentProfile = profile;
+  showNav();
+  showView(currentProfile.role === 'browser' ? 'browse' : 'likes');
+}
+
+// ─── BROWSE / SWIPE ───
+async function loadSwipeDeck() {
+  const deck = document.getElementById('swipe-deck');
+  deck.innerHTML = '<div class="loading">読み込み中...</div>';
+  swipeProfiles = []; swipeIdx = 0;
+
+  // Get already liked pocchary IDs to exclude
+  const { data: likedRows } = await db.from('likes').select('pocchary_id').eq('browser_id', currentUser.id);
+  const likedIds = (likedRows || []).map(r => r.pocchary_id);
+
+  // Get blocked IDs
+  const { data: blockedRows } = await db.from('blocks').select('blocked_id').eq('blocker_id', currentUser.id);
+  const blockedIds = (blockedRows || []).map(r => r.blocked_id);
+
+  const excludeIds = [...likedIds, ...blockedIds, currentUser.id];
+
+  // Fetch opposite gender pocchary profiles
+  const targetGender = currentProfile.gender === 'male' ? 'female' : 'male';
+  let query = db.from('profiles').select('*')
+    .eq('role', 'pocchary').eq('gender', targetGender).eq('is_active', true);
+  if (excludeIds.length) query = query.not('id', 'in', `(${excludeIds.join(',')})`);
+  const { data: profiles } = await query.limit(20);
+
+  swipeProfiles = profiles || [];
+  document.getElementById('browse-count-label').textContent = swipeProfiles.length + '人';
+  renderDeck();
+}
+
+function renderDeck() {
+  const deck = document.getElementById('swipe-deck');
+  const actions = document.getElementById('swipe-actions');
+  deck.innerHTML = '';
+
+  if (swipeIdx >= swipeProfiles.length) {
+    deck.innerHTML = `<div class="deck-empty"><div class="empty-icon">🌸</div><div class="empty-title">今日はここまで</div><div class="empty-sub">また明日チェックしてみよう</div></div>`;
+    actions.style.visibility = 'hidden';
+    return;
+  }
+  actions.style.visibility = 'visible';
+
+  for (let i = Math.min(swipeIdx + 2, swipeProfiles.length - 1); i >= swipeIdx; i--) {
+    const p = swipeProfiles[i];
+    const card = document.createElement('div');
+    card.className = 'swipe-card ' + (i === swipeIdx ? 'top' : i === swipeIdx + 1 ? 'back-1' : 'back-2');
+    card.dataset.id = p.id;
+    card.innerHTML = `
+      <div class="card-photo">${p.photo_url ? `<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;">` : '🍑'}</div>
+      <div class="card-info">
+        <div class="card-name">${esc(p.display_name)}</div>
+        <div class="card-meta">${p.age}歳</div>
+        <div class="card-bio">${esc(p.bio || '')}</div>
+      </div>
+      <div class="swipe-overlay overlay-like">LIKE ♡</div>
+      <div class="swipe-overlay overlay-nope">NOPE ✕</div>
+    `;
+    if (i === swipeIdx) attachSwipe(card);
+    deck.appendChild(card);
+  }
+}
+
+function attachSwipe(card) {
+  card.addEventListener('pointerdown', e => {
+    isDragging = true; startX = e.clientX; currentDX = 0;
+    card.setPointerCapture(e.pointerId);
+    card.style.transition = 'none';
+  });
+  card.addEventListener('pointermove', e => {
+    if (!isDragging) return;
+    currentDX = e.clientX - startX;
+    const rot = currentDX * 0.07;
+    card.style.transform = `translateX(${currentDX}px) rotate(${rot}deg)`;
+    const likeOv = card.querySelector('.overlay-like');
+    const nopeOv = card.querySelector('.overlay-nope');
+    likeOv.style.opacity = Math.max(0, currentDX / 80);
+    nopeOv.style.opacity = Math.max(0, -currentDX / 80);
+  });
+  card.addEventListener('pointerup', () => {
+    if (!isDragging) return; isDragging = false;
+    if (currentDX > 80) animateSwipe(card, 'right');
+    else if (currentDX < -80) animateSwipe(card, 'left');
+    else {
+      card.style.transition = 'transform 0.35s ease';
+      card.style.transform = '';
+      card.querySelectorAll('.swipe-overlay').forEach(o => o.style.opacity = 0);
+    }
+  });
+}
+
+function animateSwipe(card, dir) {
+  const x = dir === 'right' ? window.innerWidth + 200 : -(window.innerWidth + 200);
+  const rot = dir === 'right' ? 25 : -25;
+  card.style.transition = 'transform 0.35s ease';
+  card.style.transform = `translateX(${x}px) rotate(${rot}deg)`;
+  setTimeout(() => handleSwipeResult(dir), 350);
+}
+
+function triggerSwipe(dir) {
+  const topCard = document.querySelector('.swipe-card.top');
+  if (topCard) animateSwipe(topCard, dir);
+}
+
+async function handleSwipeResult(dir) {
+  if (swipeIdx >= swipeProfiles.length) return;
+  const profile = swipeProfiles[swipeIdx];
+  swipeIdx++;
+  if (dir === 'right') {
+    await db.from('likes').upsert({ browser_id: currentUser.id, pocchary_id: profile.id });
+    showToast('LIKEを送りました ♡');
+  }
+  renderDeck();
+}
+
+// ─── LIKES (ぽっちゃり view) ───
+async function loadLikes() {
+  const grid = document.getElementById('likes-grid');
+  const empty = document.getElementById('likes-empty');
+  grid.innerHTML = '<div class="loading">読み込み中...</div>';
+
+  const { data } = await db.from('likes').select('*, browser:browser_id(*)').eq('pocchary_id', currentUser.id).eq('status', 'pending');
+  grid.innerHTML = '';
+  if (!data || !data.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  data.forEach(like => {
+    const b = like.browser;
+    const card = document.createElement('div');
+    card.className = 'like-card';
+    card.innerHTML = `
+      <div class="like-card-photo">${b.photo_url ? `<img src="${esc(b.photo_url)}">` : '👤'}</div>
+      <div class="like-card-info">
+        <div class="like-card-name">${esc(b.display_name)}</div>
+        <div class="like-card-age">${b.age}歳</div>
+        <div class="like-card-actions">
+          <button class="like-btn accept" onclick="acceptLike('${like.id}','${b.id}',this)">承認 ♡</button>
+          <button class="like-btn decline" onclick="declineLike('${like.id}',this)">✕</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  updateLikesBadge(data.length);
+}
+
+async function acceptLike(likeId, browserId, btn) {
+  btn.disabled = true; btn.textContent = '...';
+  await db.from('likes').update({ status: 'accepted' }).eq('id', likeId);
+  await db.from('matches').upsert({ browser_id: browserId, pocchary_id: currentUser.id });
+  showToast('マッチしました！💬');
+  loadLikes();
+}
+async function declineLike(likeId, btn) {
+  btn.disabled = true;
+  await db.from('likes').update({ status: 'declined' }).eq('id', likeId);
+  btn.closest('.like-card').remove();
+}
+
+async function loadLikesBadge() {
+  if (currentProfile?.role !== 'pocchary') return;
+  const { count } = await db.from('likes').select('*', { count: 'exact', head: true }).eq('pocchary_id', currentUser.id).eq('status', 'pending');
+  updateLikesBadge(count || 0);
+}
+function updateLikesBadge(n) {
+  const badge = document.getElementById('likes-badge');
+  badge.textContent = n;
+  badge.classList.toggle('hidden', n === 0);
+}
+
+// ─── MATCHES ───
+async function loadMatches() {
+  const list = document.getElementById('matches-list');
+  const empty = document.getElementById('matches-empty');
+  list.innerHTML = '<div class="loading">読み込み中...</div>';
+
+  const isP = currentProfile.role === 'pocchary';
+  const meCol = isP ? 'pocchary_id' : 'browser_id';
+  const otherRel = isP ? 'browser:browser_id(*)' : 'pocchary:pocchary_id(*)';
+
+  const { data } = await db.from('matches').select(`*, ${otherRel}`).eq(meCol, currentUser.id).order('created_at', { ascending: false });
+  list.innerHTML = '';
+  if (!data || !data.length) { empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  for (const m of data) {
+    const other = isP ? m.browser : m.pocchary;
+    const item = document.createElement('div');
+    item.className = 'match-item' + (m.status === 'dissolved' ? ' dissolved' : '');
+    item.onclick = () => openChat(m.id, other);
+    const myCount  = isP ? m.pocchary_msg_count : m.browser_msg_count;
+    const maxCount = 10; // TODO: check premium
+    item.innerHTML = `
+      <div class="match-avatar">${other.photo_url ? `<img src="${esc(other.photo_url)}">` : '🍑'}</div>
+      <div class="match-info">
+        <div class="match-name">${esc(other.display_name)}</div>
+        <div class="match-preview">${m.status === 'dissolved' ? '会話終了' : `あなたの送信: ${myCount}/${maxCount}通`}</div>
+      </div>
+      ${m.status === 'dissolved' ? '<span class="dissolved-badge">終了</span>' : ''}
+    `;
+    list.appendChild(item);
+  }
+}
+
+// ─── CHAT ───
+async function openChat(matchId, partnerProfile) {
+  chatMatchId = matchId;
+  document.getElementById('chat-partner-name').textContent = partnerProfile.display_name;
+  document.getElementById('chat-partner-sub').textContent = `${partnerProfile.age}歳`;
+  const avatarEl = document.getElementById('chat-partner-avatar');
+  avatarEl.innerHTML = partnerProfile.photo_url ? `<img src="${esc(partnerProfile.photo_url)}" style="width:100%;height:100%;object-fit:cover;">` : '🍑';
+
+  showView('chat');
+  // hide/show bottom nav for chat
+  document.getElementById('bottom-nav').classList.remove('visible');
+
+  await loadMessages();
+  subscribeChat();
+}
+
+async function loadMessages() {
+  const container = document.getElementById('chat-messages');
+  container.innerHTML = '<div class="loading">読み込み中...</div>';
+
+  const { data: match } = await db.from('matches').select('*').eq('id', chatMatchId).single();
+  if (!match) return;
+
+  const { data: msgs } = await db.from('messages').select('*').eq('match_id', chatMatchId).order('created_at');
+  container.innerHTML = '';
+
+  (msgs || []).forEach(m => appendMessage(m));
+  container.scrollTop = container.scrollHeight;
+
+  // Update counter
+  updateChatCounter(match);
+
+  const footer = document.getElementById('chat-footer');
+  const dissolvedNotice = document.getElementById('dissolved-notice');
+  const premiumCtaBox = document.getElementById('premium-cta-box');
+  const isP = currentProfile.role === 'pocchary';
+  const myCount = isP ? match.pocchary_msg_count : match.browser_msg_count;
+  const myLimit = currentProfile.is_premium ? 30 : 10;
+
+  dissolvedNotice.classList.toggle('hidden', match.status !== 'dissolved');
+  premiumCtaBox.classList.toggle('hidden', !(myCount >= myLimit - 2 && !currentProfile.is_premium && match.status === 'active'));
+  footer.style.display = match.status === 'dissolved' || myCount >= myLimit ? 'none' : 'block';
+}
+
+function appendMessage(msg) {
+  const container = document.getElementById('chat-messages');
+  const isMine = msg.sender_id === currentUser.id;
+  const div = document.createElement('div');
+  div.className = 'msg' + (isMine ? ' mine' : '');
+  const t = new Date(msg.created_at);
+  const timeStr = `${t.getHours()}:${String(t.getMinutes()).padStart(2,'0')}`;
+  div.innerHTML = `<div class="msg-bubble">${esc(msg.content)}</div><div class="msg-time">${timeStr}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function updateChatCounter(match) {
+  const isP = currentProfile.role === 'pocchary';
+  const myCount = isP ? match.pocchary_msg_count : match.browser_msg_count;
+  const myLimit = currentProfile.is_premium ? 30 : 10;
+  const remaining = myLimit - myCount;
+  const counter = document.getElementById('chat-msg-counter');
+  counter.textContent = `残り${remaining}通`;
+  counter.className = 'chat-counter' + (remaining <= 3 ? ' danger' : remaining <= 5 ? ' warn' : '');
+}
+
+function subscribeChat() {
+  if (chatChannel) chatChannel.unsubscribe();
+  chatChannel = db.channel('chat-' + chatMatchId)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `match_id=eq.${chatMatchId}` },
+      payload => {
+        if (payload.new.sender_id !== currentUser.id) appendMessage(payload.new);
+      })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches', filter: `id=eq.${chatMatchId}` },
+      payload => {
+        updateChatCounter(payload.new);
+        if (payload.new.status === 'dissolved') {
+          document.getElementById('chat-footer').style.display = 'none';
+          document.getElementById('dissolved-notice').classList.remove('hidden');
+        }
+      })
+    .subscribe();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const content = input.value.trim();
+  if (!content) return;
+  const btn = document.getElementById('chat-send-btn');
+  btn.disabled = true;
+  input.value = ''; autoResize(input);
+
+  const { error } = await db.from('messages').insert({ match_id: chatMatchId, sender_id: currentUser.id, content });
+  if (error) { showToast('送信に失敗しました'); btn.disabled = false; return; }
+
+  // Append optimistically
+  appendMessage({ sender_id: currentUser.id, content, created_at: new Date().toISOString() });
+
+  // Re-check match state
+  const { data: match } = await db.from('matches').select('*').eq('id', chatMatchId).single();
+  if (match) updateChatCounter(match);
+
+  btn.disabled = false;
+}
+
+function chatKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+// ─── PROFILE VIEW ───
+async function loadProfileView() {
+  document.getElementById('profile-name').value = currentProfile.display_name || '';
+  document.getElementById('profile-bio').value  = currentProfile.bio || '';
+  document.getElementById('premium-badge-box').classList.toggle('hidden', !currentProfile.is_premium);
+  const av = document.getElementById('profile-avatar');
+  av.innerHTML = currentProfile.photo_url ? `<img src="${esc(currentProfile.photo_url)}" style="width:100%;height:100%;object-fit:cover;">` : '🍑';
+}
+
+async function saveProfile() {
+  const name = document.getElementById('profile-name').value.trim();
+  const bio  = document.getElementById('profile-bio').value.trim();
+  if (!name) { showToast('ニックネームを入力してください'); return; }
+  const { error } = await db.from('profiles').update({ display_name: name, bio }).eq('id', currentUser.id);
+  if (error) { showToast('保存に失敗しました'); return; }
+  currentProfile.display_name = name; currentProfile.bio = bio;
+  showToast('保存しました ✓');
+}
+
+async function updateProfilePhoto(input) {
+  if (!input.files[0]) return;
+  const file = input.files[0];
+  const ext = file.name.split('.').pop();
+  const path = `${currentUser.id}/avatar.${ext}`;
+  const { error } = await db.storage.from('poccharing-avatars').upload(path, file, { upsert: true });
+  if (error) { showToast('アップロードに失敗しました'); return; }
+  const { data } = db.storage.from('poccharing-avatars').getPublicUrl(path);
+  await db.from('profiles').update({ photo_url: data.publicUrl }).eq('id', currentUser.id);
+  currentProfile.photo_url = data.publicUrl;
+  document.getElementById('profile-avatar').innerHTML = `<img src="${data.publicUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+  showToast('写真を更新しました');
+}
+
+// ─── PREMIUM MODAL ───
+function showPremiumModal() { document.getElementById('premium-modal').classList.add('active'); }
+function closePremiumModal(e) {
+  if (!e || e.target === document.getElementById('premium-modal')) {
+    document.getElementById('premium-modal').classList.remove('active');
+  }
+}
+
+// ─── TOAST ───
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── UTILS ───
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── BACK BUTTON: restore nav ───
+window.addEventListener('hashchange', () => {
+  const h = location.hash.replace('#','');
+  if (h !== 'chat' && currentProfile) {
+    document.getElementById('bottom-nav').classList.add('visible');
+  }
+});
+
+// ─── START ───
+init();
+</script>
+</body>
+</html>

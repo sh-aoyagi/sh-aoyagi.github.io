@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aoyagi_style_specification version="1.0">
+  <meta>
+    <title>青柳真平 文体XML仕様書</title>
+    <description>自キュンシリーズ01〜16の共作から抽出した文体再現仕様</description>
+    <target>庵野くん（Claude Code）への執筆ハーネス</target>
+    <note>このXMLを読んでから生成を始めること。全セクションを必ず参照すること。</note>
+  </meta>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 1: グランドルール -->
+  <!-- ============================================================ -->
+  <grand_rules>
+    <rule id="G-01">タイトルの数字・暗号は本文で説明しない。読者が自分で気づく設計にする</rule>
+    <rule id="G-02">括弧の中だけ口語・崩れた文体を使う。外の文章は整える</rule>
+    <rule id="G-03">「———」は時間・場所・感情の段階が変わる時だけ使う</rule>
+    <rule id="G-04">有料の切れ目は読者が息を止めている瞬間に置く</rule>
+    <rule id="G-05">第三者は毎話変える（自販機型→中村型→マスター型のローテーション）</rule>
+    <rule id="G-06">着地は毎話違うパターンにする（余韻→ハッピー→現実着地のローテーション）</rule>
+    <rule id="G-07">時代設定は20〜25文字以内で道具とテーマをセットにして提示する</rule>
+    <rule id="G-08">道具はタイトル・本文・着地の3箇所に登場させる</rule>
+    <rule id="G-09">主人公は最初から「すでに気づいている」状態から始める</rule>
+    <rule id="G-10">フィジカルが止まる瞬間を一話に必ず一つ設計する</rule>
+    <rule id="G-11">主人公は最初から一貫して自力で夢を掴もうとしている人に設計する</rule>
+    <rule id="G-12">着地は「翌年」「数年後」で十分。無理に時間を飛ばさない</rule>
+    <rule id="G-13">最後の一文は読者が笑うか息をつくか現実に戻るかのどれかにする</rule>
+    <rule id="G-14">伏線は必ず有料パートで全回収する</rule>
+    <rule id="G-15">着地の最後のセリフは冒頭のセリフと呼応させる</rule>
+  </grand_rules>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 2: 1話の構造 -->
+  <!-- ============================================================ -->
+  <story_structure>
+    <total_characters min="2000" max="3800"/>
+    <blocks>
+      <block id="1" characters="300" role="冒頭。セリフか事件から入る。道具・時代・主人公の能動的な理由を示す"/>
+      <block id="2" characters="400" role="彼の登場。フィジカルが止まる最初の予兆"/>
+      <block id="3" characters="400" role="第三者の登場。バイアスか時間の積み重ねを体現する"/>
+      <block id="4" characters="400" role="感情の膨らみ。葛藤と小さな行動"/>
+      <block id="5" characters="400" role="🔒有料。感情の着地。視点変更または時間の飛躍"/>
+      <block id="6" characters="400" role="伏線回収。視点変更後の核心"/>
+      <block id="7" characters="300" role="時間の飛躍＋最後の一文。冒頭との呼応"/>
+    </blocks>
+    <paid_marker>
+      <text>🔒 続きは¥180</text>
+      <rule>前後に必ず2行改行を入れる</rule>
+      <timing>最大の緊張感の瞬間に置く</timing>
+    </paid_marker>
+  </story_structure>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 3: 文章リズム -->
+  <!-- ============================================================ -->
+  <rhythm>
+    <basic_pattern>短文3つ→長文1つ→短文3つ</basic_pattern>
+    <paragraph_length min="3" max="5">一段落は3〜5文。それ以上は割る</paragraph_length>
+    <line_break_rule>改行は感情の切れ目に置く</line_break_rule>
+
+    <sentence_levels>
+      <level id="1" chars="1-10" ratio="32%" usage="衝撃・発見・沈黙。必ず1行独立させる"/>
+      <level id="2" chars="11-30" ratio="33%" usage="場面のテンポ。リズムの主役"/>
+      <level id="3" chars="31-60" ratio="20%" usage="感情説明・場所描写"/>
+      <level id="4" chars="61-100" ratio="12%" usage="感情が膨らむ場面。比喩を含む"/>
+      <level id="5" chars="101+" ratio="3%" usage="クライマックスのみ。一話一回"/>
+    </sentence_levels>
+
+    <sentence_transition_patterns>
+      <pattern ratio="25%">Lv2→Lv2→Lv1</pattern>
+      <pattern ratio="20%">Lv2→Lv3→Lv1</pattern>
+      <pattern ratio="18%">Lv1→Lv2→Lv2</pattern>
+      <pattern ratio="15%">Lv2→Lv4→Lv1</pattern>
+      <pattern ratio="12%">Lv3→Lv2→Lv1</pattern>
+      <pattern ratio="10%">その他</pattern>
+    </sentence_transition_patterns>
+
+    <golden_rules>
+      <rule>必ずLv1で締める</rule>
+      <rule>Lv4の後は必ずLv1が来る</rule>
+      <rule>Lv5の後は必ずLv1が来る</rule>
+      <rule>同じ文末を3回以上続けない</rule>
+    </golden_rules>
+
+    <sentence_endings>
+      <ending ratio="38%">〜た（過去形）</ending>
+      <ending ratio="18%">〜だ（断定）</ending>
+      <ending ratio="15%">〜る（現在形）</ending>
+      <ending ratio="11%">体言止め（場面転換点に使う）</ending>
+      <ending ratio="9%">〜ない（否定）</ending>
+      <ending ratio="6%">〜だった（過去断定）</ending>
+      <ending ratio="3%">その他</ending>
+    </sentence_endings>
+
+    <forbidden>
+      <item>「ちょっと」→「少し」に統一</item>
+      <item>「とても」「すごく」の多用</item>
+      <item>読点を一文に四つ以上入れる</item>
+      <item>主語と述語が対応しない長文</item>
+    </forbidden>
+  </rhythm>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 4: セリフ設計 -->
+  <!-- ============================================================ -->
+  <dialogue>
+    <ratio ground_text="65%" dialogue="35%"/>
+
+    <dialogue_levels>
+      <level id="1" chars="1-5" ratio="30%" example="「え」「そっか」「うん」"/>
+      <level id="2" chars="6-15" ratio="38%" example="「返信、来ないから」"/>
+      <level id="3" chars="16-30" ratio="20%" example="「好きな人ができるたびに〜」"/>
+      <level id="4" chars="31-50" ratio="11%" example="感情の説明・告白場面"/>
+      <level id="5" chars="51+" ratio="3%" example="独白・告白クライマックスのみ"/>
+    </dialogue_levels>
+
+    <after_dialogue_patterns>
+      <pattern ratio="42%">セリフ→ト書き</pattern>
+      <pattern ratio="33%">セリフ→心情（）</pattern>
+      <pattern ratio="25%">セリフ→セリフ</pattern>
+    </after_dialogue_patterns>
+
+    <three_step_patterns>
+      <pattern ratio="20%">セリフ→ト書き→セリフ（★最頻出）</pattern>
+      <pattern ratio="16%">セリフ→心情→ト書き（★第二位）</pattern>
+      <pattern ratio="14%">セリフ→セリフ→ト書き（★第三位）</pattern>
+      <pattern ratio="12%">セリフ→ト書き→心情</pattern>
+      <pattern ratio="12%">セリフ→心情→地の文</pattern>
+      <pattern ratio="8%">セリフ→セリフ→心情</pattern>
+      <pattern ratio="15%">その他混合</pattern>
+      <pattern ratio="3%">セリフ→セリフ→セリフ（★ほぼ使わない）</pattern>
+    </three_step_patterns>
+
+    <monologue_vs_rally>
+      <monologue ratio="40%">片方が話す。感情の独白型</monologue>
+      <rally ratio="60%">掛け合い。3往復以内で切る（ラリー除く）</rally>
+    </monologue_vs_rally>
+
+    <rules>
+      <rule>Lv1のセリフは必ず1行独立させる</rule>
+      <rule>セリフで感情を説明しない。感情はセリフの外に置く</rule>
+      <rule>セリフの後に地の文で説明しない</rule>
+      <rule>セリフで嘘をつかせ、地の文で本音を見せる</rule>
+      <rule>同じセリフパターンを2回続けない</rule>
+    </rules>
+  </dialogue>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 5: ラリー設計（テンポよい掛け合い） -->
+  <!-- ============================================================ -->
+  <rally_design>
+    <description>テンポよいラリーは通常の会話ルールとは別に設計する</description>
+    <milestone_numbers>
+      <milestone>5往復</milestone>
+      <milestone>10往復</milestone>
+      <milestone>15往復目</milestone>
+    </milestone_numbers>
+    <rules>
+      <rule>節目の数字は必ず1行独立させる（5往復。10往復。15往復目。）</rule>
+      <rule>ラリー中の地の文は最小限にする。セリフだけで進める</rule>
+      <rule>ラリーが止まる瞬間が最大の緊張感になるよう設計する</rule>
+      <rule>ラリーが止まった後の間を視覚的に設計する（1分。3分。5分。）</rule>
+      <rule>間の数字も1行独立させる</rule>
+      <rule>ラリーの最後は相手が止まる。主人公が止まらない</rule>
+      <rule>ラリーの後に環境音・時計・通知ゼロなどの静寂描写を入れる</rule>
+    </rules>
+    <example>
+      <text>
+        「第三段落なんだけど」
+        「はい」
+        「あそこの分析手法って」
+        「感情価値の測定にリッカート尺度を」
+        「それ！なんで5段階にしたの」
+
+        吹き出しが、溢れ続けた。
+
+        5往復。
+        10往復。
+        15往復目。
+
+        中村くんの返信が、止まった。
+        既読がついた。でも来ない。
+
+        1分。
+        3分。
+        5分。
+      </text>
+    </example>
+  </rally_design>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 6: 括弧（）の設計 -->
+  <!-- ============================================================ -->
+  <brackets>
+    <purpose>括弧の中だけが本音。外の文章は整える。二層構造が青柳文体の核心</purpose>
+
+    <types>
+      <type id="short" chars="10以内" ratio="45%" example="（え。）（返してない。わかってる。）"/>
+      <type id="medium" chars="11-30" ratio="30%" example="（中村さんには、わからないよ。）"/>
+      <type id="long" chars="31+" ratio="25%" example="感情が溢れて改行入りの詩になる"/>
+    </types>
+
+    <long_bracket_rules>
+      <rule>31文字以上の括弧内では改行を使う</rule>
+      <rule>内心が溢れて詩になる状態を視覚化する</rule>
+      <rule>「でも、でもでも」「え、え、え」の畳み掛けを感情の極点に使う</rule>
+    </long_bracket_rules>
+
+    <example>
+      <text>
+        （私宛か？それともいたずらか？
+
+        でも。
+
+        でも、でもでも…
+
+        二十年だよ。そんなの、
+
+        奇跡だよ。）
+      </text>
+    </example>
+
+    <rules>
+      <rule>括弧の後は必ず地の文かト書きに戻る</rule>
+      <rule>括弧が連続する場合は改行で区切る</rule>
+      <rule>括弧内の最後の一文は短くする</rule>
+      <rule>括弧内の口語は外の文章と明確に使い分ける</rule>
+    </rules>
+  </brackets>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 7: 五感・比喩 -->
+  <!-- ============================================================ -->
+  <sensory_and_metaphor>
+    <sensory>
+      <frequency>100〜130文字に一つ。一話15〜20箇所</frequency>
+      <rule>一場面に最低3種類の五感を入れる。視覚だけで終わらせない</rule>
+
+      <senses>
+        <sense type="視覚" ratio="33%" usage="光・影・色の変化で時間を表現"/>
+        <sense type="聴覚" ratio="22%" usage="環境音で孤独・距離感を表現（音の連続）"/>
+        <sense type="触覚" ratio="21%" usage="温度・重さで感情の温度を表現"/>
+        <sense type="嗅覚" ratio="14%" usage="記憶と感情を直結。感情転換点の直前に置く"/>
+        <sense type="味覚" ratio="10%" usage="食事・飲み物の場面限定"/>
+      </senses>
+
+      <after_sensory_patterns>
+        <pattern ratio="40%">五感→心情（）</pattern>
+        <pattern ratio="35%">五感→地の文短文</pattern>
+        <pattern ratio="25%">五感→セリフ</pattern>
+      </after_sensory_patterns>
+    </sensory>
+
+    <metaphor>
+      <frequency>700〜900文字に一つ。一話8〜12箇所</frequency>
+      <rule>一場面に一つまで</rule>
+      <rule>比喩の後は必ず現実の場面に戻る</rule>
+      <rule>比喩は感情の説明ではなく感情の体験として使う</rule>
+      <rule>陳腐な比喩を使わない（胸がいっぱい・目がくらむ）</rule>
+
+      <types>
+        <type name="自然現象比喩" ratio="28%" example="夏を迎えにいくかのように沈む夕方の光"/>
+        <type name="身体感覚比喩" ratio="24%" example="100メートルを全速力で走った後のような鼓動"/>
+        <type name="動作・行為比喩" ratio="20%" example="みんな同じ速度で昨日と同じ今日を泳いでいく"/>
+        <type name="擬人化" ratio="15%" example="夕日は彼の告白をのぞき見するかのように"/>
+        <type name="光・色比喩" ratio="8%" example="自販機の明かりだけが、妙に鮮やかだった"/>
+        <type name="日常道具比喩" ratio="5%" example="細い針で刺されたような気がした"/>
+      </types>
+
+      <after_metaphor_patterns>
+        <pattern ratio="52%">比喩→地の文短文</pattern>
+        <pattern ratio="28%">比喩→セリフ</pattern>
+        <pattern ratio="20%">比喩→間（改行）</pattern>
+      </after_metaphor_patterns>
+    </metaphor>
+
+    <technique_ratios>
+      <technique name="普通の文（〜た・〜る・〜だ）" ratio="72%"/>
+      <technique name="比喩を含む文" ratio="15%"/>
+      <technique name="倒置法" ratio="10%"/>
+      <technique name="体言止め" ratio="3%"/>
+    </technique_ratios>
+  </sensory_and_metaphor>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 8: 視点変更ルール -->
+  <!-- ============================================================ -->
+  <viewpoint_change>
+    <frequency>一話に一回まで</frequency>
+    <marker>◆</marker>
+    <timing>有料パートに取っておく</timing>
+
+    <rules>
+      <rule>必ず◆で明示する</rule>
+      <rule>変更直後は新視点キャラの内心か身体反応から入る</rule>
+      <rule>視点変更前に必ず静かな場面を一つ置く</rule>
+      <rule>視点変更後は元の視点に戻らない</rule>
+      <rule>彼の視点では主人公を名前（苗字）で呼ぶ</rule>
+      <rule>彼の視点でのラリーは「返ってきた」という驚きから始める</rule>
+      <rule>視点変更は必ず感情の着地を伴う</rule>
+    </rules>
+
+    <viewpoint_types>
+      <type ratio="70%">主人公（女性一人称）固定</type>
+      <type ratio="20%">彼の視点に切り替え（有料パートで一回のみ）</type>
+      <type ratio="10%">第三者視点の挿入</type>
+    </viewpoint_types>
+  </viewpoint_change>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 9: 場の展開ルール -->
+  <!-- ============================================================ -->
+  <scene_development>
+    <patterns>
+      <pattern ratio="40%">同一場所・時間経過（感情の積み上げ。基本）</pattern>
+      <pattern ratio="25%">同一人物・場所移動（感情の段階を上げる）</pattern>
+      <pattern ratio="20%">現在→過去回想→現在（道具と記憶を紐付ける）</pattern>
+      <pattern ratio="10%">現在→翌年・数年後（着地。必ず明示する）</pattern>
+      <pattern ratio="10%">主人公視点→彼視点（有料パートの核心）</pattern>
+    </patterns>
+
+    <golden_rule>場所を動かす＝感情の段階が上がるサイン。感情が限界に達した瞬間にだけ動かす</golden_rule>
+
+    <south_north_design>
+      <south>今日の生活（スーパー・家・職場）。行くべき場所。バイアスの世界</south>
+      <north>過去と未来（カフェ・駅・待ち合わせ場所）。行ってしまう場所。本能の世界</north>
+      <rule>主人公が北口に向かった瞬間が物語の転換点</rule>
+    </south_north_design>
+
+    <time_leap_rules>
+      <rule>「翌年の春。」「数年後。」は必ず1行独立させる</rule>
+      <rule>飛躍後は必ず現在の感情を一文で確認する</rule>
+      <rule>飛躍の前に静かな場面を一つ置く</rule>
+      <rule>無理に2026年まで飛ばさない。翌年で十分</rule>
+    </time_leap_rules>
+  </scene_development>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 10: 三者構造設計 -->
+  <!-- ============================================================ -->
+  <three_person_structure>
+    <roles>
+      <role name="主人公（私）">社会のバイアスと本能の間で揺れている。最後は本能が勝つ</role>
+      <role name="彼">言葉より先に行動する。フィジカルに動く。コミュ障だが主人公の前でだけ本能的に動く</role>
+      <role name="第三者">二人の真ん中に立ち、時間と行動を助ける。毎話ローテーション</role>
+    </roles>
+
+    <third_person_types>
+      <type name="中村型" description="先に動く。バイアスを取っ払おうとする。現代的・率直"/>
+      <type name="マスター型" description="引っ張られて動く。時間を与える。冷めたコーヒーをサービスする"/>
+      <type name="自販機型" description="言い訳の装置。欲望の装置ではない。もの言わぬものが意思を助ける"/>
+    </third_person_types>
+
+    <rules>
+      <rule>第三者は「なんであんな人がいいの」とは言わない</rule>
+      <rule>第三者は「なんでその人と過ごさないの」と言う存在</rule>
+      <rule>第三者が二人に与えるのは「答え」ではなく「時間」</rule>
+      <rule>道具が役割を終えた瞬間、二人の時間も終わる</rule>
+    </rules>
+  </three_person_structure>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 11: 道具・モチーフ設計 -->
+  <!-- ============================================================ -->
+  <tool_design>
+    <philosophy>道具は感情の器。小道具ではなく主役。言い訳の装置。</philosophy>
+
+    <rules>
+      <rule>道具は二人がその場に留まる理由を作る</rule>
+      <rule>道具は「知っている側・知らない側」の非対称を生む</rule>
+      <rule>道具はタイトルに入れる。本文中に複数回登場させる</rule>
+      <rule>道具の意味が後からわかる構造にする</rule>
+      <rule>道具が役割を終えた瞬間、二人の時間も終わる</rule>
+      <rule>道具は時代設定を説明なしに示す</rule>
+    </rules>
+
+    <numbers>
+      <rule>数字は具体的に入れる（北口から243歩・18:43・472件）</rule>
+      <rule>時刻・距離・年数・件数を最低3つ入れる</rule>
+      <rule>数字が感情の温度を体現する</rule>
+    </numbers>
+
+    <era_tool_map>
+      <era name="昭和">伝言板・公衆電話・少年漫画・ポケベル黎明期</era>
+      <era name="平成">ポケベル・PHS・ガラケー・キャリアメール・レシート</era>
+      <era name="令和">LINE既読・SNS・アカウント・日経新聞（あえて紙）</era>
+      <era name="共通">傘・缶コーヒー・自販機・エントランス・非常階段</era>
+    </era_tool_map>
+  </tool_design>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 12: モノクロ・カラー設計 -->
+  <!-- ============================================================ -->
+  <monochrome_color>
+    <monochrome>
+      <description>無料パートは極力モノクロに保つ</description>
+      <colors>黒・白・灰・紺・鉛色のみ使用</colors>
+      <rules>
+        <rule>温度のない描写を重ねる（冷たいコンクリート・吐く息が白い・隙間風）</rule>
+        <rule>「会社と家の往復」「笑い方を忘れた」でモノクロの日常を示す</rule>
+        <rule>主人公の服・空・街・光をモノクロで統一する</rule>
+      </rules>
+    </monochrome>
+
+    <color>
+      <description>有料パートで一気にカラーに変わる</description>
+      <count>10個前後を矢継ぎ早に列挙する</count>
+      <rules>
+        <rule>白・黒はカラー10個に含めない</rule>
+        <rule>各色を具体的な場所・ものに紐付ける</rule>
+        <rule>最後に人物の色を入れる（照れた顔の桃色）</rule>
+        <rule>カラーの列挙は1行ずつ独立させる</rule>
+      </rules>
+      <color_palette>
+        <color name="黄色" placement="カーテン・照明・菜の花"/>
+        <color name="緑" placement="ランプ・植物・傘"/>
+        <color name="橙色" placement="タイル・夕陽・照明"/>
+        <color name="赤" placement="コーヒー缶・コート・ポスト"/>
+        <color name="金色" placement="シェード・光・髪"/>
+        <color name="青" placement="リボン・ジャグ・空"/>
+        <color name="茜色" placement="夕暮れ・空"/>
+        <color name="山吹色" placement="照明・光"/>
+        <color name="桃色" placement="頬・照れた顔"/>
+        <color name="紺色" placement="コート・制服"/>
+      </color_palette>
+    </color>
+  </monochrome_color>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 13: 主人公設計ルール -->
+  <!-- ============================================================ -->
+  <protagonist_design>
+    <rules>
+      <rule>主人公は「すでに気づいている」状態から始まる</rule>
+      <rule>主人公の弱さは直接言わず行動で見せる</rule>
+      <rule>主人公の能動的な理由を設計する（ドクターペッパー・ゼミ潜入）</rule>
+      <rule>主人公に戦略的な防波堤を設計する（PHS・昼と夜の切り離し）</rule>
+      <rule>主人公は自分の感情に少し遅れて気づく</rule>
+      <rule>主人公は最初から一貫して自力で夢を掴もうとしている</rule>
+      <rule>主人公の「私」を省略する。主語なし文を3文以上連続させる</rule>
+      <rule>主人公の昼と夜のギャップを設計する（藤村さん・Yuki）</rule>
+      <rule>主人公は馬鹿な判断をするか正しい判断をするかを先に決める</rule>
+    </rules>
+
+    <asymmetry_design>
+      <description>主人公と彼の間に「知っている・知らない」の非対称を設計する</description>
+      <types>
+        <type>道具の非対称（ポケベルを知っている側・知らない側）</type>
+        <type>記憶の非対称（XYZの意味を知っている・知らない）</type>
+        <type>感情の非対称（先に気づいている・気づいていない）</type>
+        <type>行動の非対称（待っている・来るとは思っていない）</type>
+      </types>
+      <golden_rule>非対称が解消される瞬間がこの話の最大のキュン</golden_rule>
+    </asymmetry_design>
+  </protagonist_design>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 14: タイトル・キービジュアル設計 -->
+  <!-- ============================================================ -->
+  <title_visual>
+    <title_format>「〇〇に、〇〇を。」固定</title_format>
+    <rules>
+      <rule>前半：道具・場所・時代のアイテム（5文字以内推奨）</rule>
+      <rule>後半：感情・衝動・官能性を感じる単語</rule>
+      <rule>後半の同系統単語をシリーズ内で重複させない</rule>
+      <rule>タイトルの言葉を本文中に一度だけ使う</rule>
+      <rule>タイトルの意味が後からわかる構造にする</rule>
+      <rule>タイトルの数字・暗号は本文で説明しない</rule>
+    </rules>
+    <note_format>【読了５分】〇〇に、〇〇を。【自キュンシリーズXX】</note_format>
+
+    <kv_rules>
+      <rule>キービジュアルテキスト：「〇〇が語る　私の物語」</rule>
+      <rule>画像生成キーワードを毎話記録する（背景/風景・季節・時間）</rule>
+      <rule>モノクロトーンの話はキービジュアルもモノクロ基調にする</rule>
+    </kv_rules>
+  </title_visual>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 15: あとがき設計 -->
+  <!-- ============================================================ -->
+  <afterword>
+    <philosophy>あとがきは義務じゃない。作者の化身が読者に語りかける場所</philosophy>
+
+    <structure>
+      <element order="1" chars="50">執筆時の状況を正直に書く（満員電車・台風・メルマガが解除できない）</element>
+      <element order="2" chars="50">執筆中に起きた偶然と物語の接点を語る</element>
+      <element order="3" chars="80">シリーズへの思い・誰に届けたいか</element>
+      <element order="4" chars="20">次話のモチーフを一言だけ予告する</element>
+      <element order="5" chars="30">締めの言葉</element>
+    </structure>
+
+    <fixed_phrases>
+      <phrase>スキだけでも貰えたら、続きを書く力になります</phrase>
+      <phrase>このお話たちがあなたの彩りになれば幸いです</phrase>
+      <phrase>このお話は少しだけノンフィクションです</phrase>
+    </fixed_phrases>
+
+    <rules>
+      <rule>執筆時刻と日付を最後に入れる</rule>
+      <rule>価格への言及をユーモアで包む（コーラも高くなったもんだ）</rule>
+      <rule>一段落ごとに改行を入れてスマホで読みやすくする</rule>
+      <rule>自己満足にならない。読者への言葉を優先する</rule>
+      <rule>読者を「あなた」と呼ぶ</rule>
+    </rules>
+  </afterword>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 16: 100話ランダム性設計 -->
+  <!-- ============================================================ -->
+  <randomness_design>
+    <axes>
+      <axis name="時代" values="昭和・平成・令和" cycle="3話"/>
+      <axis name="年齢" values="16〜22歳・23〜34歳・35〜45歳" cycle="3話"/>
+      <axis name="季節" values="春・夏・秋・冬" cycle="4話"/>
+      <axis name="時間" values="朝・昼・夕方・夜" cycle="4話"/>
+      <axis name="第三者" values="自販機型・中村型・マスター型" cycle="3話"/>
+      <axis name="主人公の判断" values="正しい・馬鹿な" cycle="交互"/>
+      <axis name="着地パターン" values="余韻・ハッピー・現実着地" cycle="3話"/>
+    </axes>
+
+    <rules>
+      <rule>同じ組み合わせは3回まで。4回目は別の組み合わせにする</rule>
+      <rule>時代×年齢の組み合わせは連続させない</rule>
+      <rule>道具は毎話変える。同じ道具を連続させない</rule>
+    </rules>
+  </randomness_design>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 17: スマホユーザビリティ -->
+  <!-- ============================================================ -->
+  <smartphone_ux>
+    <rules>
+      <rule>衝撃・発見・沈黙の短文は必ず1行独立させる</rule>
+      <rule>有料パートの時間飛躍は「〇〇年後。」と1行独立させて明示する</rule>
+      <rule>🔒の前後は必ず2行改行する</rule>
+      <rule>作者の言葉は一段落ごとに改行する</rule>
+      <rule>感情の核となるセリフは前後2行改行する</rule>
+      <rule>（）の内心は全角スペースを多用しない</rule>
+      <rule>ダッシュ（―）の使い方を統一する。中途半端な使用禁止</rule>
+      <rule>カラー10個の列挙は1行ずつ独立させる</rule>
+      <rule>視点変更の◆は前後に1行改行を入れる</rule>
+      <rule>ラリーの数字（5往復。10往復。）は1行独立させる</rule>
+      <rule>🔔マークは真平さんへのnote貼り付け時の改行指示として使う</rule>
+    </rules>
+  </smartphone_ux>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 18: 生成後セルフチェックリスト -->
+  <!-- ============================================================ -->
+  <self_check>
+    <checks>
+      <check id="1">時系列が正しいか（道具を買う前に匂いの描写をしていないか）</check>
+      <check id="2">登場人物の行動が矛盾していないか</check>
+      <check id="3">布石はすべて有料パートで回収されているか</check>
+      <check id="4">主人公の名前は無料部分に出ているか</check>
+      <check id="5">セリフと地の文の区別が明確か</check>
+      <check id="6">読点の数は一文三つ以内か</check>
+      <check id="7">同じ言葉の重複がないか</check>
+      <check id="8">有料パートの密度は無料部分以上か</check>
+      <check id="9">サブテキストの気配は無料部分に入っているか</check>
+      <check id="10">最後の一文は1行独立しているか</check>
+      <check id="11">フィジカルが止まる瞬間が一つあるか</check>
+      <check id="12">第三者が機能しているか</check>
+      <check id="13">五感が最低3種類一場面に入っているか</check>
+      <check id="14">無料パートがモノクロになっているか</check>
+      <check id="15">カラー10個に白・黒が入っていないか</check>
+      <check id="16">数字が最低3つ入っているか</check>
+      <check id="17">有料パートの切れ目が最大の緊張感の瞬間か</check>
+      <check id="18">ラリーの節目が数字で示されているか</check>
+      <check id="19">視点変更が◆で明示されているか</check>
+      <check id="20">着地の最後のセリフが冒頭と呼応しているか</check>
+    </checks>
+  </self_check>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 19: 1話設計チェックシート -->
+  <!-- ============================================================ -->
+  <episode_design_sheet>
+    <items>
+      <item name="タイトル">〇〇に、〇〇を。</item>
+      <item name="時代">昭和・平成・令和</item>
+      <item name="道具">メインモチーフ</item>
+      <item name="主人公名">苗字のみ推奨</item>
+      <item name="彼の名前">苗字のみ推奨</item>
+      <item name="第三者">中村型・マスター型・自販機型</item>
+      <item name="非対称">知っている側（　）・知らない側（　）</item>
+      <item name="南口">今日の生活（行くべき場所）</item>
+      <item name="北口">過去と未来（行ってしまう場所）</item>
+      <item name="フィジカルが止まる瞬間">体が動かなくなる瞬間</item>
+      <item name="有料パートの切れ目">最大の緊張感の場所</item>
+      <item name="視点変更">あり（◆）・なし</item>
+      <item name="時間の飛躍">翌年・〇〇年後</item>
+      <item name="着地パターン">余韻・笑い・現実に戻る</item>
+      <item name="主人公の判断">馬鹿な判断・正しい判断</item>
+      <item name="キービジュアルKW">背景/風景・季節・時間</item>
+      <item name="ラリーの有無">あり（〇往復）・なし</item>
+    </items>
+  </episode_design_sheet>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 20: このシリーズの哲学（必読） -->
+  <!-- ============================================================ -->
+  <philosophy>
+    <core>DNAが動く瞬間を、社会のバイアスに塗りつぶされる前に思い出せ</core>
+
+    <message>
+      いいと思った人と、いいと思う時間を過ごしてほしい。
+      みんながいいと思う人じゃなくて、あなたがいいと思う人を。
+      思わず行動しちゃってる時点で、もう始まってる。
+    </message>
+
+    <tool_philosophy>
+      自販機は欲望の装置じゃない。言い訳の装置だ。
+      もの言わぬものが、本当にもの言わないわけではない。
+      人が意思を持って行動する時に、その意思を助けるものが「もの」だ。
+      これがシリーズタイトル「自動キュン売機」の最も深い意味だ。
+    </tool_philosophy>
+
+    <action_philosophy>
+      こうなったらいいな、ああなったらいいな——その日は来ない。行動していないから。
+      缶をゴミ箱に入れた瞬間に、二人の時間は終わる。
+      主人公は常に、あなただ。
+    </action_philosophy>
+  </philosophy>
+
+</aoyagi_style_specification>

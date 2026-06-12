@@ -1,0 +1,14 @@
+# 環境変数・APIキー
+.env
+
+# 依存関係（package.jsonから復元可能）
+node_modules/
+
+# Pythonキャッシュ
+__pycache__/
+*.pyc
+
+# OS
+Thumbs.db
+desktop.ini
+lp_staging/

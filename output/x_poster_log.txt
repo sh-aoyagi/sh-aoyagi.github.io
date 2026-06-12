@@ -1,0 +1,71 @@
+[2026-05-20 13:55:36] ==================================================
+[2026-05-20 13:55:36] X自動投稿スクリプト 開始
+[2026-05-20 13:55:38] 投稿対象: 5件
+[2026-05-20 13:55:39]   → 予期しないエラー: UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f40e' in position 67: illegal multibyte sequence
+[2026-05-20 13:55:39]   → 予期しないエラー: UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f6a4' in position 68: illegal multibyte sequence
+[2026-05-20 13:55:39]   → 予期しないエラー: UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f6b4' in position 69: illegal multibyte sequence
+[2026-05-20 13:55:39]   → 予期しないエラー: UnicodeEncodeError: 'cp932' codec can't encode character '\U0001f40e' in position 68: illegal multibyte sequence
+[2026-05-20 13:55:39] 投稿中 [post_no=1 week_of=2026-05-20]: 競馬でFIREを目指す予想アカウントです。独自の「FIREスコア（血統×追い切り×展開）」で毎週の重賞を分析し、根拠ある...
+[2026-05-20 13:55:40]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 13:55:40] 完了: 成功0件 / 失敗5件
+[2026-05-20 13:55:40] ==================================================
+[2026-05-20 14:04:18] ==================================================
+[2026-05-20 14:04:18] X自動投稿スクリプト 開始
+[2026-05-20 14:04:20] 投稿対象: 5件
+[2026-05-20 14:04:20] 投稿中 [post_no=1 week_of=2026-05-18]: 【安田記念G1直前🐎】東京マイルの王者決定戦！狙い目はここ→ ✅前走GI好走馬が中心 ✅東京1600m実績を重視 ✅調教...
+[2026-05-20 14:04:21]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:04:21] 投稿中 [post_no=2 week_of=2026-05-18]: 【朝イチボート穴狙い🚤】知ってる人だけ得する条件→ ✅1号艇スタートが乱れる日 ✅気温差10度以上の朝 ✅モーター勝率5...
+[2026-05-20 14:04:21]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:04:21] 投稿中 [post_no=3 week_of=2026-05-19]: 【競輪ライン予想の基本🚴】これだけ覚えれば変わる→ ✅先行選手の脚力が命 ✅決まり手データを必ず確認 ✅バンクの長さで狙...
+[2026-05-20 14:04:21]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:04:21] 投稿中 [post_no=4 week_of=2026-05-19]: 【調教タイムの読み方🐎】プロが見るポイント→ ✅最終追い切りのタイムと動き ✅栗東坂路と美浦Wは別基準 ✅馬体重の変化と...
+[2026-05-20 14:04:22]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:04:22] 投稿中 [post_no=1 week_of=2026-05-20]: 競馬でFIREを目指す予想アカウントです。独自の「FIREスコア（血統×追い切り×展開）」で毎週の重賞を分析し、根拠ある...
+[2026-05-20 14:04:22]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:04:22] 完了: 成功0件 / 失敗5件
+[2026-05-20 14:04:22] ==================================================
+[2026-05-20 14:29:36] ==================================================
+[2026-05-20 14:29:36] X自動投稿スクリプト 開始
+[2026-05-20 14:29:38] 投稿対象: 0件
+[2026-05-20 14:29:38] 投稿対象なし。終了。
+[2026-05-20 14:29:38] ==================================================
+[2026-05-20 14:30:05] ==================================================
+[2026-05-20 14:30:05] X自動投稿スクリプト 開始
+[2026-05-20 14:30:07] 投稿対象: 5件
+[2026-05-20 14:30:07] 投稿中 [post_no=1 week_of=2026-05-18]: 【安田記念G1直前🐎】東京マイルの王者決定戦！狙い目はここ→ ✅前走GI好走馬が中心 ✅東京1600m実績を重視 ✅調教...
+[2026-05-20 14:30:07]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:30:08] 投稿中 [post_no=2 week_of=2026-05-18]: 【朝イチボート穴狙い🚤】知ってる人だけ得する条件→ ✅1号艇スタートが乱れる日 ✅気温差10度以上の朝 ✅モーター勝率5...
+[2026-05-20 14:30:08]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:30:08] 投稿中 [post_no=3 week_of=2026-05-19]: 【競輪ライン予想の基本🚴】これだけ覚えれば変わる→ ✅先行選手の脚力が命 ✅決まり手データを必ず確認 ✅バンクの長さで狙...
+[2026-05-20 14:30:08]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:30:08] 投稿中 [post_no=4 week_of=2026-05-19]: 【調教タイムの読み方🐎】プロが見るポイント→ ✅最終追い切りのタイムと動き ✅栗東坂路と美浦Wは別基準 ✅馬体重の変化と...
+[2026-05-20 14:30:08]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:30:09] 投稿中 [post_no=1 week_of=2026-05-20]: 競馬でFIREを目指す予想アカウントです。独自の「FIREスコア（血統×追い切り×展開）」で毎週の重賞を分析し、根拠ある...
+[2026-05-20 14:30:09]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 14:30:09] 完了: 成功0件 / 失敗5件
+[2026-05-20 14:30:09] ==================================================
+[2026-05-20 15:12:12] ==================================================
+[2026-05-20 15:12:12] X自動投稿スクリプト 開始
+[2026-05-20 15:12:14] 投稿対象: 3件
+[2026-05-20 15:12:14] 投稿中 [post_no=1 week_of=2026-05-18]: 【安田記念G1直前🐎】東京マイルの王者決定戦！狙い目はここ→ ✅前走GI好走馬が中心 ✅東京1600m実績を重視 ✅調教...
+[2026-05-20 15:12:15]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 15:12:15] 投稿中 [post_no=4 week_of=2026-05-19]: 【調教タイムの読み方🐎】プロが見るポイント→ ✅最終追い切りのタイムと動き ✅栗東坂路と美浦Wは別基準 ✅馬体重の変化と...
+[2026-05-20 15:12:15]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 15:12:15] 投稿中 [post_no=1 week_of=2026-05-20]: 競馬でFIREを目指す予想アカウントです。独自の「FIREスコア（血統×追い切り×展開）」で毎週の重賞を分析し、根拠ある...
+[2026-05-20 15:12:15]   → X APIエラー: 402 Payment Required
+Your enrolled account [2056953807280443392] does not have any credits to fulfill this request.
+[2026-05-20 15:12:15] 完了: 成功0件 / 失敗3件
+[2026-05-20 15:12:15] ==================================================

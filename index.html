@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>デジタル会議単語帳 | 会議の「わからない」をゼロに</title>
+  <meta name="description" content="Google Meetの字幕から略語・専門用語を自動で検出。会議後に単語カードで答え合わせできるChrome拡張。">
+  <meta property="og:title" content="デジタル会議単語帳 | 会議の「わからない」をゼロに">
+  <meta property="og:description" content="会議で出てきた「わからない単語」を自動でメモ。カード形式で1分で答え合わせ。">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --indigo: #4F46E5;
+      --indigo-dark: #3730A3;
+      --indigo-light: #EEF2FF;
+      --green: #10B981;
+      --red: #EF4444;
+      --gray: #64748B;
+      --gray-light: #F1F5F9;
+      --white: #FFFFFF;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --shadow: 0 4px 24px rgba(0,0,0,.10);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,.16);
+      --radius: 16px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans JP', system-ui, sans-serif; color: var(--text); background: var(--white); line-height: 1.7; }
+
+    /* ===== HERO ===== */
+    #hero {
+      background: linear-gradient(135deg, #3730A3 0%, #4F46E5 50%, #7C3AED 100%);
+      color: white;
+      text-align: center;
+      padding: 80px 24px 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      margin-bottom: 24px;
+    }
+    #hero h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+    #hero h1 span { color: #FDE68A; }
+    #hero .lead {
+      font-size: clamp(15px, 2.5vw, 18px);
+      opacity: .85;
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+    .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .btn-primary {
+      background: white;
+      color: var(--indigo);
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-size: 15px;
+      display: inline-block;
+      transition: transform .15s, box-shadow .15s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+    .btn-outline-white {
+      background: transparent;
+      color: white;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-size: 15px;
+      display: inline-block;
+      border: 2px solid rgba(255,255,255,.6);
+      transition: background .15s;
+      cursor: pointer;
+    }
+    .btn-outline-white:hover { background: rgba(255,255,255,.1); }
+    .hero-note { font-size: 12px; opacity: .6; margin-top: 8px; }
+
+    /* ===== DEMO ===== */
+    #demo {
+      background: var(--gray-light);
+      padding: 80px 24px;
+    }
+    .section-label {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: var(--indigo);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(22px, 4vw, 36px);
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 48px;
+      font-size: 15px;
+    }
+    .demo-box {
+      max-width: 640px;
+      margin: 0 auto;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .demo-tab-bar {
+      display: flex;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 16px 20px 0;
+      gap: 4px;
+    }
+    .demo-tab-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .demo-tab-dot:nth-child(1) { background: #FC5F5A; }
+    .demo-tab-dot:nth-child(2) { background: #FEBB2C; }
+    .demo-tab-dot:nth-child(3) { background: #2AC740; }
+
+    /* Input state */
+    #state-input { padding: 24px; }
+    #state-input label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    #demo-textarea {
+      width: 100%;
+      height: 140px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      transition: border-color .15s;
+    }
+    #demo-textarea:focus { border-color: var(--indigo); }
+    .demo-sample-btn {
+      background: none;
+      border: 1px dashed #CBD5E1;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all .15s;
+    }
+    .demo-sample-btn:hover { border-color: var(--indigo); color: var(--indigo); }
+    #extract-btn {
+      width: 100%;
+      margin-top: 16px;
+      background: var(--indigo);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s;
+    }
+    #extract-btn:hover { background: var(--indigo-dark); }
+
+    /* Card state */
+    #state-cards { display: none; padding: 24px; }
+    .card-progress-wrap { margin-bottom: 16px; }
+    .card-progress-bar-bg {
+      height: 4px;
+      background: #E2E8F0;
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .card-progress-bar {
+      height: 100%;
+      background: var(--indigo);
+      border-radius: 100px;
+      transition: width .3s ease;
+    }
+    .card-progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+    .flashcard {
+      background: var(--gray-light);
+      border-radius: 14px;
+      padding: 32px 24px;
+      text-align: center;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      position: relative;
+      transition: opacity .2s, transform .2s;
+    }
+    .flashcard.slide-left { animation: slideLeft .25s ease forwards; }
+    .flashcard.slide-right { animation: slideRight .25s ease forwards; }
+    @keyframes slideLeft {
+      to { transform: translateX(-60px); opacity: 0; }
+    }
+    @keyframes slideRight {
+      to { transform: translateX(60px); opacity: 0; }
+    }
+    .card-word {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: .02em;
+    }
+    .card-def {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 300px;
+    }
+    .card-def-toggle {
+      font-size: 12px;
+      color: var(--indigo);
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 4px 8px;
+      margin-top: 4px;
+    }
+    .hint-tag {
+      display: inline-block;
+      background: var(--indigo-light);
+      color: var(--indigo);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 10px;
+      letter-spacing: .05em;
+    }
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .act-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform .1s, box-shadow .1s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .act-btn:active { transform: scale(.95); }
+    .act-btn .act-icon { font-size: 20px; }
+    .btn-unknown-act { background: #FEF2F2; color: #DC2626; }
+    .btn-unknown-act:hover { background: #FEE2E2; }
+    .btn-skip-act { background: #F8FAFC; color: var(--text-muted); }
+    .btn-skip-act:hover { background: #E2E8F0; }
+    .btn-known-act { background: #F0FDF4; color: #16A34A; }
+    .btn-known-act:hover { background: #DCFCE7; }
+    .swipe-hint { text-align: center; font-size: 11px; color: #CBD5E1; margin-top: 4px; }
+
+    /* Result state */
+    #state-result { display: none; padding: 24px; }
+    .result-header { text-align: center; margin-bottom: 24px; }
+    .result-icon { font-size: 48px; margin-bottom: 12px; }
+    .result-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+    .result-sub { font-size: 14px; color: var(--text-muted); }
+    .unknown-list-wrap {
+      background: #FEF2F2;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .unknown-list-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #DC2626;
+      margin-bottom: 10px;
+    }
+    .unknown-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .unknown-chip {
+      background: white;
+      border: 1.5px solid #FECACA;
+      color: #DC2626;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+    .result-cta-box { text-align: center; }
+    .result-cta-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+    .btn-indigo-full {
+      display: block;
+      background: var(--indigo);
+      color: white;
+      padding: 14px;
+      border-radius: 100px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-indigo-full:hover { background: var(--indigo-dark); }
+    .restart-btn {
+      display: block;
+      text-align: center;
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+      text-decoration: underline;
+    }
+
+    /* ===== FEATURES ===== */
+    #features { padding: 80px 24px; background: white; }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .feature-card {
+      background: var(--gray-light);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+    }
+    .feature-icon { font-size: 36px; margin-bottom: 16px; }
+    .feature-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .feature-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+    /* ===== STEPS ===== */
+    #steps { padding: 80px 24px; background: var(--gray-light); }
+    .steps-list {
+      max-width: 560px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .step-item { display: flex; gap: 20px; align-items: flex-start; }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      background: var(--indigo);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .step-content { padding-top: 8px; }
+    .step-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .step-desc { font-size: 14px; color: var(--text-muted); }
+
+    /* ===== PERSONAS ===== */
+    #personas { padding: 80px 24px; background: white; }
+    .persona-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .persona-card {
+      border: 1.5px solid #E2E8F0;
+      border-radius: var(--radius);
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .persona-card::before { display: block; font-size: 24px; margin-bottom: 8px; }
+    .persona-card:nth-child(1)::before { content: '🆕'; }
+    .persona-card:nth-child(2)::before { content: '📊'; }
+    .persona-card:nth-child(3)::before { content: '🤝'; }
+    .persona-card:nth-child(4)::before { content: '📚'; }
+
+    /* ===== WAITLIST ===== */
+    #waitlist {
+      background: linear-gradient(135deg, #3730A3 0%, #4F46E5 100%);
+      color: white;
+      padding: 80px 24px;
+      text-align: center;
+    }
+    #waitlist h2 {
+      font-size: clamp(22px, 4vw, 36px);
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    #waitlist .lead { opacity: .85; font-size: 15px; margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .waitlist-form {
+      display: flex;
+      gap: 12px;
+      max-width: 440px;
+      margin: 0 auto 16px;
+      flex-wrap: wrap;
+    }
+    .waitlist-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 14px 18px;
+      border-radius: 100px;
+      border: none;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+    }
+    .waitlist-submit {
+      background: white;
+      color: var(--indigo);
+      border: none;
+      border-radius: 100px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: transform .15s;
+    }
+    .waitlist-submit:hover { transform: translateY(-2px); }
+    .waitlist-note { font-size: 12px; opacity: .6; }
+    #waitlist-success { display: none; }
+    #waitlist-success .success-icon { font-size: 48px; margin-bottom: 12px; }
+    #waitlist-success p { font-size: 16px; opacity: .9; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-top: 1px solid #E2E8F0;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      #hero { padding: 60px 20px 80px; }
+      .card-word { font-size: 28px; }
+      .act-btn { padding: 12px 6px; font-size: 12px; }
+      .waitlist-form { flex-direction: column; }
+      .waitlist-input, .waitlist-submit { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-badge">📝 Chrome拡張（開発中）</div>
+  <h1>会議で出てきた<br><span>「わからない単語」</span>を<br>自動でメモ。</h1>
+  <p class="lead">デジタル会議単語帳は、Google Meet の字幕から専門用語や略語を自動で拾い、会議後に「答え合わせ」できるツールです。</p>
+  <div class="hero-ctas">
+    <a href="#demo" class="btn-primary">✨ デモを試す（無料）</a>
+    <a href="#waitlist" class="btn-outline-white">Waitlistに登録</a>
+  </div>
+  <p class="hero-note">※会議の内容は保存せず、単語のみを扱います。安心してご利用ください。</p>
+</section>
+
+<!-- ===== DEMO ===== -->
+<section id="demo">
+  <p class="section-label">Interactive Demo</p>
+  <h2 class="section-title">1分で体験してみる</h2>
+  <p class="section-sub">会議のメモを貼り付けると、略語・専門用語を自動で抽出します</p>
+
+  <div class="demo-box">
+    <div class="demo-tab-bar">
+      <div class="demo-tab-dot"></div>
+      <div class="demo-tab-dot"></div>
+      <div class="demo-tab-dot"></div>
+    </div>
+
+    <!-- Input State -->
+    <div id="state-input">
+      <label for="demo-textarea">📋 会議のメモ・議事録を貼り付けてください</label>
+      <textarea id="demo-textarea" placeholder="例：今期のKPIはMQLを500件に設定しました。CACの改善が急務で、オンボーディングプロセスのLTV向上も重要課題です。"></textarea>
+      <button class="demo-sample-btn" onclick="loadSample()">📎 サンプルテキストを試す</button>
+      <button id="extract-btn" onclick="startDemo()">単語を抽出する →</button>
+    </div>
+
+    <!-- Cards State -->
+    <div id="state-cards">
+      <div class="card-progress-wrap">
+        <div class="card-progress-bar-bg">
+          <div class="card-progress-bar" id="progress-bar" style="width:0%"></div>
+        </div>
+        <div class="card-progress-text">
+          <span id="progress-label">1 / 7</span>
+          <span>←左右にスワイプでも操作できます</span>
+        </div>
+      </div>
+
+      <div class="flashcard" id="flashcard">
+        <div class="hint-tag" id="card-type">略語</div>
+        <div class="card-word" id="card-word">CRM</div>
+        <button class="card-def-toggle" id="def-toggle" onclick="toggleDef()">💡 意味を見る</button>
+        <div class="card-def" id="card-def" style="display:none"></div>
+      </div>
+
+      <div class="swipe-hint">← わからない　｜　スキップ　｜　わかる →</div>
+
+      <div class="card-actions">
+        <button class="act-btn btn-unknown-act" onclick="markUnknown()">
+          <span class="act-icon">👎</span>
+          わからない
+        </button>
+        <button class="act-btn btn-skip-act" onclick="skipCard()">
+          <span class="act-icon">↩️</span>
+          スキップ
+        </button>
+        <button class="act-btn btn-known-act" onclick="markKnown()">
+          <span class="act-icon">👍</span>
+          わかる
+        </button>
+      </div>
+    </div>
+
+    <!-- Result State -->
+    <div id="state-result">
+      <div class="result-header">
+        <div class="result-icon">🎉</div>
+        <div class="result-title">答え合わせ完了！</div>
+        <div class="result-sub" id="result-sub-text">7語中 3語がわからなかった単語です</div>
+      </div>
+
+      <div class="unknown-list-wrap" id="unknown-wrap">
+        <div class="unknown-list-title">📌 あなたの「わからない」単語</div>
+        <div class="unknown-chips" id="unknown-chips"></div>
+      </div>
+
+      <div class="result-cta-box">
+        <div class="result-cta-title">本番は Google Meet で自動記録できます</div>
+        <a href="#waitlist" class="btn-indigo-full">Waitlistに登録して先行アクセス →</a>
+        <button class="restart-btn" onclick="resetDemo()">もう一度試す</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section id="features">
+  <p class="section-label">Features</p>
+  <h2 class="section-title">3つの特徴</h2>
+  <p class="section-sub">会議後1分で、理解漏れをゼロに</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <div class="feature-title">自動で単語を拾う</div>
+      <div class="feature-desc">Google Meet の字幕から、略語・専門用語を自動で検出・記録。メモを取る手間が不要です。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🃏</div>
+      <div class="feature-title">会議後に答え合わせ</div>
+      <div class="feature-desc">カード形式でサクサク確認。「わかる / わからない」を選ぶだけ。1分で終わります。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤝</div>
+      <div class="feature-title">みんなでナレッジ共有</div>
+      <div class="feature-desc">「わからない」にした単語はチームで共有し、知識をみんなの資産に。暗黙知を可視化します。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STEPS ===== -->
+<section id="steps">
+  <p class="section-label">How it works</p>
+  <h2 class="section-title">使い方 3ステップ</h2>
+  <p class="section-sub">難しい設定は一切不要</p>
+
+  <div class="steps-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Google Meet でいつも通り会議に参加</div>
+        <div class="step-desc">Chrome拡張をインストールするだけ。会議中の操作は何も変わりません。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">終了後、自動で単語カードが生成</div>
+        <div class="step-desc">会議で使われた略語・専門用語・カタカナ語を自動で抽出。あなたの「わからない候補」をリストアップします。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">「わかる / わからない」を選ぶだけ</div>
+        <div class="step-desc">カードをめくって答え合わせ。「わからない」とした単語だけを記録して、学習リストに追加します。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PERSONAS ===== -->
+<section id="personas">
+  <p class="section-label">For who?</p>
+  <h2 class="section-title">こんな方におすすめ</h2>
+  <p class="section-sub"></p>
+
+  <div class="persona-grid">
+    <div class="persona-card">新しいプロジェクトに参加したばかりで、専門用語に追いつけない方</div>
+    <div class="persona-card">先輩が当たり前のように使う略語がわからず、あとで聞けずにいる方</div>
+    <div class="persona-card">チームの知識格差を埋めて、全員のレベルを底上げしたいリーダー</div>
+    <div class="persona-card">会議の内容は理解したいけど、すべてはメモできない方</div>
+  </div>
+</section>
+
+<!-- ===== WAITLIST ===== -->
+<section id="waitlist">
+  <div id="waitlist-form-block">
+    <p class="section-label" style="color:rgba(255,255,255,.6)">Early Access</p>
+    <h2>1分で答え合わせ。<br>会議の理解漏れをゼロに。</h2>
+    <p class="lead">会議の要約ではなく、あなたの「理解漏れ」だけを記録します。Waitlistに登録して、先行アクセスを受け取ってください。</p>
+    <form class="waitlist-form" onsubmit="submitWaitlist(event)">
+      <input type="email" class="waitlist-input" placeholder="your@email.com" id="waitlist-email" required>
+      <button type="submit" class="waitlist-submit">登録する →</button>
+    </form>
+    <p class="waitlist-note">スパムは送りません。先行アクセスのご案内のみ送ります。</p>
+  </div>
+  <div id="waitlist-success">
+    <div class="success-icon">✅</div>
+    <p style="font-size:22px;font-weight:900;margin-bottom:8px;">登録完了！ありがとうございます。</p>
+    <p>先行アクセスの準備ができたらメールでご連絡します。</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 デジタル会議単語帳　｜　<a href="#" style="color:inherit;">プライバシーポリシー</a>　｜　<a href="#" style="color:inherit;">お問い合わせ</a></p>
+</footer>
+
+<script>
+  // ===== WORD DATABASE =====
+  const DEFS = {
+    'CRM': 'Customer Relationship Management｜顧客関係管理。SalesforceなどのCRMツールで顧客情報を一元管理する仕組み。',
+    'LTV': 'Life Time Value｜顧客生涯価値。1人の顧客が取引期間全体でもたらす売上・利益の合計。',
+    'CAC': 'Customer Acquisition Cost｜顧客獲得コスト。1人の新規顧客を獲得するためにかかるマーケ・営業コスト。',
+    'KPI': 'Key Performance Indicator｜重要業績評価指標。目標達成度を測るための定量的な指標。',
+    'MQL': 'Marketing Qualified Lead｜マーケティング部門が「見込み客」と判断したリード。',
+    'SQL': 'Sales Qualified Lead｜営業部門が「商談化できる」と判断した見込み客。',
+    'ROI': 'Return on Investment｜投資収益率。投資に対してどれだけの利益が得られたかを示す指標。',
+    'SaaS': 'Software as a Service｜インターネット経由でソフトウェアを提供するビジネスモデル。',
+    'API': 'Application Programming Interface｜ソフトウェア同士を繋ぐ仕組み。データ連携に使われる。',
+    'UI': 'User Interface｜ユーザーが操作する画面やボタンなどのインターフェース。',
+    'UX': 'User Experience｜ユーザーがサービスを使う全体的な体験・感情を指す。',
+    'MVP': 'Minimum Viable Product｜最小限の機能で作る最初のプロダクト。仮説検証に使う。',
+    'OKR': 'Objectives and Key Results｜目標と主要結果指標。Googleが普及させた目標管理フレームワーク。',
+    'CTR': 'Click Through Rate｜クリック率。広告や記事が表示された回数に対するクリック数の割合。',
+    'CPM': 'Cost Per Mille｜1,000回表示あたりの広告コスト。',
+    'CPA': 'Cost Per Action｜1件のコンバージョン（購入・登録など）にかかる広告コスト。',
+    'B2B': 'Business to Business｜企業間取引。法人顧客向けのビジネスモデル。',
+    'B2C': 'Business to Consumer｜企業と消費者の取引。個人向けのビジネスモデル。',
+    'PMF': 'Product Market Fit｜プロダクトが市場のニーズに合った状態。スタートアップの最初の目標。',
+    'ARR': 'Annual Recurring Revenue｜年間経常収益。SaaSビジネスで重要な指標。',
+    'MRR': 'Monthly Recurring Revenue｜月次経常収益。毎月安定して入ってくる収益。',
+    'NPS': 'Net Promoter Score｜顧客がサービスを他者に勧めたいかを測るスコア（-100〜+100）。',
+    'GTM': 'Go-To-Market｜製品・サービスを市場に投入する戦略全般。',
+    'CI': 'Corporate Identity｜企業のブランドイメージを統一するための取り組み。',
+    'PR': 'Public Relations｜広報・宣伝。メディアとの関係管理を通じたブランド構築。',
+    'HR': 'Human Resources｜人事部門。採用・研修・評価などを担当。',
+    'GA': 'Google Analytics｜Googleが提供するウェブ解析ツール。',
+    'SEO': 'Search Engine Optimization｜検索エンジン最適化。Googleなどの検索結果で上位表示させる施策。',
+    'SEM': 'Search Engine Marketing｜検索エンジンを使った広告マーケティング全般。',
+    'SNS': 'Social Networking Service｜X（Twitter）・Instagram・LINEなどのソーシャルメディア。',
+    'DX': 'Digital Transformation｜デジタル技術を活用して事業や業務を変革すること。',
+    'RPA': 'Robotic Process Automation｜定型的なPC作業を自動化するソフトウェアロボット技術。',
+    'AI': 'Artificial Intelligence｜人工知能。機械が人間のように学習・判断する技術。',
+    'ML': 'Machine Learning｜機械学習。データからパターンを学習するAIの手法。',
+    // Katakana
+    'オンボーディング': '新メンバーや新規顧客がサービス・組織にスムーズに馴染めるよう支援するプロセス。',
+    'ステークホルダー': '企業や事業の利害関係者。株主・従業員・顧客・地域社会など。',
+    'コンバージョン': 'Webサイト訪問者が目的の行動（購入・登録など）を達成すること。',
+    'リテンション': '既存顧客を引き留めておくこと。継続率・定着率とも呼ばれる。',
+    'スケーラブル': '規模が拡大しても対応できる仕組みであること。',
+    'アジャイル': '短期間でテスト・改善を繰り返す開発・運営手法。ウォーターフォールの対義語。',
+    'マイルストーン': 'プロジェクトの重要な節目・区切りとなる目標。',
+    'ボトルネック': '全体の流れを遅らせている箇所・工程。',
+    'フィードバック': '評価・改善のための意見・感想。良い点・改善点を伝えること。',
+    'ロールアウト': '製品・機能・施策を段階的または一斉に展開すること。',
+    'スプリント': 'アジャイル開発における短期間の作業サイクル（通常1〜2週間）。',
+    'バックログ': '優先順位をつけてリスト化した未完了タスクの一覧。',
+    'ペルソナ': '顧客像を具体的に擬人化したもの。マーケティング戦略の基礎になる。',
+    'グロース': '成長戦略・事業拡大のための施策全般。',
+    'インサイト': '顧客や市場の深層にある気づき・本質的な発見。',
+    'シナジー': '複数の要素が組み合わさって、単独以上の効果を生み出す相乗効果。',
+    'デプロイ': 'アプリやシステムを本番環境に展開・公開すること。',
+    'イテレーション': '改善を繰り返す1サイクル。アジャイル開発でよく使われる。',
+    'スケール': '事業・システムの規模を拡大すること。',
+    'ブレスト': 'ブレインストーミング。自由にアイデアを出し合う発想会議。',
+    'アジェンダ': '会議の議題・進行予定。',
+    'クロージング': '商談の最終段階で契約を締結すること。',
+    'ヒアリング': '顧客や関係者からニーズや状況を聞き取ること。',
+    'インフルエンサー': 'SNSで多くのフォロワーを持ち、影響力を持つ人物。',
+    'コンテンツ': '情報・記事・動画・画像などのメディア上のコンテンツ全般。',
+    'プロダクト': '製品・サービス。特にデジタルサービス文脈で使われることが多い。',
+    'ユーザー': 'サービス・製品の使用者。利用者。',
+    'リード': '見込み客。まだ購入していないが、興味・関心を示している顧客候補。',
+  };
+
+  // ===== STATE =====
+  let words = [];
+  let currentIdx = 0;
+  let unknownList = [];
+  let defVisible = false;
+  let touchStartX = 0;
+  let isAnimating = false;
+
+  // ===== SAMPLE TEXT =====
+  const SAMPLE = `今期のKPIはMQLを月500件に設定しました。CACの改善が急務で、現状のROIは目標の60%にとどまっています。
+オンボーディングプロセスの改善によるLTV向上も重要課題です。ARRを来期中に2倍にするため、グロース施策の優先度をあげます。
+ステークホルダーへの説明のため、NPS・リテンション率をKPIダッシュボードに追加しましょう。
+マーケとセールスのアライメントを強化し、MQLからSQLへのコンバージョン率を改善します。
+DX推進のためRPAの導入も検討中です。次回のスプリントレビューまでにバックログを整理してください。`;
+
+  function loadSample() {
+    document.getElementById('demo-textarea').value = SAMPLE;
+  }
+
+  // ===== EXTRACT =====
+  function extractWords(text) {
+    const abbrs = text.match(/\b[A-Z]{2,}\b/g) || [];
+    const kata = text.match(/[ァ-ヶー]{3,}/g) || [];
+    const raw = [...abbrs, ...kata];
+    const seen = new Set();
+    return raw.filter(w => { if (seen.has(w)) return false; seen.add(w); return true; });
+  }
+
+  function startDemo() {
+    const text = document.getElementById('demo-textarea').value.trim();
+    if (!text) { alert('テキストを貼り付けてください。'); return; }
+    words = extractWords(text);
+    if (words.length === 0) {
+      alert('単語が見つかりませんでした。\n英語略語（KPI, MQLなど）やカタカナ語を含む文章を貼り付けてください。');
+      return;
+    }
+    currentIdx = 0;
+    unknownList = [];
+    document.getElementById('state-input').style.display = 'none';
+    document.getElementById('state-cards').style.display = 'block';
+    showCard(0);
+    setupSwipe();
+  }
+
+  function showCard(idx) {
+    defVisible = false;
+    document.getElementById('card-def').style.display = 'none';
+    document.getElementById('def-toggle').style.display = 'inline-block';
+    document.getElementById('def-toggle').textContent = '💡 意味を見る';
+
+    const word = words[idx];
+    const isKata = /[ァ-ヶー]/.test(word);
+    document.getElementById('card-type').textContent = isKata ? 'カタカナ語' : '略語';
+    document.getElementById('card-word').textContent = word;
+    document.getElementById('card-def').textContent = DEFS[word] || 'この単語を知っていますか？';
+
+    const pct = Math.round((idx / words.length) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = `${idx + 1} / ${words.length}`;
+  }
+
+  function toggleDef() {
+    defVisible = !defVisible;
+    document.getElementById('card-def').style.display = defVisible ? 'block' : 'none';
+    document.getElementById('def-toggle').textContent = defVisible ? '🙈 隠す' : '💡 意味を見る';
+  }
+
+  function animateCard(dir, cb) {
+    if (isAnimating) return;
+    isAnimating = true;
+    const card = document.getElementById('flashcard');
+    card.classList.add(dir === 'right' ? 'slide-right' : 'slide-left');
+    setTimeout(() => {
+      card.classList.remove('slide-right', 'slide-left');
+      isAnimating = false;
+      cb();
+    }, 250);
+  }
+
+  function markKnown() { animateCard('right', () => { currentIdx++; next(); }); }
+  function markUnknown() {
+    unknownList.push(words[currentIdx]);
+    animateCard('left', () => { currentIdx++; next(); });
+  }
+  function skipCard() { currentIdx++; next(); }
+
+  function next() {
+    if (currentIdx >= words.length) { showResults(); return; }
+    showCard(currentIdx);
+  }
+
+  function showResults() {
+    document.getElementById('state-cards').style.display = 'none';
+    document.getElementById('state-result').style.display = 'block';
+
+    const total = words.length;
+    const unk = unknownList.length;
+    document.getElementById('result-sub-text').textContent =
+      unk === 0
+        ? `${total}語、すべてわかっていました！さすがです。`
+        : `${total}語中 ${unk}語が「わからない」でした。記録しておきましょう。`;
+
+    const wrap = document.getElementById('unknown-wrap');
+    const chips = document.getElementById('unknown-chips');
+    chips.innerHTML = '';
+    if (unk === 0) {
+      wrap.style.display = 'none';
+    } else {
+      wrap.style.display = 'block';
+      unknownList.forEach(w => {
+        const chip = document.createElement('span');
+        chip.className = 'unknown-chip';
+        chip.textContent = w;
+        chips.appendChild(chip);
+      });
+    }
+  }
+
+  function resetDemo() {
+    document.getElementById('state-result').style.display = 'none';
+    document.getElementById('state-input').style.display = 'block';
+    document.getElementById('demo-textarea').value = '';
+    words = []; currentIdx = 0; unknownList = [];
+  }
+
+  // ===== SWIPE =====
+  function setupSwipe() {
+    const card = document.getElementById('flashcard');
+    card.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    card.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) {
+        if (dx > 0) markKnown();
+        else markUnknown();
+      }
+    }, { passive: true });
+  }
+
+  // ===== WAITLIST =====
+  function submitWaitlist(e) {
+    e.preventDefault();
+    const email = document.getElementById('waitlist-email').value;
+    if (!email) return;
+    // Store in localStorage (demo)
+    const list = JSON.parse(localStorage.getItem('waitlist') || '[]');
+    if (!list.includes(email)) list.push(email);
+    localStorage.setItem('waitlist', JSON.stringify(list));
+    document.getElementById('waitlist-form-block').style.display = 'none';
+    document.getElementById('waitlist-success').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

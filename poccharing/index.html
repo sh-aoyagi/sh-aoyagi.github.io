@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ぽっちゃりんぐ — まるっと、好きになろう。</title>
+  <meta name="description" content="ぽっちゃりを愛でる、新しいマッチングサービス。太めが選ばれる側に登録できる、25歳以上の出会い。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:    #ff6b9d;
+      --rose:    #ff4081;
+      --peach:   #ff9a6c;
+      --purple:  #c44dff;
+      --bg:      #120d18;
+      --surf:    #1c1526;
+      --surf2:   #261e33;
+      --border:  rgba(255,107,157,0.14);
+      --text:    #f7f0f5;
+      --muted:   rgba(247,240,245,0.5);
+      --muted2:  rgba(247,240,245,0.7);
+      --glow:    rgba(255,107,157,0.28);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', 'Noto Sans JP', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      backdrop-filter: blur(20px);
+      background: rgba(18,13,24,0.75);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 1.3rem; font-weight: 900; letter-spacing: 0.05em;
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .nav-actions { display: flex; gap: 0.75rem; }
+    .btn-sm {
+      padding: 0.5rem 1.2rem; border-radius: 100px; font-size: 0.82rem;
+      font-weight: 600; text-decoration: none; letter-spacing: 0.04em;
+      transition: all 0.22s;
+    }
+    .btn-outline { border: 1px solid var(--border); color: var(--muted2); }
+    .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
+    .btn-fill {
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      color: #fff; box-shadow: 0 0 20px var(--glow);
+    }
+    .btn-fill:hover { transform: translateY(-1px); box-shadow: 0 0 30px var(--glow); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 8rem 2rem 6rem; position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: ''; position: absolute; top: -20%; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,157,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--pink); border: 1px solid rgba(255,107,157,0.3);
+      padding: 0.35rem 1rem; border-radius: 100px; margin-bottom: 2rem;
+      animation: fadeUp 0.7s ease both;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--pink);
+      animation: blink 2s ease infinite;
+    }
+
+    .hero-emoji { font-size: clamp(3rem, 8vw, 5rem); margin-bottom: 1rem; animation: fadeUp 0.7s 0.05s ease both; }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 9vw, 6.5rem); font-weight: 900;
+      line-height: 1.05; letter-spacing: -0.02em;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+    .hero-title .grad {
+      background: linear-gradient(130deg, var(--pink) 10%, var(--peach) 60%, #ffd6e8 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 1.5rem; font-size: clamp(1rem, 2.2vw, 1.2rem);
+      color: var(--muted2); max-width: 500px; font-weight: 300; line-height: 1.85;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+
+    .hero-cta {
+      margin-top: 3rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 1s 0.3s ease both;
+    }
+    .btn-lg {
+      padding: 1rem 2.5rem; border-radius: 100px; font-size: 1rem;
+      font-weight: 700; letter-spacing: 0.04em; text-decoration: none; transition: all 0.22s;
+    }
+    .btn-pink {
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      color: #fff; box-shadow: 0 4px 30px var(--glow);
+    }
+    .btn-pink:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--glow); }
+    .btn-border-pink { border: 2px solid rgba(255,107,157,0.5); color: var(--pink); }
+    .btn-border-pink:hover { background: rgba(255,107,157,0.1); }
+
+    .hero-note {
+      margin-top: 1.5rem; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em;
+      animation: fadeUp 1s 0.4s ease both;
+    }
+
+    /* PHONE MOCKUP */
+    .phone-mockup {
+      position: relative; margin-top: 4rem; animation: fadeUp 1s 0.5s ease both;
+    }
+    .phone-frame {
+      width: 260px; height: 520px; background: var(--surf);
+      border: 2px solid rgba(255,107,157,0.25); border-radius: 40px;
+      padding: 1.5rem 1rem; margin: 0 auto; position: relative;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.5), 0 0 40px var(--glow);
+      overflow: hidden;
+    }
+    .phone-notch {
+      width: 80px; height: 20px; background: var(--bg);
+      border-radius: 0 0 14px 14px; margin: 0 auto 1rem; position: relative; z-index: 1;
+    }
+    .mock-card {
+      background: linear-gradient(160deg, #2d1e38, #1e1428);
+      border: 1px solid rgba(255,107,157,0.2); border-radius: 20px;
+      padding: 0; overflow: hidden; height: 300px; position: relative;
+    }
+    .mock-card-img {
+      width: 100%; height: 220px; object-fit: cover;
+      background: linear-gradient(135deg, #3d2550, #2a1a3e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+    .mock-card-info { padding: 0.75rem 1rem; }
+    .mock-card-name { font-size: 1rem; font-weight: 700; }
+    .mock-card-age { font-size: 0.75rem; color: var(--muted); }
+    .mock-overlay-like {
+      position: absolute; top: 1rem; right: 1rem; padding: 0.3rem 0.7rem;
+      border: 2px solid var(--pink); border-radius: 6px;
+      color: var(--pink); font-size: 0.85rem; font-weight: 700;
+      transform: rotate(15deg); opacity: 0.9;
+    }
+    .mock-actions {
+      display: flex; justify-content: center; gap: 2rem; margin-top: 1rem;
+    }
+    .mock-btn {
+      width: 48px; height: 48px; border-radius: 50%; border: none; cursor: default;
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    }
+    .mock-btn.nope { background: rgba(255,80,80,0.15); }
+    .mock-btn.like { background: rgba(255,107,157,0.2); }
+
+    /* SECTION COMMON */
+    .section { padding: 7rem 4rem; position: relative; z-index: 1; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.68rem; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--pink); margin-bottom: 1.2rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+      letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 3.5rem;
+    }
+
+    /* HOW IT WORKS */
+    #how { background: linear-gradient(180deg, transparent, rgba(255,107,157,0.04) 50%, transparent); }
+    .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+    .how-card {
+      background: var(--surf); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem 1.75rem; transition: transform 0.28s, border-color 0.28s;
+      position: relative; overflow: hidden;
+    }
+    .how-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--pink), var(--peach));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.35s;
+    }
+    .how-card:hover { transform: translateY(-4px); border-color: rgba(255,107,157,0.3); }
+    .how-card:hover::after { transform: scaleX(1); }
+    .how-step {
+      font-size: 0.65rem; letter-spacing: 0.2em; color: var(--pink); margin-bottom: 0.75rem;
+    }
+    .how-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .how-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .how-desc { font-size: 0.83rem; color: var(--muted2); line-height: 1.75; }
+
+    /* WHO */
+    #who .who-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3.5rem;
+    }
+    .who-card {
+      background: var(--surf); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2.5rem 2rem;
+    }
+    .who-card.pocchary { border-color: rgba(255,107,157,0.3); background: rgba(255,107,157,0.06); }
+    .who-card.browser  { border-color: rgba(196,77,255,0.3);  background: rgba(196,77,255,0.06); }
+    .who-tag {
+      display: inline-block; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 0.25rem 0.75rem; border-radius: 100px; margin-bottom: 1.25rem; font-weight: 600;
+    }
+    .tag-p { background: rgba(255,107,157,0.15); color: var(--pink); }
+    .tag-b { background: rgba(196,77,255,0.15); color: var(--purple); }
+    .who-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.75rem; }
+    .who-desc { font-size: 0.85rem; color: var(--muted2); line-height: 1.8; }
+    .who-list { list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .who-list li { font-size: 0.83rem; color: var(--muted2); display: flex; gap: 0.6rem; align-items: flex-start; }
+    .who-list li::before { content: '✓'; color: var(--pink); flex-shrink: 0; }
+
+    /* RULES */
+    #rules { background: var(--surf); }
+    .rules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .rule-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem 1.1rem;
+    }
+    .rule-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .rule-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .rule-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.6; }
+
+    /* CTA SECTION */
+    #join {
+      padding: 9rem 4rem; text-align: center;
+      background: linear-gradient(160deg, rgba(255,107,157,0.08), rgba(196,77,255,0.06));
+      border-top: 1px solid var(--border);
+    }
+    .join-title {
+      font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900;
+      letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 1.5rem;
+    }
+    .join-title .grad {
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .join-sub { font-size: 1rem; color: var(--muted2); margin-bottom: 2.5rem; line-height: 1.85; }
+    .join-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 4rem; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-logo {
+      font-size: 1rem; font-weight: 900;
+      background: linear-gradient(120deg, var(--pink), var(--peach));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: 0.75rem; color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { font-size: 0.72rem; color: var(--muted); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .section { padding: 5rem 1.5rem; }
+      #join { padding: 6rem 1.5rem; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+      #who .who-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">ぽっちゃりんぐ</span>
+  <div class="nav-actions">
+    <a href="app.html#login" class="btn-sm btn-outline">ログイン</a>
+    <a href="app.html#register" class="btn-sm btn-fill">無料登録</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge"><span class="badge-dot"></span>New Matching Service · 25歳以上</div>
+  <div class="hero-emoji">🍑</div>
+  <h1 class="hero-title">
+    まるっと、<br><span class="grad">好きになろう。</span>
+  </h1>
+  <p class="hero-sub">
+    ぽっちゃりさんが「選ばれる側」に。<br>
+    あなたのそのまるさが、誰かの好みです。
+  </p>
+  <div class="hero-cta">
+    <a href="app.html#register?role=pocchary" class="btn-lg btn-pink">ぽっちゃりで登録する</a>
+    <a href="app.html#register?role=browser" class="btn-lg btn-border-pink">探す側で登録する</a>
+  </div>
+  <p class="hero-note">基本無料・25歳以上・日本国内</p>
+
+  <!-- PHONE MOCKUP -->
+  <div class="phone-mockup">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="mock-card">
+        <div class="mock-card-img">🍑</div>
+        <div class="mock-card-info">
+          <div class="mock-card-name">みき</div>
+          <div class="mock-card-age">28歳 · 東京</div>
+        </div>
+        <div class="mock-overlay-like">LIKE ♡</div>
+      </div>
+      <div class="mock-actions">
+        <div class="mock-btn nope">✕</div>
+        <div class="mock-btn like">♡</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="section">
+  <div class="section-inner">
+    <p class="section-label reveal">— How it works</p>
+    <h2 class="section-title reveal reveal-d1">3ステップで出会える</h2>
+    <div class="how-grid">
+      <div class="how-card reveal reveal-d1">
+        <div class="how-step">STEP 01</div>
+        <div class="how-icon">📝</div>
+        <div class="how-title">プロフィールを登録</div>
+        <div class="how-desc">ぽっちゃりさんは「選ばれる側」として登録。写真・年齢・自己紹介を設定するだけ。無料で始められます。</div>
+      </div>
+      <div class="how-card reveal reveal-d2">
+        <div class="how-step">STEP 02</div>
+        <div class="how-icon">👆</div>
+        <div class="how-title">スワイプして気持ちを伝える</div>
+        <div class="how-desc">閲覧側はぽっちゃりさんのカードを左右にスワイプ。右でLIKE、左でパス。ぽっちゃりさんはLIKEが来たら承認するだけ。</div>
+      </div>
+      <div class="how-card reveal reveal-d3">
+        <div class="how-step">STEP 03</div>
+        <div class="how-icon">💬</div>
+        <div class="how-title">メッセージで距離を縮める</div>
+        <div class="how-desc">マッチ成立後、双方最大10通のメッセージを交換できます。10通という制限が、本気の出会いを生み出します。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section id="who" class="section">
+  <div class="section-inner">
+    <p class="section-label reveal">— Who is this for</p>
+    <h2 class="section-title reveal reveal-d1">あなたはどちらですか？</h2>
+    <div class="who-grid">
+      <div class="who-card pocchary reveal reveal-d2">
+        <span class="who-tag tag-p">ぽっちゃり登録</span>
+        <div class="who-title">選ばれる側として登録する</div>
+        <div class="who-desc">自分の体型に自信を持って、好きになってもらえる場所。まるごとの自分で勝負しよう。</div>
+        <ul class="who-list">
+          <li>太めの体型を好む人に直接届く</li>
+          <li>LIKEが来てから承認・断りを選べる</li>
+          <li>プロフィールを見られるだけはゼロリスク</li>
+          <li>男女どちらも登録可能・25歳以上</li>
+        </ul>
+      </div>
+      <div class="who-card browser reveal reveal-d3">
+        <span class="who-tag tag-b">閲覧・検索側</span>
+        <div class="who-title">ぽっちゃりさんを探す</div>
+        <div class="who-desc">ぽっちゃりな人が好き、という気持ちを堂々と表現できる唯一の場所。体型の好みに正直に。</div>
+        <ul class="who-list">
+          <li>体型は問わず誰でも登録可能</li>
+          <li>直感的なスワイプで好みを伝える</li>
+          <li>マッチした相手とのみメッセージ</li>
+          <li>25歳以上・真剣な出会いに特化</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RULES -->
+<section id="rules" class="section">
+  <div class="section-inner">
+    <p class="section-label reveal">— Rules &amp; Safety</p>
+    <h2 class="section-title reveal reveal-d1">安心して使えるルール</h2>
+    <div class="rules-grid">
+      <div class="rule-item reveal reveal-d1">
+        <div class="rule-icon">🔒</div>
+        <div>
+          <div class="rule-title">25歳以上限定</div>
+          <div class="rule-desc">大人の真剣な出会いに特化。登録時に年齢確認があります。</div>
+        </div>
+      </div>
+      <div class="rule-item reveal reveal-d2">
+        <div class="rule-icon">💌</div>
+        <div>
+          <div class="rule-title">双方10通制限</div>
+          <div class="rule-desc">メッセージは双方各10通まで。その後マッチ解消。本気の言葉だけが交わされます。</div>
+        </div>
+      </div>
+      <div class="rule-item reveal reveal-d3">
+        <div class="rule-icon">🚫</div>
+        <div>
+          <div class="rule-title">ブロック・通報機能</div>
+          <div class="rule-desc">不快なユーザーはすぐブロック・通報可能。運営が対応します。</div>
+        </div>
+      </div>
+      <div class="rule-item reveal">
+        <div class="rule-icon">💰</div>
+        <div>
+          <div class="rule-title">基本無料</div>
+          <div class="rule-desc">登録・スワイプ・マッチは無料。有料会員はメッセージ制限が延長されます。</div>
+        </div>
+      </div>
+      <div class="rule-item reveal reveal-d1">
+        <div class="rule-icon">👤</div>
+        <div>
+          <div class="rule-title">異性間限定</div>
+          <div class="rule-desc">現在は男女間のマッチングに特化しています。</div>
+        </div>
+      </div>
+      <div class="rule-item reveal reveal-d2">
+        <div class="rule-icon">🍑</div>
+        <div>
+          <div class="rule-title">ぽっちゃりを愛でる文化</div>
+          <div class="rule-desc">体型への否定的なコメント・ハラスメントは即アカウント停止。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOIN CTA -->
+<section id="join">
+  <h2 class="join-title">さあ、始めよう。<br><span class="grad">無料で登録。</span></h2>
+  <p class="join-sub">
+    LIKEを待つか、探しに行くか。<br>どちらの選択もここから始まります。
+  </p>
+  <div class="join-btns">
+    <a href="app.html#register?role=pocchary" class="btn-lg btn-pink">ぽっちゃりで登録 🍑</a>
+    <a href="app.html#register?role=browser" class="btn-lg btn-border-pink">探す側で登録 ♡</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">ぽっちゃりんぐ</span>
+  <div class="footer-links">
+    <a href="#">利用規約</a>
+    <a href="#">プライバシーポリシー</a>
+    <a href="#">お問い合わせ</a>
+  </div>
+  <span class="footer-copy">© 2026 ぽっちゃりんぐ</span>
+</footer>
+
+<script>
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

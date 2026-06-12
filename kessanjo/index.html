@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>風雲！決算城 — 敵は経済にあり！</title>
+  <meta name="description" content="決算書から武将を呼び、城で語る。戦国エンタメ型・金融教育メディア。ユニクロ、Tesla、SoftBankの財務を家康・信長・秀吉が斬る。">
+
+  <!-- OGP -->
+  <meta property="og:type"        content="website">
+  <meta property="og:title"       content="風雲！決算城 — 敵は経済にあり！">
+  <meta property="og:description" content="決算書から武将を呼び、城で語る。戦国エンタメ型・金融教育メディア。">
+  <meta property="og:image"       content="https://YOUR_DOMAIN/images/ogp.png">
+  <meta property="og:url"         content="https://YOUR_DOMAIN/">
+  <meta property="og:site_name"   content="風雲！決算城">
+  <meta name="twitter:card"       content="summary_large_image">
+  <meta name="twitter:title"      content="風雲！決算城 — 敵は経済にあり！">
+  <meta name="twitter:description" content="決算書から武将を呼び、城で語る。戦国エンタメ型・金融教育メディア。">
+  <meta name="twitter:image"      content="https://YOUR_DOMAIN/images/ogp.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'GA_MEASUREMENT_ID');
+  </script>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ══ ヘッダー ══ -->
+<header class="site-header">
+  <div>
+    <div class="site-logo">風雲！<span>決算城</span></div>
+    <div class="site-tagline">敵は経済にあり！</div>
+  </div>
+  <nav>
+    <a href="#castles" style="font-size:.85rem;color:var(--muted);margin-left:1.5rem;">城一覧</a>
+    <a href="#generals" style="font-size:.85rem;color:var(--muted);margin-left:1.5rem;">武将</a>
+  </nav>
+</header>
+
+<!-- ══ ヒーロー ══ -->
+<section class="hero">
+  <!-- 城シルエット SVG -->
+  <div class="hero__castle">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" aria-hidden="true">
+      <g fill="#c9a843" opacity=".9">
+        <!-- 最上層 -->
+        <polygon points="100,8 113,32 87,32"/>
+        <rect x="85" y="32" width="30" height="24"/>
+        <!-- 第2層 -->
+        <polygon points="100,44 126,64 74,64"/>
+        <rect x="72" y="64" width="56" height="26"/>
+        <!-- 第3層 -->
+        <polygon points="100,76 142,100 58,100"/>
+        <rect x="56" y="100" width="88" height="28"/>
+        <!-- 第4層 -->
+        <polygon points="100,112 158,138 42,138"/>
+        <rect x="40" y="138" width="120" height="30"/>
+        <!-- 基部 -->
+        <polygon points="100,148 180,178 20,178"/>
+        <rect x="18" y="178" width="164" height="28"/>
+        <!-- 石垣 -->
+        <rect x="0" y="206" width="200" height="14" rx="2"/>
+        <!-- 窓装飾（各層） -->
+        <rect x="92" y="38" width="16" height="14" rx="1" fill="#0e0c0a" opacity=".6"/>
+        <rect x="80" y="70" width="12" height="14" rx="1" fill="#0e0c0a" opacity=".6"/>
+        <rect x="108" y="70" width="12" height="14" rx="1" fill="#0e0c0a" opacity=".6"/>
+      </g>
+    </svg>
+  </div>
+
+  <h1 class="hero__title">風雲！決算城</h1>
+  <p class="hero__catch">── 敵は経済にあり！ ──</p>
+  <p class="hero__desc">
+    決算書から武将を呼び、城で語る。<br>
+    戦国エンタメ型・金融教育メディア。
+  </p>
+</section>
+
+<!-- ══ 判断軸 ══ -->
+<section class="section" id="axis">
+  <h2 class="section__title">城の見方・判断軸</h2>
+  <div class="axis-grid">
+    <div class="axis-card">
+      <div class="axis-card__label">自己資本比率</div>
+      <div class="axis-card__title">この城は何年持つか</div>
+      <div class="axis-card__desc">石垣の厚さ。借金に頼らず自前の資本で立っているか。50%超えは難攻不落。</div>
+    </div>
+    <div class="axis-card">
+      <div class="axis-card__label">営業利益率</div>
+      <div class="axis-card__title">兵糧は足りているか</div>
+      <div class="axis-card__desc">売上に対して利益が残る率。10%超は精鋭部隊。5%以下は兵糧不足に注意。</div>
+    </div>
+    <div class="axis-card">
+      <div class="axis-card__label">フリーCF</div>
+      <div class="axis-card__title">堀の水は干上がっていないか</div>
+      <div class="axis-card__desc">手元に残る現金の流れ。マイナスが続けば城の堀が枯れ始める危険信号。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 武将一覧 ══ -->
+<section class="section" id="generals">
+  <h2 class="section__title">城主（武将）紹介</h2>
+  <div class="generals-grid">
+    <div class="general-card">
+      <div class="general-card__mon">🏯</div>
+      <div class="general-card__name">徳川家康</div>
+      <div class="general-card__castle">白鷺城（姫路）</div>
+      <div class="general-card__trait">守り・長期・高自己資本。<br>焦らず蓄え、最後に勝つ。<br>石垣が厚い企業が呼ぶ城主。</div>
+    </div>
+    <div class="general-card">
+      <div class="general-card__mon">🔥</div>
+      <div class="general-card__name">織田信長</div>
+      <div class="general-card__castle">安土城</div>
+      <div class="general-card__trait">破壊・革新・高成長。<br>常識を焼き払い市場を塗り替える。<br>赤字上等で攻める企業が呼ぶ城主。</div>
+    </div>
+    <div class="general-card">
+      <div class="general-card__mon">⛅</div>
+      <div class="general-card__name">豊臣秀吉</div>
+      <div class="general-card__castle">大坂城</div>
+      <div class="general-card__trait">急拡大・高売上・薄利。<br>一夜城を建て版図を広げる。<br>売上は大きいが利益が薄い企業が呼ぶ城主。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 城一覧グリッド ══ -->
+<section class="section" id="castles">
+  <h2 class="section__title">城一覧 ── 参陣した企業たち</h2>
+  <div class="castles-grid">
+
+    <!-- 第一城：実記事（ユニクロ × 白鷺城 × 家康） -->
+    <a href="articles/fastretailing-shirasagijo.html" class="castle-card castle-card--live" style="display:block;color:inherit;">
+      <span class="castle-card__badge badge-live">参陣済</span>
+      <div class="castle-card__visual">🏯</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">ファーストリテイリング（9983）</div>
+        <div class="castle-card__title">第一城 白鷺城<br>ユニクロの財務を家康が語る</div>
+        <div class="castle-card__general">城主：徳川家康</div>
+      </div>
+    </a>
+
+    <!-- 以下、近日参陣ダミー -->
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">🔥</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">Tesla（TSLA）</div>
+        <div class="castle-card__title">第二城 安土城<br>破壊者の財務を信長が語る</div>
+        <div class="castle-card__general">城主：織田信長</div>
+      </div>
+    </div>
+
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">⛅</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">SoftBank Group（9984）</div>
+        <div class="castle-card__title">第三城 大坂城<br>急拡大の財務を秀吉が語る</div>
+        <div class="castle-card__general">城主：豊臣秀吉</div>
+      </div>
+    </div>
+
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">🏯</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">トヨタ自動車（7203）</div>
+        <div class="castle-card__title">第四城 白鷺城<br>盤石製造業を家康が語る</div>
+        <div class="castle-card__general">城主：徳川家康</div>
+      </div>
+    </div>
+
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">🔥</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">Amazon（AMZN）</div>
+        <div class="castle-card__title">第五城 安土城<br>物流帝国を信長が語る</div>
+        <div class="castle-card__general">城主：織田信長</div>
+      </div>
+    </div>
+
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">⛅</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">楽天グループ（4755）</div>
+        <div class="castle-card__title">第六城 大坂城<br>薄利拡大の財務を秀吉が語る</div>
+        <div class="castle-card__general">城主：豊臣秀吉</div>
+      </div>
+    </div>
+
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">🏯</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">花王（4452）</div>
+        <div class="castle-card__title">第七城 白鷺城<br>安定配当の財務を家康が語る</div>
+        <div class="castle-card__general">城主：徳川家康</div>
+      </div>
+    </div>
+
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">🔥</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">NVIDIA（NVDA）</div>
+        <div class="castle-card__title">第八城 安土城<br>AI革命の財務を信長が語る</div>
+        <div class="castle-card__general">城主：織田信長</div>
+      </div>
+    </div>
+
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">⛅</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">メルカリ（4385）</div>
+        <div class="castle-card__title">第九城 大坂城<br>赤字拡大期の財務を秀吉が語る</div>
+        <div class="castle-card__general">城主：豊臣秀吉</div>
+      </div>
+    </div>
+
+    <div class="castle-card castle-card--soon">
+      <span class="castle-card__badge badge-soon">近日参陣</span>
+      <div class="castle-card__visual">🏯</div>
+      <div class="castle-card__body">
+        <div class="castle-card__company">日本電産（6594）</div>
+        <div class="castle-card__title">第十城 白鷺城<br>製造精鋭の財務を家康が語る</div>
+        <div class="castle-card__general">城主：徳川家康</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ CTAバナー ══ -->
+<div class="section" style="padding-top:0;">
+  <div class="cta-banner">
+    <div class="cta-banner__label">── 城を攻略するなら ──</div>
+    <div class="cta-banner__title">
+      まず口座を持て。<br>
+      武将も兵糧がなければ動けない。
+    </div>
+    <a href="AFFILIATE_LINK_HERE" class="btn btn--gold" target="_blank" rel="noopener">
+      無料で口座を開く →
+    </a>
+  </div>
+</div>
+
+<!-- ══ フッター ══ -->
+<footer class="site-footer">
+  <p>
+    <a href="#">プライバシーポリシー</a>　|
+    <a href="#">免責事項</a>
+  </p>
+  <p style="margin-top:.8rem;">
+    本サイトは投資を推奨するものではありません。掲載情報は公開情報をもとにした解説です。<br>
+    投資判断はご自身の責任で行ってください。
+  </p>
+  <p style="margin-top:.8rem;">© 2026 風雲！決算城</p>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
