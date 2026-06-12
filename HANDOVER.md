@@ -17,6 +17,8 @@
 6. **C:\denno\skills\horse-racing-article\SKILL.md** — 競馬記事制作の核心ロジック（FIREスコア）
 7. 本ファイル末尾の「最終チェックリストTOP5」
 
+> 🆕 **OpenAI Codex CLIへ移植する場合**：`C:\denno\MIGRATION_TO_CODEX.md`（ステップバイステップ手順書、Desktop\電脳会社\05_宿題にも同内容のtxtあり）を参照。
+
 ---
 
 ## 1. 最終チェックリスト（これだけは引き継がないと詰むTOP5）
