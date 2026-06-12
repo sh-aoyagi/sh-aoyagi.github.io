@@ -12,3 +12,6 @@ __pycache__/
 Thumbs.db
 desktop.ini
 lp_staging/
+
+# 秘密情報を集約したファイル（ローカル専用・push禁止）
+CREDENTIALS.md
