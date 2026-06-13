@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>詳しい設定手順｜AI導入ガイド</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; color: #e8e0d0; font-family: 'Segoe UI','Noto Sans JP',sans-serif; }
+  .page-body { padding: 24px; max-width: 880px; margin: 0 auto; }
+  .header { text-align: center; padding: 20px 0 24px; border-bottom: 1px solid #2a2a2a; margin-bottom: 24px; }
+  .header h1 { font-size: 22px; color: #d4a017; letter-spacing: 2px; margin-bottom: 6px; }
+  .header .sub { color: #888; font-size: 12px; line-height: 1.8; }
+  .toc { background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; padding: 16px 18px; margin-bottom: 32px; font-size: 12px; }
+  .toc a { color: #d4a017; text-decoration: none; display: inline-block; margin: 3px 10px 3px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .ex { border-top: 1px solid #2a2a2a; padding-top: 24px; margin-bottom: 36px; scroll-margin-top: 16px; }
+  .ex h2 { font-size: 17px; color: #d4a017; margin-bottom: 4px; }
+  .ex .toolset { font-size: 12px; color: #888; margin-bottom: 14px; }
+  .ex h3 { font-size: 13px; color: #e8e0d0; margin: 16px 0 8px; border-left: 3px solid #d4a017; padding-left: 8px; }
+  .ex ol { font-size: 13px; color: #ccc; line-height: 1.9; padding-left: 22px; }
+  .ex ol li { margin-bottom: 6px; }
+  .prompt-box {
+    background: #0d1117; border: 1px solid #2a3a2a; border-left: 3px solid #22c55e;
+    border-radius: 8px; padding: 14px 16px; margin-top: 8px; position: relative;
+  }
+  .prompt-box pre { white-space: pre-wrap; font-size: 12px; color: #b8d8b8; line-height: 1.8; font-family: inherit; }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px; background: #1a2a1a; border: 1px solid #2a4a2a;
+    color: #22c55e; font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;
+  }
+  .copy-btn:hover { background: #223322; }
+  .back-link { display: inline-block; margin-top: 6px; font-size: 12px; color: #666; text-decoration: none; }
+  .back-link:hover { color: #d4a017; }
+</style>
+</head>
+<body>
+<div class="page-body">
+  <div class="header">
+    <h1>詳しい設定手順集</h1>
+    <div class="sub">AI導入ガイド STEP2「組み合わせでできること10例」＋STEP7「スマホダッシュボードの作り方」の詳細ページ。<br>
+    各例には「スクリーンショットをしながらステップバイステップで進められるプロンプト」を用意しています。<br>
+    コピーしてClaude（またはClaude in Chrome／ChatGPT）に貼り、画面のスクリーンショットを送りながら進めてください。</div>
+  </div>
+
+  <div class="toc">
+    <a href="#sns-accounts">STEP1：SNS新規アカウント作成とGmail複数管理</a>
+    <a href="#ex1">①社外メールをSlackアラート</a>
+    <a href="#ex2">②メール確認→Slack→清書返信</a>
+    <a href="#ex3">③メール期限→カレンダー＋Slack</a>
+    <a href="#ex4">④交通費をスプシ記録</a>
+    <a href="#ex5">⑤フォーム回答→集計→Slack通知</a>
+    <a href="#ex6">⑥予定の事前リマインド</a>
+    <a href="#ex7">⑦スプシ追加行→自動メール送付</a>
+    <a href="#ex8">⑧絵文字リアクションで完了記録</a>
+    <a href="#ex9">⑨朝の予定をSlackに自動投稿</a>
+    <a href="#ex10">⑩LINE→スプシログ＋Slack転送</a>
+    <a href="#dashboard">STEP7：スマホダッシュボードの作り方</a>
+    <a href="#line-harness">便利ツール集：LINE Harness</a>
+    <a href="#x-harness">便利ツール集：X Harness</a>
+    <a href="#ig-harness">便利ツール集：IG Harness</a>
+    <a href="#thunderbird">便利ツール集：Thunderbird</a>
+  </div>
+
+  <!-- SNS新規アカウント -->
+  <div class="ex" id="sns-accounts">
+    <h2>STEP1：SNS（X・Instagram・Threads）新規アカウント作成とGmail複数管理</h2>
+    <div class="toolset">使うもの：Gmail（複数アカウント追加） ／ Googleアカウント新規作成 ／ ブラウザのプロフィール機能（Chrome等）</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>Googleで新しいGoogleアカウント（Gmail）をプロジェクト・ブランド単位で1つ作成する。氏名・誕生日など必須項目を入力するだけで数分で作れる。</li>
+      <li>普段使っているGmailの右上アイコンから「別のアカウントを追加」を選び、新しく作ったアカウントを追加する。これでブラウザ上のメニューからアカウントを切り替えられるようになる。</li>
+      <li>Chromeの右上アイコンから「新しいプロフィールを追加」を選び、プロジェクト専用のブラウザプロフィールを作る。このプロフィールでログインするアカウント（Google・X・Instagram・Threads）は、他のプロフィールのCookie・ログイン状態と混ざらない。</li>
+      <li>そのプロフィール上で、ブラウザからX・Instagram・Threadsそれぞれの新規登録ページにアクセスし、手順1で作ったGmailアドレスを使ってアカウントを作成する。電話番号認証は自分の本物のスマホ番号を使う。</li>
+      <li>登録直後に、プロフィール画像・ヘッダー画像・自己紹介文をすべて設定する。空欄のまま放置しない。</li>
+      <li>最初の1〜2週間は自動化を使わず、手動で「いいね10〜20件/日」「フォロー数件」「自分の投稿1〜2件/日」程度のウォームアップ運用を行う。</li>
+      <li>ウォームアップ期間が終わったら、STEP2・STEP5で紹介する自動化（Slack通知・自動投稿等）を、投稿時間や文面パターンに変化をつけながら少しずつ導入する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('psns')">コピー</button>
+      <pre id="psns">これから「新しいプロジェクト用のGmailアカウントを作り、ブラウザのプロフィールを分けた上で、X・Instagram・Threadsの新規アカウントを作成する」作業を、スクリーンショットを送りながら一緒に進めます。
+
+進め方のルール：
+1. 私が今見ている画面のスクリーンショットを送ります
+2. あなたは画面の中から「次に何をクリック・入力すればいいか」を1つだけ指示してください
+3. 一度に複数の手順を出さないでください
+4. 項目名・ボタン名は画面に表示されている通りの名称で指示してください
+5. パスワードや電話番号など画面に映ってはいけない情報があれば、入力前に隠す・伏せ字にするよう注意してください
+6. 完了したら「次のスクリーンショットを送ってください」と伝えてください
+7. エラーが出たらエラー文をそのまま貼るので、原因と対処法を教えてください
+
+最初のステップ：
+まずGoogleアカウント作成ページ（accounts.google.com/signup）を開いた画面のスクリーンショットを送ります。
+新しいGoogleアカウントの作成から始めて、
+既存Gmailへの「アカウント追加」、Chromeの新規プロフィール作成、
+そのプロフィール上でのX・Instagram・Threadsの新規登録（プロフィール画像・ヘッダー・自己紹介文の設定まで）の順に案内してください。
+作るアカウントのテーマは「自キュン」シリーズです。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ① -->
+  <div class="ex" id="ex1">
+    <h2>①社外からのメールをSlackにアラート</h2>
+    <div class="toolset">使うもの：Gmail API ／ Google Apps Script（GAS） ／ Slack Incoming Webhook</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>Slack側で「Incoming Webhook」アプリを追加し、通知を送りたいチャンネル用のWebhook URLを発行する。</li>
+      <li>Google Drive で新しいGoogle Apps Scriptプロジェクトを作成する。</li>
+      <li>スクリプトに、Gmailの未読メールを取得する処理を書く（GmailApp.search関数を使う）。</li>
+      <li>送信者のメールアドレスに、自社のドメイン（例：@denno.co.jp）が含まれているかを判定する条件を書く。</li>
+      <li>含まれていない場合のみ、UrlFetchAppでSlackのWebhook URLにPOSTし、件名・送信者をメッセージとして送る。</li>
+      <li>GASの「トリガー」設定で、この処理を5〜10分おきに自動実行するように設定する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p1')">コピー</button>
+      <pre id="p1">これから「Gmailで受信した社外からのメールを検知してSlackに通知する」設定を、画面のスクリーンショットを送りながら一緒に進めます。
+
+進め方のルール：
+1. 私が今見ている画面のスクリーンショットを送ります
+2. あなたは画面の中から「次に何をクリック・入力すればいいか」を1つだけ指示してください
+3. 一度に複数の手順を出さないでください
+4. ボタン名・項目名は画面に表示されている通りの名称で指示してください
+5. 完了したら「次のスクリーンショットを送ってください」と伝えてください
+6. エラーが出たらエラー文をそのまま貼るので、原因と対処法を教えてください
+
+最初のステップ：
+まずSlackの「Appディレクトリ」から「Incoming Webhook」を検索して開いた画面のスクリーンショットを送ります。そこから、Webhook URLを発行するところまでを案内してください。
+その後、Google Driveで新規のGoogle Apps Scriptを作成する手順、Gmail検索とSlack通知のスクリプト、トリガー設定まで順番に進めてください。
+私の会社ドメインは（ここに自分のメールアドレスのドメインを書く）です。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ② -->
+  <div class="ex" id="ex2">
+    <h2>②メールをSlackで確認→Slackから返信→清書してメールから返信</h2>
+    <div class="toolset">使うもの：Gmail API ／ GAS ／ Slack Workflow Builder ／ Slack Webhook</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>①と同じ仕組みで、受信メールの「件名・送信者・本文の先頭」をSlackに通知する。</li>
+      <li>Slackの通知メッセージに、スレッドで返信できるように促す一文を入れる（例：「返信文をこのスレッドに書いてください」）。</li>
+      <li>Slack Workflow Builderで「ワークフロー」を作成し、特定のチャンネルへの投稿をトリガーに設定する。</li>
+      <li>そのワークフローから、GASのWebアプリ（doPost）にスレッドの返信内容を送る。</li>
+      <li>GAS側で、受け取った文章を元のメールに対する返信としてGmailApp.sendEmailで送信する（必要なら文体を整えるひと手間を挟む）。</li>
+      <li>テスト用の自分宛メールで一連の流れを確認してから、実際の業務メールに適用する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p2')">コピー</button>
+      <pre id="p2">これから「Slack上でメール内容を確認し、Slackに書いた返信文をそのままメールとして返信する」仕組みを、画面のスクリーンショットを送りながら一緒に作ります。
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+まずSlackの「ワークフロービルダー」を開いた画面のスクリーンショットを送ります。
+「特定のチャンネルに投稿されたら開始」というトリガーでワークフローを作るところから案内してください。
+その後、Google Apps ScriptでWebアプリ（doPost）を作り、Slackからの返信文をGmailApp.sendEmailで元のメールに返信する処理まで進めてください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ③ -->
+  <div class="ex" id="ex3">
+    <h2>③メールから次のステップの期限をカレンダー登録＋Slackアラート</h2>
+    <div class="toolset">使うもの：Gmail API ／ GAS ／ Google Calendar API ／ Slack Webhook</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>①のGASスクリプトをベースに、メール本文から日付らしき文字列（例：「6/20までに」）を正規表現で抜き出す処理を追加する。</li>
+      <li>抜き出した日付をもとに、CalendarApp.createEventで予定を作成する（タイトルにメールの件名を入れる）。</li>
+      <li>予定作成時に、Googleカレンダーの「通知」設定で前日・当日朝にリマインドが届くようにする。</li>
+      <li>予定作成と同時に、Slack Webhookへ「カレンダーに登録しました：{件名}（{日付}）」と通知する。</li>
+      <li>日付が正しく取れなかった場合は、「日付を自動取得できませんでした」とSlackに通知し、手動登録を促す。</li>
+      <li>GASのトリガーで定期実行し、新着メールに対して自動で動くようにする。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p3')">コピー</button>
+      <pre id="p3">これから「受信メールの本文から期限を読み取り、Googleカレンダーに登録し、Slackにもアラートする」仕組みを、スクリーンショットを送りながら一緒に作ります。
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+①で作ったGoogle Apps Scriptのプロジェクトを開いた画面のスクリーンショットを送ります。
+そこに、メール本文から日付を抜き出してGoogleカレンダーに予定を作成する処理を追加するところから案内してください。
+その後、Slackへの通知文の調整まで進めてください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ④ -->
+  <div class="ex" id="ex4">
+    <h2>④交通費をスプレッドシートに記録</h2>
+    <div class="toolset">使うもの：Slack スラッシュコマンド ／ Slack Webhook ／ GAS ／ Google Sheets API</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>Google Sheetsで「交通費記録」用のシートを作り、日付・区間・金額・メモの列を用意する。</li>
+      <li>Slackで「/交通費」のようなスラッシュコマンドを作成する（Slack App管理画面の「Slash Commands」）。</li>
+      <li>このコマンドの送信先URLに、GASのWebアプリ（doPost）のURLを設定する。</li>
+      <li>Slackで「/交通費 渋谷-新宿 220円 取材」のように入力すると、GASがその文字列を分解してスプレッドシートに1行追加する。</li>
+      <li>記録が完了したら、Slackに「記録しました：{内容}」と返信する（Slackの応答用URLを使う）。</li>
+      <li>月末にスプレッドシートの合計をSUM関数で表示し、Slackから「/交通費合計」で呼び出せるようにする（任意）。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p4')">コピー</button>
+      <pre id="p4">これから「Slackにコマンドで打った交通費を、Googleスプレッドシートに自動記録する」仕組みを、スクリーンショットを送りながら一緒に作ります。
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+まずGoogle Sheetsで新しいスプレッドシートを開いた画面のスクリーンショットを送ります。
+「日付・区間・金額・メモ」の列を作るところから始めて、
+そのあとSlack Appの「Slash Commands」設定画面、GASのWebアプリ作成、スプレッドシートへの書き込み処理まで順番に案内してください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ⑤ -->
+  <div class="ex" id="ex5">
+    <h2>⑤Googleフォームの回答→スプシ集計→Slack通知</h2>
+    <div class="toolset">使うもの：Google Forms ／ Google Sheets（標準連携） ／ GAS ／ Slack Webhook</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>Googleフォームを作成し、「回答」タブから「スプレッドシートにリンク」を選んで自動集計シートを作る。</li>
+      <li>そのスプレッドシートに対して、GASで「フォーム送信時」トリガー（onFormSubmit）を設定する。</li>
+      <li>トリガーが発火したら、新しい回答の内容をSlack Webhookに整形して送る処理を書く。</li>
+      <li>通知文には「回答者名・回答内容の要点・回答日時」を含める。</li>
+      <li>テストとして自分でフォームに回答し、Slackに通知が届くか確認する。</li>
+      <li>必要であれば、回答内容に応じて通知先チャンネルを分ける条件分岐を追加する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p5')">コピー</button>
+      <pre id="p5">これから「Googleフォームの回答をスプレッドシートに集計し、新しい回答が来たらSlackに通知する」仕組みを、スクリーンショットを送りながら一緒に作ります。
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+まずGoogleフォームの編集画面のスクリーンショットを送ります。
+「回答」タブから「スプレッドシートにリンク」を作るところから始めて、
+そのあとGoogle Apps Scriptでのフォーム送信トリガー設定、Slackへの通知処理まで順番に案内してください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ⑥ -->
+  <div class="ex" id="ex6">
+    <h2>⑥カレンダーの予定が近づいたらSlack/LINEにリマインド</h2>
+    <div class="toolset">使うもの：Google Calendar API ／ GAS（定期トリガー） ／ Slack Webhook または LINE Messaging API</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>GASで新しいプロジェクトを作成し、CalendarApp.getEvents()で「これから1時間以内に始まる予定」を取得する処理を書く。</li>
+      <li>取得した予定のタイトル・時間を、Slack Webhookまたは（②で確認済みの）LINE Messaging APIに送る。</li>
+      <li>GASの「トリガー」で、この処理を15〜30分おきに自動実行するよう設定する。</li>
+      <li>通知済みの予定に重複通知が送られないよう、予定IDをスプレッドシートやGASのプロパティに記録する。</li>
+      <li>テスト用に1時間後の予定を作成し、通知が届くか確認する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p6')">コピー</button>
+      <pre id="p6">これから「Googleカレンダーの予定が近づいたら、Slack（またはLINE）に自動でリマインドを送る」仕組みを、スクリーンショットを送りながら一緒に作ります。
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+まずGoogle Driveで新規のGoogle Apps Scriptプロジェクトを作成した画面のスクリーンショットを送ります。
+そこから、1時間以内に始まる予定を取得するコード、Slack（またはLINE）への通知処理、重複通知を防ぐ仕組み、トリガー設定まで順番に案内してください。
+通知先は（SlackかLINEかをここに書く）でお願いします。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ⑦ -->
+  <div class="ex" id="ex7">
+    <h2>⑦スプレッドシートに行が追加されたら自動メール送信（請求書送付など）</h2>
+    <div class="toolset">使うもの：Google Sheets API ／ GAS（onEditトリガー） ／ Gmail API</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>請求リストとなるスプレッドシートを作り、「宛先メール・件名・本文・送付済みフラグ」の列を用意する。</li>
+      <li>GASでonEdit（またはonChange）トリガーを設定し、シートが編集されたら処理が走るようにする。</li>
+      <li>「送付済みフラグ」が空の行を探し、その行の宛先・件名・本文を使ってGmailApp.sendEmailで送信する処理を書く。</li>
+      <li>送信が成功したら「送付済みフラグ」に日時を書き込み、二重送信を防ぐ。</li>
+      <li>添付ファイル（PDF等）が必要な場合は、Google DriveのファイルIDを列に追加し、添付して送信する。</li>
+      <li>テスト行で動作確認をしてから、実際の請求データに適用する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p7')">コピー</button>
+      <pre id="p7">これから「スプレッドシートに行を追加・編集したら、自動でメールを送信する」仕組みを、スクリーンショットを送りながら一緒に作ります。
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+まず請求リスト用に作ったスプレッドシートの画面のスクリーンショットを送ります。
+「宛先メール・件名・本文・送付済みフラグ」の列を確認したあと、
+Google Apps ScriptでのonEditトリガー設定、Gmail送信処理、二重送信防止の仕組みまで順番に案内してください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ⑧ -->
+  <div class="ex" id="ex8">
+    <h2>⑧Slackの絵文字リアクションでタスク完了をスプシに記録</h2>
+    <div class="toolset">使うもの：Slack Events API ／ Slack App（Bot Token） ／ GAS（Webアプリ） ／ Google Sheets API</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>Slack Appの管理画面で「Event Subscriptions」を有効にし、「reaction_added」イベントを購読する。</li>
+      <li>イベントの送信先URLに、GASのWebアプリ（doPost）のURLを設定する。</li>
+      <li>特定の絵文字（例：✅）がタスク投稿メッセージに付けられたら、そのメッセージの内容を取得する処理を書く。</li>
+      <li>取得した内容（タスク名・完了者・完了日時）をスプレッドシートに1行追加する。</li>
+      <li>Slack Bot Token（Bearer認証）を使ってメッセージ本文を取得するAPI呼び出しを実装する。</li>
+      <li>テストとして自分の投稿に✅を付け、スプレッドシートに記録されるか確認する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p8')">コピー</button>
+      <pre id="p8">これから「Slackで特定の絵文字リアクションが付いたら、その内容をスプレッドシートに記録する」仕組みを、スクリーンショットを送りながら一緒に作ります。
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+まずSlack APIの管理画面（api.slack.com/apps）で対象のAppを開いた画面のスクリーンショットを送ります。
+「Event Subscriptions」を有効にしてreaction_addedイベントを設定するところから始めて、
+GASのWebアプリ作成、Slack Bot Tokenでのメッセージ取得、スプレッドシートへの書き込みまで順番に案内してください。
+記録したい絵文字は✅（white_check_mark）です。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ⑨ -->
+  <div class="ex" id="ex9">
+    <h2>⑨毎朝、今日のカレンダー予定をSlackに自動投稿（朝礼ボット）</h2>
+    <div class="toolset">使うもの：Google Calendar API ／ GAS（時間ベーストリガー） ／ Slack Webhook</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>GASで新しいプロジェクトを作成し、CalendarApp.getEventsForDay()で「今日の予定一覧」を取得する処理を書く。</li>
+      <li>予定がない場合は「今日は予定なし。自由に動ける日です」のような一言を入れる。</li>
+      <li>取得した予定一覧を、見やすい形式（時刻＋件名のリスト）に整形する。</li>
+      <li>整形したテキストをSlack Webhookに送信する処理を書く。</li>
+      <li>GASの「トリガー」で「時間ベース」を選び、毎日朝7〜8時に実行されるよう設定する。</li>
+      <li>テストとして「今すぐ実行」を押し、Slackに今日の予定が投稿されるか確認する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p9')">コピー</button>
+      <pre id="p9">これから「毎朝、その日のGoogleカレンダーの予定をSlackに自動投稿する朝礼ボット」を、スクリーンショットを送りながら一緒に作ります。
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+まずGoogle Driveで新規のGoogle Apps Scriptプロジェクトを作成した画面のスクリーンショットを送ります。
+そこから、今日の予定一覧を取得して整形するコード、Slackへの投稿処理、毎朝7時に実行するトリガー設定まで順番に案内してください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- ⑩ -->
+  <div class="ex" id="ex10">
+    <h2>⑩LINEで来たメッセージをスプシにログ化＋Slack転送</h2>
+    <div class="toolset">使うもの：LINE Messaging API（Webhook） ／ GAS（Webアプリ） ／ Google Sheets API ／ Slack Webhook</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>LINE Developersコンソールで、Messaging APIのチャネルを作成する（無料）。</li>
+      <li>そのチャネルの「Webhook URL」に、GASで作成したWebアプリ（doPost）のURLを設定する。</li>
+      <li>LINEからメッセージが届くと、GASのdoPost関数が呼ばれる仕組みになるので、受け取ったJSONからメッセージ本文・送信者情報を取り出す処理を書く。</li>
+      <li>取り出した内容を、スプレッドシートに「日時・送信者・本文」の形で1行追加する。</li>
+      <li>同時に、Slack Webhookにも同じ内容を転送する処理を書く。</li>
+      <li>LINEの公式アカウントに友だち追加し、テストメッセージを送って、シートとSlackの両方に反映されるか確認する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('p10')">コピー</button>
+      <pre id="p10">これから「LINE公式アカウントに来たメッセージを、スプレッドシートに記録し、同時にSlackにも転送する」仕組みを、スクリーンショットを送りながら一緒に作ります。
+（LINE Notifyは2025年3月で終了したため、後継のLINE Messaging APIを使います）
+
+進め方のルール（①と同じ）：
+1. スクリーンショットを送るので、次にやることを1つだけ指示してください
+2. 項目名・ボタン名は画面の表示通りに指示してください
+3. エラーが出たらエラー文を貼るので対処法を教えてください
+4. 完了したら次のスクリーンショットを促してください
+
+最初のステップ：
+まずLINE Developersコンソール（developers.line.biz）にログインした画面のスクリーンショットを送ります。
+Messaging APIのチャネルを新規作成するところから始めて、
+Webhook URLの設定、GASでのdoPost受信処理、スプレッドシートへの書き込み、Slackへの転送まで順番に案内してください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="ex" id="dashboard">
+    <h2>STEP7：Supabase×GitHubで作る「スマホで見れるダッシュボード」</h2>
+    <div class="toolset">使うもの：Supabase（データベース＋API） ／ GitHub（GitHub Pages） ／ HTML・JS（Supabase JS Client）</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>Supabaseでプロジェクトを作成し、表示したいデータのテーブル（例：mercari_items、tasksなど）を用意する。</li>
+      <li>Supabaseの「Project Settings → API」から、Project URLとanonキー（公開用キー）を確認する。</li>
+      <li>GitHubで新しいリポジトリを作成する（例：username.github.io、または通常のリポジトリ＋GitHub Pages設定）。</li>
+      <li>リポジトリ内にdashboard.htmlを作成し、&lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;を読み込む。</li>
+      <li>HTML内でcreateClient(Project URL, anonキー)を呼び出し、テーブルのデータをselect()で取得して画面に表示するコードを書く。</li>
+      <li>GitHubのリポジトリ設定（Settings → Pages）で、公開するブランチ・フォルダを指定し、GitHub Pagesを有効にする。</li>
+      <li>数分後に発行される公開URL（https://username.github.io/リポジトリ名/dashboard.html）にスマホのブラウザでアクセスする。</li>
+      <li>スマホのブラウザで「ホーム画面に追加」を行うと、アプリのアイコンのように使えるようになる。</li>
+      <li>anonキーは「読み取り専用」の公開用キーであることを確認し、書き込み権限が必要な操作はSupabaseのRLS（行レベルセキュリティ）で制限する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('pd')">コピー</button>
+      <pre id="pd">これから「Supabaseのデータを、GitHub Pagesで公開してスマホからも見れるダッシュボード」を、スクリーンショットを送りながら一緒に作ります。
+
+進め方のルール：
+1. 私が今見ている画面のスクリーンショットを送ります
+2. あなたは画面の中から「次に何をクリック・入力すればいいか」を1つだけ指示してください
+3. 一度に複数の手順を出さないでください
+4. 項目名・ボタン名は画面に表示されている通りの名称で指示してください
+5. 完了したら「次のスクリーンショットを送ってください」と伝えてください
+6. APIキーなど画面に映ってはいけない情報があれば、隠す・伏せ字にするよう先に注意してください
+7. エラーが出たらエラー文をそのまま貼るので、原因と対処法を教えてください
+
+最初のステップ：
+まずSupabaseの管理画面で対象プロジェクトを開いた画面のスクリーンショットを送ります。
+「Project Settings → API」からProject URLとanonキーを確認するところから始めて、
+表示したいテーブルの確認、GitHubリポジトリの作成、dashboard.htmlの作成（Supabase JS Clientでデータ取得・表示）、
+GitHub Pagesの有効化、公開URLの確認、スマホでのホーム画面追加まで順番に案内してください。
+表示したいテーブル名は（ここに表示したいテーブル名を書く）です。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- 便利ツール集：LINE Harness -->
+  <div class="ex" id="line-harness">
+    <h2>便利ツール集：LINE Harness（野田修一氏のOSS・LINE自動応答）</h2>
+    <div class="toolset">使うもの：Cloudflare Workers（無料枠） ／ LINE Developers（Messaging API） ／ GitHub（github.com/Shudesu/line-harness-oss）</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>github.com/Shudesu/line-harness-ossのREADMEを確認し、ライセンス（MIT）・必要なアカウント（Cloudflare・LINE Developers）を確認する。</li>
+      <li>c:\denno\.claude\settings.local.jsonにgit clone許可を追記したうえで（手順は別の宿題ファイルを参照）、リポジトリをローカルにクローンする。</li>
+      <li>Cloudflareアカウントを作成し、Workersの無料枠を有効化する。</li>
+      <li>LINE Developersでチャネル（Messaging API）を作成し、チャネルアクセストークン・チャネルシークレットを取得する。</li>
+      <li>リポジトリのREADMEに従い、Cloudflare Workersにdeployし、環境変数にLINEのトークン類を設定する。</li>
+      <li>LINE公式アカウントのWebhook URLに、deployされたWorkersのURLを設定する。</li>
+      <li>テストメッセージを送信し、自動応答が動作することを確認する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('plh')">コピー</button>
+      <pre id="plh">これから「LINE Harness（github.com/Shudesu/line-harness-oss）をCloudflare Workersにセルフホストし、LINE公式アカウントの自動応答を動かす」設定を、スクリーンショットを送りながら一緒に進めます。
+
+進め方のルール：
+1. 私が今見ている画面のスクリーンショットを送ります
+2. あなたは画面の中から「次に何をクリック・入力すればいいか」を1つだけ指示してください
+3. 一度に複数の手順を出さないでください
+4. 項目名・ボタン名は画面に表示されている通りの名称で指示してください
+5. APIキー・トークンなど画面に映ってはいけない情報があれば、隠す・伏せ字にするよう先に注意してください
+6. 完了したら「次のスクリーンショットを送ってください」と伝えてください
+7. エラーが出たらエラー文をそのまま貼るので、原因と対処法を教えてください
+
+最初のステップ：
+まずgithub.com/Shudesu/line-harness-ossのREADMEを開いた画面のスクリーンショットを送ります。
+必要なアカウント（Cloudflare・LINE Developers）の準備から、Workersへのdeploy、LINE公式アカウントのWebhook設定、動作確認までを順番に案内してください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- 便利ツール集：X Harness -->
+  <div class="ex" id="x-harness">
+    <h2>便利ツール集：X Harness（野田修一氏のOSS・X自動投稿・自動応答）</h2>
+    <div class="toolset">使うもの：Cloudflare Workers（無料枠） ／ X Developer Portal（Pay-Per-Useプラン） ／ GitHub（github.com/Shudesu/x-harness-oss）</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>github.com/Shudesu/x-harness-ossのREADMEを確認し、ライセンス（MIT）・必要なアカウント（Cloudflare・X Developer Portal）を確認する。</li>
+      <li>c:\denno\.claude\settings.local.jsonにgit clone許可を追記したうえで、リポジトリをローカルにクローンする。</li>
+      <li>X Developer Portalでアプリを作成し、Pay-Per-Useプランで最低$5のプリペイドを設定、APIキー・トークンを取得する。</li>
+      <li>Cloudflareアカウントを作成し、Workersの無料枠を有効化する。</li>
+      <li>リポジトリのREADMEに従い、Cloudflare Workersにdeployし、環境変数にX APIのキー類を設定する。</li>
+      <li>STEP1のウォームアップ期間が終わったアカウントから、ジッター・レート制限・テンプレート変異の設定を行い、テスト投稿で動作確認する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('pxh')">コピー</button>
+      <pre id="pxh">これから「X Harness（github.com/Shudesu/x-harness-oss）をCloudflare Workersにセルフホストし、Xアカウントの自動投稿・自動応答を動かす」設定を、スクリーンショットを送りながら一緒に進めます。
+
+進め方のルール：
+1. 私が今見ている画面のスクリーンショットを送ります
+2. あなたは画面の中から「次に何をクリック・入力すればいいか」を1つだけ指示してください
+3. 一度に複数の手順を出さないでください
+4. 項目名・ボタン名は画面に表示されている通りの名称で指示してください
+5. APIキー・トークンなど画面に映ってはいけない情報があれば、隠す・伏せ字にするよう先に注意してください
+6. 完了したら「次のスクリーンショットを送ってください」と伝えてください
+7. エラーが出たらエラー文をそのまま貼るので、原因と対処法を教えてください
+
+最初のステップ：
+まずgithub.com/Shudesu/x-harness-ossのREADMEを開いた画面のスクリーンショットを送ります。
+X Developer PortalでのPay-Per-Useアプリ作成・APIキー取得から、Cloudflare Workersへのdeploy、
+ジッター・レート制限・テンプレート変異の設定、テスト投稿での動作確認までを順番に案内してください。
+対象アカウントは「自キュン」シリーズの新規Xアカウントです。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- 便利ツール集：IG Harness -->
+  <div class="ex" id="ig-harness">
+    <h2>便利ツール集：IG Harness（野田修一氏のOSS・Instagram自動応答）</h2>
+    <div class="toolset">使うもの：Cloudflare Workers（無料枠） ／ Meta for Developers（Instagram Graph API） ／ GitHub（github.com/Shudesu/ig-harness-oss）</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>github.com/Shudesu/ig-harness-ossのREADMEを確認し、ライセンス（MIT）・必要なアカウント（Cloudflare・Meta for Developers）を確認する。</li>
+      <li>c:\denno\.claude\settings.local.jsonにgit clone許可を追記したうえで、リポジトリをローカルにクローンする。</li>
+      <li>Meta for DevelopersでアプリとInstagramビジネスアカウントの連携を設定し、アクセストークンを取得する。</li>
+      <li>Cloudflareアカウントを作成し、Workersの無料枠を有効化する。</li>
+      <li>リポジトリのREADMEに従い、Cloudflare Workersにdeployし、環境変数にInstagramのアクセストークン類を設定する。</li>
+      <li>コメント・DMへの自動応答先（LINE Harness等）を設定し、テストコメント・DMで動作確認する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('pih')">コピー</button>
+      <pre id="pih">これから「IG Harness（github.com/Shudesu/ig-harness-oss）をCloudflare Workersにセルフホストし、Instagramアカウントのコメント・DM自動応答を動かす」設定を、スクリーンショットを送りながら一緒に進めます。
+
+進め方のルール：
+1. 私が今見ている画面のスクリーンショットを送ります
+2. あなたは画面の中から「次に何をクリック・入力すればいいか」を1つだけ指示してください
+3. 一度に複数の手順を出さないでください
+4. 項目名・ボタン名は画面に表示されている通りの名称で指示してください
+5. アクセストークンなど画面に映ってはいけない情報があれば、隠す・伏せ字にするよう先に注意してください
+6. 完了したら「次のスクリーンショットを送ってください」と伝えてください
+7. エラーが出たらエラー文をそのまま貼るので、原因と対処法を教えてください
+
+最初のステップ：
+まずgithub.com/Shudesu/ig-harness-ossのREADMEを開いた画面のスクリーンショットを送ります。
+Meta for DevelopersでのInstagramビジネスアカウント連携・アクセストークン取得から、
+Cloudflare Workersへのdeploy、コメント・DM自動応答先（LINE Harness等）の設定、
+テストコメント・DMでの動作確認までを順番に案内してください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+  <!-- 便利ツール集：Thunderbird -->
+  <div class="ex" id="thunderbird">
+    <h2>便利ツール集：Thunderbird（複数Gmailの一括管理）</h2>
+    <div class="toolset">使うもの：Thunderbird（無料・インストール済み） ／ 各プロジェクトのGmailアカウント</div>
+    <h3>詳しい手順</h3>
+    <ol>
+      <li>Thunderbirdを起動し、最初の画面で「既存のメールアドレスを使用」を選ぶ。</li>
+      <li>1つ目のGmailアドレスとパスワードを入力する。2段階認証が有効な場合はGoogleアカウントの「アプリパスワード」を発行して入力する。</li>
+      <li>「アカウント設定」から「アカウント操作 → メールアカウントを追加」で、STEP1で作った2つ目以降のGmailアカウントも同様に追加する。</li>
+      <li>左側のフォルダ一覧で、各アカウントの「受信トレイ」がまとめて見えることを確認する。必要であれば「統合フォルダ」を有効にして、全アカウントの受信トレイを1画面で見られるようにする。</li>
+      <li>SNSアカウント（X・Instagram・Threads）やHarness系OSSのCloudflare/Meta/X Developer登録時の確認メールが、正しいアカウントに届いていることを確認する。</li>
+    </ol>
+    <h3>スクリーンショットプロンプト</h3>
+    <div class="prompt-box">
+      <button class="copy-btn" onclick="copyPrompt('ptb')">コピー</button>
+      <pre id="ptb">これから「Thunderbirdに複数のGmailアカウントを追加して、1つの画面で一括管理する」設定を、スクリーンショットを送りながら一緒に進めます。
+
+進め方のルール：
+1. 私が今見ている画面のスクリーンショットを送ります
+2. あなたは画面の中から「次に何をクリック・入力すればいいか」を1つだけ指示してください
+3. 一度に複数の手順を出さないでください
+4. 項目名・ボタン名は画面に表示されている通りの名称で指示してください
+5. パスワード・アプリパスワードなど画面に映ってはいけない情報があれば、入力前に隠す・伏せ字にするよう注意してください
+6. 完了したら「次のスクリーンショットを送ってください」と伝えてください
+7. エラーが出たらエラー文をそのまま貼るので、原因と対処法を教えてください
+
+最初のステップ：
+まずThunderbirdを起動した直後の画面のスクリーンショットを送ります。
+1つ目のGmailアカウントの追加（2段階認証時はアプリパスワード発行を含む）から、
+2つ目以降のアカウント追加、統合フォルダの有効化までを順番に案内してください。</pre>
+    </div>
+    <a class="back-link" href="./ai-setup-guide.html">← AI導入ガイドに戻る</a>
+  </div>
+
+</div>
+<script>
+function copyPrompt(id) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text);
+  event.target.innerText = 'コピーしました';
+  setTimeout(() => { event.target.innerText = 'コピー'; }, 1500);
+}
+</script>
+</body>
+</html>

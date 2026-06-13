@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI導入ガイド｜電脳会社</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #e8e0d0;
+    font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+  }
+  /* ── グローバルナビ（既存ダッシュボードと共通） ── */
+  .gnav {
+    background: #141414;
+    border-bottom: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 16px;
+    height: 48px;
+    position: sticky;
+    top: 0;
+    z-index: 500;
+  }
+  .gnav-logo { font-size: 13px; font-weight: bold; color: #d4a017; letter-spacing: 2px; margin-right: 10px; white-space: nowrap; }
+  .gnav-links { display: flex; gap: 2px; flex: 1; overflow-x: auto; }
+  .gnav-links a {
+    color: #666; text-decoration: none; padding: 6px 12px;
+    border-radius: 6px; font-size: 12px; font-weight: bold;
+    transition: all .15s; white-space: nowrap;
+  }
+  .gnav-links a:hover { background: #1a1a1a; color: #e8e0d0; }
+  .gnav-links a.active { color: #d4a017; background: #1a1200; }
+
+  .page-body { padding: 24px; max-width: 880px; margin: 0 auto; }
+
+  /* ── ヘッダー ── */
+  .header { text-align: center; padding: 24px 0 28px; border-bottom: 1px solid #2a2a2a; margin-bottom: 28px; }
+  .header h1 { font-size: 24px; color: #d4a017; letter-spacing: 3px; margin-bottom: 6px; }
+  .header .sub { color: #888; font-size: 13px; line-height: 1.8; }
+
+  /* ── ⓪ ステップナビ ── */
+  .step-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin-bottom: 28px;
+    padding-bottom: 4px;
+  }
+  .step-pill {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+    background: #141414;
+    color: #888;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .step-pill:hover { background: #1a1a1a; color: #e8e0d0; }
+  .step-pill.active { color: #d4a017; border-color: #d4a017; background: #1a1200; }
+
+  /* ── ① ステップタイトル ── */
+  .step-title {
+    font-size: 20px;
+    color: #d4a017;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .step-progress { font-size: 12px; color: #555; margin-bottom: 24px; }
+
+  /* ── ② このステップの概要 ── */
+  .intro-box {
+    background: #0d1117;
+    border: 1px solid #2a3a2a;
+    border-left: 3px solid #22c55e;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    line-height: 1.9;
+    color: #ccc;
+  }
+  .intro-box b { color: #22c55e; }
+
+  /* ── ③ 本文 ── */
+  .section { margin-bottom: 28px; }
+  .section h2 {
+    font-size: 15px;
+    color: #e8e0d0;
+    border-left: 3px solid #d4a017;
+    padding-left: 10px;
+    margin-bottom: 14px;
+  }
+  .item {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .item .item-title { font-size: 13px; font-weight: bold; color: #d4a017; margin-bottom: 6px; }
+  .item .item-body { font-size: 13px; color: #ccc; line-height: 1.9; }
+  .item .item-why { font-size: 12px; color: #888; margin-top: 8px; border-top: 1px dashed #2a2a2a; padding-top: 8px; line-height: 1.8; }
+  .item .item-why b { color: #999; }
+
+  /* ── ④ 注意事項 ── */
+  .caution-box {
+    background: #1a1208;
+    border: 1px solid #4a3a1a;
+    border-left: 3px solid #d4a017;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+  }
+  .caution-box h2 { font-size: 14px; color: #d4a017; margin-bottom: 10px; }
+  .caution-box ul { list-style: none; font-size: 13px; color: #ccc; line-height: 2; }
+  .caution-box li { padding-left: 18px; position: relative; margin-bottom: 6px; }
+  .caution-box li::before { content: "⚠"; position: absolute; left: 0; color: #d4a017; }
+  .caution-box li b { color: #f0d080; }
+
+  /* ── ⑤ 次のステップへ ── */
+  .next-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #2a2a2a;
+    padding-top: 20px;
+    margin-top: 8px;
+  }
+  .next-bar a, .next-bar span, .next-bar button {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .next-bar .next-btn { background: #1a1200; border: 1px solid #d4a017; color: #d4a017; }
+  .next-bar .back-btn { background: none; border: 1px solid #2a2a2a; color: #888; }
+  .next-bar .back-btn:disabled, .next-bar .next-btn:disabled { border-color: #2a2a2a; color: #444; cursor: default; }
+  .next-note { font-size: 11px; color: #555; text-align: right; margin-top: 8px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ⓪ グローバルナビ -->
+<nav class="gnav">
+  <span class="gnav-logo">電脳会社</span>
+  <div class="gnav-links">
+    <a href="../dashboard.html">📊 ダッシュ</a>
+    <a href="../note.html">📝 note</a>
+    <a href="../mercari.html">🛍️ メルカリ</a>
+    <a href="../kassenjo.html">🏯 決算城</a>
+    <a href="./ai-setup-guide.html" class="active">🧭 AI導入ガイド</a>
+  </div>
+</nav>
+
+<div class="page-body">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <h1>初心者がAIを設定する順番</h1>
+    <div class="sub">
+      27日間の実体験記録（DAY0〜DAY20の電脳独立日記）をもとに、<br>
+      「どこで詰まったか」「本当はどの順番でやるべきだったか」を逆算した再現ガイド。
+    </div>
+  </div>
+
+  <!-- ⓪ ステップナビ -->
+  <div class="step-nav">
+    <div class="step-pill active" onclick="showPanel(1)" id="pill1">STEP1<br>全体像の把握</div>
+    <div class="step-pill" onclick="showPanel(2)" id="pill2">STEP2<br>ツール連携の基礎</div>
+    <div class="step-pill" onclick="showPanel(3)" id="pill3">STEP3<br>環境を整える</div>
+    <div class="step-pill" onclick="showPanel(4)" id="pill4">STEP4<br>記録の置き場所</div>
+    <div class="step-pill" onclick="showPanel(5)" id="pill5">STEP5<br>最初の自動化</div>
+    <div class="step-pill" onclick="showPanel(6)" id="pill6">STEP6<br>運用・継続</div>
+    <div class="step-pill" onclick="showPanel(7)" id="pill7">STEP7<br>スマホダッシュ</div>
+  </div>
+
+  <!-- ============ PANEL 1 ============ -->
+  <div class="panel active" id="panel1">
+    <div class="step-title">STEP1　全体像の把握</div>
+    <div class="step-progress">全7ステップ中の1ステップ目</div>
+
+    <div class="intro-box">
+      <b>このステップでは</b>「AIを使って個人開発・自動化を始めるための全体像」と、これから歩く5つのステップを紹介する。<br><br>
+      27日間の記録を振り返ると、最初の数日（DAY2〜DAY4）で一番時間を溶かしたのは「やる気」や「AIの性能」ではなく、<b>"何にどのツールを使うのか"を決めずに手を動かし始めたこと</b>だった。
+      最初に全体図を持っておくだけで、後のステップでの迷いがほぼ消える。
+    </div>
+
+    <div class="section">
+      <h2>本文：最初に押さえる4つの全体像</h2>
+
+      <div class="item">
+        <div class="item-title">① 「何をしたいか」より先に「ツールの役割マップ」を決める</div>
+        <div class="item-body">
+          AIツールは1つに全部やらせるものではなく、それぞれ得意分野が違う。<br>
+          ・<b>Claude（Claude Code）</b>＝ 思考の整理・実装・戦略相談・記事構成<br>
+          ・<b>ChatGPT</b>＝ 画像生成<br>
+          ・<b>Gemini</b>＝ 画像加工・文字除去<br>
+          ・<b>Supabase</b>＝ 数値・実績・在庫などのデータ保管庫<br>
+          ・<b>GitHub</b>＝ 日記・記録・文体の保存（無料で公開・同期できる）<br>
+          この5つの役割を最初に1枚の図にしておくだけで、「このタスクはどのツール？」で迷う時間がゼロになる。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY14時点でようやく「ChatGPT＝画像、Gemini＝加工、Claude＝HTML組み・戦略、クロコ＝開発ツール」という役割分担が確定したが、それまでの2週間は同じ作業を複数のAIで何度もやり直していた。最初に決めておけば防げたムダ。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">② 自分の作業環境（PC・デバイス）を最初に確認する</div>
+        <div class="item-body">
+          AIツール（特にClaude Code）が動く環境かどうかを、契約・課金の前に確認する。<br>
+          会社PCのセキュリティ制限、ブラウザの権限、ローカルにインストールできるかどうかを最初にチェックする。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY1でClaude Proに課金した直後のDAY2で「会社PCではClaude Codeが使えない」と判明し、急いで中古PC（ThinkPad X1 Carbon・約34,800円）を探すことになった。課金より先に「動く場所」を確認していれば、この2日間のロスは発生しなかった。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">③ 「自分が今どういう状態か」をAIに伝える準備をする</div>
+        <div class="item-body">
+          AIに丸投げする前に、自分の得意・不得意・性格的な傾向（例：単純作業が苦手、決まった指示が苦手など）を一言でまとめておく。これが後のステップで「AIに自分の文体・思考パターンを渡す」ための土台になる。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY3では「バイブス（その場の勢い）」だけで進めた結果、成果が見えず混乱した。DAY16でようやく「自分の文体・思考パターンがAIに渡せていないことが、出させては直すの繰り返しの根本原因」と気づいたが、これは最初に整理しておけば1週目で気づけたこと。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">④ SNS（X・Instagram・Threads）の新規アカウント作成とGmailの複数管理</div>
+        <div class="item-body">
+          プロジェクト・ブランドごとにSNSアカウントを作る前提で、Gmailアドレスとブラウザのプロフィールをセットで整理しておく。<br><br>
+          <b>簡単な手順：</b><br>
+          1. プロジェクト用のGoogleアカウント（Gmail）を新規作成する<br>
+          2. 既存のGmailに「アカウントを追加」して、ブラウザ上で複数アカウントを切り替えられるようにする<br>
+          3. ブラウザ（Chrome等）に「プロフィール」を作り、プロジェクトごとにログイン状態・Cookieを分ける<br>
+          4. そのプロフィール上で、X・Instagram・Threadsの新規アカウントをそれぞれ作成する<br>
+          5. 作成直後にプロフィール画像・ヘッダー・自己紹介文を整え、最初の1〜2週間は手動でウォームアップ（いいね・フォロー・少量の投稿）してから自動化を始める<br>
+          <a href="./ai-setup-guide-details.html#sns-accounts" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> STEP2・STEP5で複数のSNS・チャットツールをAIと連携させる前提に立つと、「どのアカウントがどのGmail・どのブラウザプロフィールに紐づいているか」が最初に整理されていないと、後から連携設定をやり直すコストが発生する。新規アカウントは作成直後の振る舞いでスパム判定のリスクが変わるため、健全な立ち上げ方を最初に知っておく。
+        </div>
+      </div>
+    </div>
+
+    <div class="caution-box">
+      <h2>④ 注意事項</h2>
+      <ul>
+        <li><b>デバイス・ツールをまたぐ操作はAIが苦手</b>：ブラウザ操作やYouTube操作はAIにとって「安全」だが、地図・位置情報・FTPアップロードなど一部の操作は急に「危険」と判定されて止まる（DAY4・DAY12で実際に発生）。最初から「これはAIに無理かもしれない」という前提を持っておく。</li>
+        <li><b>1つのAIに全部任せると精度が下がる</b>：窓口を一本化すると、品質がタスク数に応じて分散する（DAY15）。役割ごとにツールを分けるのが結果的に速い。</li>
+        <li><b>「出力が明確にない命令」「トークンを使い切る指示」は避ける</b>：DAY4で得られた教訓。指示を出す前に「何が返ってくれば成功か」を自分で決めておく。</li>
+        <li><b>記録（メモ・ログ）を最初から残す</b>：何を試して、どこで詰まったかの記録がないと、同じ場所で何度も詰まる（DAY12で「12日経ってまだ同じ問題にぶつかる」と発覚）。STEP3で記録の置き場所を決める。</li>
+      </ul>
+    </div>
+
+    <div class="next-bar">
+      <button class="back-btn" disabled>← STEP1（最初のステップ）</button>
+      <button class="next-btn" onclick="showPanel(2)">STEP2 ツール連携の基礎 →</button>
+    </div>
+    <div class="next-note">※ STEP2では「Gmail・カレンダー・スプシ・Slack/LINEを繋ぐ無料の方法」を扱います</div>
+  </div>
+
+  <!-- ============ PANEL 2（新規） ============ -->
+  <div class="panel" id="panel2">
+    <div class="step-title">STEP2　ビジネスツール連携の基礎知識</div>
+    <div class="step-progress">全7ステップ中の2ステップ目</div>
+
+    <div class="intro-box">
+      <b>このステップでは</b>「Gmail・カレンダー・スプレッドシート・Slack/LINEを、無料の範囲でAIや自動化と繋ぐための代表的な手段」を一覧化し、さらに「組み合わせで何ができるか」の実例10個を紹介する。<br><br>
+      ここで紹介するのは<b>「ネット上にあるAIだけで完結する初歩設定集」</b>。STEP5の「最初の自動化」に進む前に、自分の業務でどの組み合わせが使えそうかをこのページで眺めておくと、自動化の引き出しが一気に増える。
+    </div>
+
+    <div class="section">
+      <h2>本文：4ジャンル×20の無料API・スラッシュコマンド・コネクタ</h2>
+      <p style="font-size:12px;color:#888;margin-bottom:14px;line-height:1.8;">
+        ここに挙げたものはすべて無料プランの範囲で使い始められる代表例（一部は有料プランで機能拡張あり）。
+        まずは名前を眺めて「こういうものがあるんだ」を知っておくだけでOK。実際の設定はSTEP5や各「詳しい設定」ページで行う。
+      </p>
+
+      <div class="item">
+        <div class="item-title">📧 Gmail / メール連携（20）</div>
+        <div class="item-body">
+          <b>1. Gmail API</b>　Googleの公式API。メール送受信・検索・ラベル付けを直接操作できる。<br>
+          <b>2. Google Apps Script（GAS）</b>　Gmail/Sheets/Calendarをまとめて無料で操作できるスクリプト環境。最重要ツール。<br>
+          <b>3. Gmailフィルタ＋自動転送</b>　件名・送信者で振り分ける標準機能。設定だけで使える。<br>
+          <b>4. Zapier Gmail連携</b>　受信メールをきっかけに他サービスへ自動連携（無料枠あり）。<br>
+          <b>5. Make.com Gmailモジュール</b>　自動化フローにGmail送受信を組み込む。<br>
+          <b>6. n8nのGmailノード</b>　自分のPC/サーバーで動かす無料の自動化基盤。<br>
+          <b>7. IFTTT Gmail連携</b>　シンプルな「もし〜なら」ルールでメール通知。<br>
+          <b>8. Microsoft Graph API（Outlook）</b>　Outlook/Exchangeメールを操作するAPI。<br>
+          <b>9. SendGrid API</b>　通知・レポート用の自動送信メールAPI（無料枠あり）。<br>
+          <b>10. Mailchimp API</b>　メルマガ配信の自動化API。<br>
+          <b>11. Gmail Add-on（Workspace Marketplace）</b>　Gmail画面に直接機能を追加。<br>
+          <b>12. Pipedream</b>　イベント駆動でメール処理を自動化する無料プラットフォーム。<br>
+          <b>13. ChatGPTのGmailコネクタ</b>　チャットからGmail検索・下書き作成を指示できる。<br>
+          <b>14. Claude のGmailコネクタ（MCP）</b>　Claudeからメール検索・ラベル操作・下書き作成。<br>
+          <b>15. Google Chat スラッシュコマンド（/gmail等）</b>　チャットから直接メール操作。<br>
+          <b>16. Boomerang for Gmail</b>　送信予約・リマインダーの拡張機能。<br>
+          <b>17. Mailparser</b>　受信メールの内容を自動でデータ抽出するサービス。<br>
+          <b>18. Front（共有受信箱）API</b>　チームでの受信箱管理・自動振り分け。<br>
+          <b>19. Notion Gmail連携</b>　メール内容をNotionデータベースに自動保存。<br>
+          <b>20. AppSheet（Gmailトリガー）</b>　受信メールをトリガーに簡易アプリを動かす。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">📅 カレンダー連携（20）</div>
+        <div class="item-body">
+          <b>1. Google Calendar API</b>　予定の作成・取得・更新を行う公式API。<br>
+          <b>2. Google Apps Script（Calendar操作）</b>　CalendarAppでカレンダーを自由に操作。<br>
+          <b>3. Zapier Calendar連携</b>　他サービスとカレンダーを自動連携。<br>
+          <b>4. Make.com Google Calendarモジュール</b>　自動化フローに予定作成を組み込む。<br>
+          <b>5. n8nのGoogle Calendarノード</b>　無料の自動化基盤でカレンダー操作。<br>
+          <b>6. IFTTT Calendar連携</b>　シンプルなif-thenでカレンダー連携。<br>
+          <b>7. Calendly API</b>　予約調整・面談スケジュールの自動化。<br>
+          <b>8. Microsoft Graph API（Outlook Calendar）</b>　Outlookカレンダーの操作。<br>
+          <b>9. Claude のGoogle Calendarコネクタ（MCP）</b>　Claudeから予定確認・作成・変更。<br>
+          <b>10. ChatGPTのCalendarコネクタ</b>　チャットからスケジュール確認・登録。<br>
+          <b>11. Google Chat スラッシュコマンド（/meet等）</b>　チャットから会議設定。<br>
+          <b>12. TimeTree API</b>　家族・チーム共有カレンダーとの連携。<br>
+          <b>13. Notion Calendar（旧Cron）</b>　スケジュール管理＋他カレンダーとの統合。<br>
+          <b>14. Reclaim.ai API</b>　タスクを自動でカレンダーに割り当てる。<br>
+          <b>15. Google Tasks API</b>　ToDoとカレンダーを連携。<br>
+          <b>16. Slack の /remind コマンド</b>　予定に紐づくリマインドをSlackに出す。<br>
+          <b>17. Zoom API</b>　会議作成とカレンダー登録を連携。<br>
+          <b>18. Apple Calendar（CalDAV）連携</b>　iPhone標準カレンダーとの同期。<br>
+          <b>19. Todoist カレンダー連携</b>　タスク管理ツールとカレンダーを同期。<br>
+          <b>20. GASの時間ベーストリガー</b>　「毎朝7時」のような定時実行の起点に使う。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">📊 スプレッドシート連携（20）</div>
+        <div class="item-body">
+          <b>1. Google Sheets API</b>　スプレッドシートの読み書きを行う公式API。<br>
+          <b>2. Google Apps Script（Sheets操作）</b>　SpreadsheetAppで行の追加・編集・集計。<br>
+          <b>3. Zapier Google Sheets連携</b>　他サービスのデータをシートに自動記録。<br>
+          <b>4. Make.com Google Sheetsモジュール</b>　自動化フローでシートを読み書き。<br>
+          <b>5. n8nのGoogle Sheetsノード</b>　無料の自動化基盤でシート操作。<br>
+          <b>6. IFTTT Google Sheets連携</b>　簡単な記録をシートに自動追加。<br>
+          <b>7. Claude のGoogle Sheetsコネクタ（MCP）</b>　Claudeからシートを直接読み書き。<br>
+          <b>8. ChatGPTのSheetsコネクタ</b>　チャットからシートのデータ確認・編集。<br>
+          <b>9. GASのカスタムメニュー／スラッシュ的操作</b>　シート上に独自の実行ボタンを追加。<br>
+          <b>10. Airtable API</b>　スプレッドシート感覚で使えるデータベース。<br>
+          <b>11. Notion API</b>　データベースとしてスプシ代わりに記録・連携。<br>
+          <b>12. Coda API</b>　ドキュメント＋表＋自動化を兼ねるツール。<br>
+          <b>13. Excel Online（Microsoft Graph API）</b>　Excelファイルの読み書きをAPIで。<br>
+          <b>14. Googleフォーム→Sheets連携（標準機能）</b>　フォーム回答を自動集計。<br>
+          <b>15. AppSheet</b>　スプレッドシートをそのまま簡易アプリ化。<br>
+          <b>16. Sheetgo</b>　複数シート間でデータを自動転送・同期。<br>
+          <b>17. Supabase（PostgreSQL）</b>　スプシより本格的なデータベース。無料枠あり。<br>
+          <b>18. Zapier Tables</b>　Zapier内に作れる簡易データベース。<br>
+          <b>19. Make.com Data Store</b>　Make内に作れる簡易データストア。<br>
+          <b>20. GASのWebアプリ公開（doGet/doPost）</b>　シートをAPIのように外部から呼び出せる。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">💬 Slack / LINE / チャット連携（20）</div>
+        <div class="item-body">
+          <b>1. Slack API（Web API）</b>　メッセージ送信・取得など全般を操作する公式API。<br>
+          <b>2. Slack スラッシュコマンド</b>　/remind、/invite等、自作コマンドも作成できる。<br>
+          <b>3. Slack Incoming/Outgoing Webhook</b>　最も手軽な通知の送受信手段。<br>
+          <b>4. Slack Workflow Builder</b>　ノーコードでSlack内の業務フローを作成。<br>
+          <b>5. Zapier Slack連携</b>　他サービスとSlackを自動連携。<br>
+          <b>6. Make.com Slackモジュール</b>　自動化フローにSlack通知を組み込む。<br>
+          <b>7. n8nのSlackノード</b>　無料の自動化基盤でSlack操作。<br>
+          <b>8. IFTTT Slack連携</b>　シンプルなif-thenでSlack通知。<br>
+          <b>9. LINE Messaging API</b>　LINE Notify終了（2025年3月）の後継。月200通まで無料、それ以上は有料プラン。<br>
+          <b>10. LINE公式アカウント＋Webhook</b>　LINEで受けたメッセージを外部に転送できる。<br>
+          <b>11. Discord API＋Webhook</b>　無料でBot通知・自動投稿が組める。<br>
+          <b>12. Discordスラッシュコマンド</b>　/から始まる自作コマンドをBotに追加。<br>
+          <b>13. Microsoft Teams＋Power Automate</b>　Teams上での自動通知・承認フロー。<br>
+          <b>14. Chatwork API</b>　国内向けビジネスチャットの自動連携。<br>
+          <b>15. Google Chat API＋スラッシュコマンド</b>　Google Chatでの自動応答・通知。<br>
+          <b>16. Claude Code Channels</b>　Telegram/Discord/iMessageからPCのClaude Codeを操作。<br>
+          <b>17. Telegram Bot API</b>　無料でBot作成・通知配信ができる。<br>
+          <b>18. Pipedream のSlack/Discordコネクタ</b>　イベント駆動でチャット通知を自動化。<br>
+          <b>19. Zapier Chatbots</b>　簡易チャットボットをノーコードで作成。<br>
+          <b>20. Make.com HTTPモジュール</b>　任意のWebhook先（Slack/LINE/Discord等）に通知送信。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>本文：組み合わせでできることの例（10）</h2>
+      <p style="font-size:12px;color:#888;margin-bottom:14px;line-height:1.8;">
+        各例の「詳しい設定はこちら」を押すと、別タブで「スクリーンショットをしながらステップバイステップで進められるプロンプト」付きの詳細ページが開く。
+        コピーしてClaude（またはClaude in Chrome／ChatGPT）に貼り、実際の画面を見せながら進めるだけで設定できる。
+      </p>
+
+      <div class="item">
+        <div class="item-title">① 社外からのメールが来たらSlackにアラート</div>
+        <div class="item-body">
+          手順：Slackで通知用Webhookを作る → Gmailの受信メールを定期チェックするGASスクリプトを作る → 送信者のドメインが自社以外ならSlackに通知する。<br>
+          <a href="./ai-setup-guide-details.html#ex1" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">② メールをSlackで確認→Slackから返信→清書してメールから返信</div>
+        <div class="item-body">
+          手順：受信メールをSlackに通知する（①の延長） → Slackのスレッドに返信文を書く → Slack WorkflowからGASのWebアプリに送る → GASが元のメールに返信する。<br>
+          <a href="./ai-setup-guide-details.html#ex2" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">③ メールから次のステップの期限をカレンダー登録→Slackにアラート</div>
+        <div class="item-body">
+          手順：受信メールの本文から日付を正規表現で抜き出すGASを作る → Google Calendarに予定を作成する → 同時にSlackへ「カレンダーに登録しました」と通知する。<br>
+          <a href="./ai-setup-guide-details.html#ex3" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">④ 交通費をスプレッドシートに記録</div>
+        <div class="item-body">
+          手順：Google Sheetsに「日付・区間・金額・メモ」のシートを作る → Slackで「/交通費」スラッシュコマンドを作成 → コマンドの内容をGASのWebアプリでシートに1行追加する。<br>
+          <a href="./ai-setup-guide-details.html#ex4" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">⑤ Googleフォームの回答→スプシ集計→Slackに通知</div>
+        <div class="item-body">
+          手順：Googleフォームの回答をスプレッドシートにリンク（標準機能） → GASで「フォーム送信時」トリガーを設定 → 新しい回答内容をSlackに通知する。<br>
+          <a href="./ai-setup-guide-details.html#ex5" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">⑥ カレンダーの予定が近づいたらSlack/LINEにリマインド</div>
+        <div class="item-body">
+          手順：GASで「1時間以内に始まる予定」を取得するスクリプトを作る → Slack（またはLINE Messaging API）に通知する → 15〜30分おきの定期トリガーで自動実行する。<br>
+          <a href="./ai-setup-guide-details.html#ex6" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">⑦ スプシに行が追加されたら自動でメール送信（請求書送付など）</div>
+        <div class="item-body">
+          手順：請求リスト用シートに「宛先・件名・本文・送付済みフラグ」の列を作る → GASのonEditトリガーで未送付の行を検出 → Gmail APIで自動送信し、送付済みフラグを更新する。<br>
+          <a href="./ai-setup-guide-details.html#ex7" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">⑧ Slackの絵文字リアクションでタスク完了をスプシに記録</div>
+        <div class="item-body">
+          手順：Slack Appで「reaction_added」イベントを購読する → 特定の絵文字（✅等）が付いたらGASのWebアプリに通知が届く → メッセージ内容をスプレッドシートに記録する。<br>
+          <a href="./ai-setup-guide-details.html#ex8" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">⑨ 毎朝、今日のカレンダー予定をSlackに自動投稿（朝礼ボット）</div>
+        <div class="item-body">
+          手順：GASで「今日の予定一覧」を取得・整形するスクリプトを作る → Slack Webhookに送信する → 毎朝7時に実行する時間ベーストリガーを設定する。<br>
+          <a href="./ai-setup-guide-details.html#ex9" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">⑩ LINEで来たメッセージをスプシにログ化＋Slackに転送</div>
+        <div class="item-body">
+          手順：LINE Developersコンソールでメッセージ用チャネルを作成 → WebhookをGASのWebアプリに設定 → 受信内容をスプレッドシートに記録しつつSlackにも転送する。<br>
+          <a href="./ai-setup-guide-details.html#ex10" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="caution-box">
+      <h2>④ 注意事項</h2>
+      <ul>
+        <li><b>LINE Notifyは2025年3月末に終了済み</b>：今は「LINE Messaging API」が後継。無料枠は月200通まで、それ以上は有料プラン（月額〜）になる点に注意。</li>
+        <li><b>無料枠の「数」は必ず公式ページで確認する</b>：このページに書いた「無料」は2026年時点の代表例。各サービスの無料枠は変更されることがあるため、実際に設定する直前にもう一度公式サイトで確認する。</li>
+        <li><b>Google Apps Script（GAS）が一番のハブになる</b>：Gmail・Calendar・Sheetsの3つはGAS1つでほぼ全部繋がる。最初に覚えるならGASが最優先。</li>
+        <li><b>「詳しい設定はこちら」のプロンプトは、画面を見せながら一歩ずつ進める前提</b>：一度に全部やろうとせず、1ステップごとにスクリーンショットを送る運用にする。</li>
+      </ul>
+    </div>
+
+    <div class="next-bar">
+      <button class="back-btn" onclick="showPanel(1)">← STEP1 全体像の把握</button>
+      <button class="next-btn" onclick="showPanel(3)">STEP3 環境を整える →</button>
+    </div>
+    <div class="next-note">※ STEP3では「PC・アカウント・自動化ツールをどの順番で揃えるか」を扱います</div>
+  </div>
+
+  <!-- ============ PANEL 3（旧PANEL2） ============ -->
+  <div class="panel" id="panel3">
+    <div class="step-title">STEP3　環境を整える</div>
+    <div class="step-progress">全7ステップ中の3ステップ目</div>
+
+    <div class="intro-box">
+      <b>このステップでは</b>「PC・各種アカウント・自動化ツールを、どの順番で・どこまで整えるか」を紹介する。<br><br>
+      STEP1で決めた「ツールの役割マップ」を、実際に手元で動かせる状態にするのが目的。
+      27日間の記録では、契約や開設の順番を誤ったことで、PC買い替え（DAY2）やXアカウント凍結（DAY13）といった大きなロスが発生している。
+    </div>
+
+    <div class="section">
+      <h2>本文：環境を整える3つの手順</h2>
+
+      <div class="item">
+        <div class="item-title">① 課金・契約の前に「動かす場所」を1つに決める</div>
+        <div class="item-body">
+          Claude Code・GitHub・Supabase・Make.com など、これから使うツールを動かすメイン端末を1つ決め、その端末でセキュリティ・権限の制約がないかを先に確認する。会社PCと私用PCを併用する場合は、どの作業をどちらでやるかも先に分けておく。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY1でClaude Proに課金した直後、DAY2で会社PCがClaude Codeに対応していないと判明し、中古PC探し（秋葉原・ThinkPad X1 Carbon 約34,800円）に発展した。「課金→使えない場所だった」の順番を逆にするだけで防げる。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">② アカウント開設は「凍結リスクが低いもの」から始める</div>
+        <div class="item-body">
+          GitHub・Supabase・Claude・Make.com など開発系のアカウントを先に整える。SNS（X等）のアカウントは、自動投稿の仕組みがまだ無い段階では後回しにするか、開設してもすぐに自動投稿を始めない。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY5でXアカウント（@FIRE1173Go）を作成し、Make.com経由でBufferへの自動投稿に成功した。しかしDAY13で「人間っぽくない」と判定され凍結。自動化の仕組みが固まる前にSNS運用を急いだことが要因の一つになっている。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">③ 自動化ツールは「無料枠の制約」を先に調べてから選ぶ</div>
+        <div class="item-body">
+          自動化を組む前に、使う予定のAPI・サービスの無料プランでできること・できないことを確認する。できない場合の代替ルート（別サービス経由など）も合わせて調べておく。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY5で、X APIの無料プランでは投稿に有料プラン（月100ドル）が必要と判明（402エラー）。Make.com経由でBufferに繋ぐ代替ルートに切り替えることで無料での自動投稿を実現できた。先に制約を調べていれば、最初の実装の手戻りがなかった。
+        </div>
+      </div>
+    </div>
+
+    <div class="caution-box">
+      <h2>④ 注意事項</h2>
+      <ul>
+        <li><b>自動投稿は「人間っぽさ」が判定基準になる</b>：投稿頻度・文面が機械的すぎるとアカウント凍結のリスクがある（DAY13）。自動化の前に「手動でもこのペースで運用できるか」を確認する。</li>
+        <li><b>ブラウザ操作の自動化は安定しない</b>：Geminiでのブラウザ操作は15分のプロセスを見ても完了せず失敗した（DAY4）。「Claude Codeでできること」と「ブラウザ操作が必要なこと」は別物として扱う。</li>
+        <li><b>「最初の設定はアナログ、動いたら自動」と割り切る</b>：自動化フローの初期設定（変数マッピング等）は手作業になる前提でスケジュールを組む（DAY5）。</li>
+        <li><b>環境を後から変えるとそれまでの設定がリセットされる</b>：端末・アカウントを途中で変更すると、ログイン・連携設定をやり直すコストが発生する。STEP2はできるだけ最初に固めておく。</li>
+      </ul>
+    </div>
+
+    <div class="next-bar">
+      <button class="back-btn" onclick="showPanel(2)">← STEP2 ツール連携の基礎</button>
+      <button class="next-btn" onclick="showPanel(4)">STEP4 記録の置き場所 →</button>
+    </div>
+    <div class="next-note">※ STEP4では「データ・文脈・決定事項をどこに記録するか」を扱います</div>
+  </div>
+
+  <!-- ============ PANEL 4（旧PANEL3） ============ -->
+  <div class="panel" id="panel4">
+    <div class="step-title">STEP4　記録の置き場所</div>
+    <div class="step-progress">全7ステップ中の4ステップ目</div>
+
+    <div class="intro-box">
+      <b>このステップでは</b>「数値・文脈・決定事項を、それぞれどこに記録するか」を紹介する。<br><br>
+      27日間の記録の中で繰り返し出てくる課題が「AIが記憶を引き継げない」「同じ問題に何度もぶつかる」というもの。
+      DAY15で「3層構造」の記録設計に到達するまで、約2週間この課題に振り回されている。最初にこの設計をしておけば、AIとのやり取りの再現性が大きく上がる。
+    </div>
+
+    <div class="section">
+      <h2>本文：記録を3層に分ける</h2>
+
+      <div class="item">
+        <div class="item-title">① 数値・実績データ → Supabase（データベース）</div>
+        <div class="item-body">
+          売上・在庫・スコアなど「後で集計・分析したい数字」はデータベースに入れる。テーブルを作る前に「将来どんな分析をしたいか」（例：いつ出品していつ売れたか）を先に決めて、必要なカラムを設計する。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY16で、mercari_itemsテーブルにsold_at（売却時刻）のカラムが存在せず、出品時刻と成約時刻の相関分析ができないことが判明した。後からカラムを追加するより、最初に「何を分析したいか」から逆算してテーブルを作るほうが手戻りが少ない。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">② 文脈・文体・日記 → GitHub</div>
+        <div class="item-body">
+          日々の作業ログ、考えたこと、自分の言葉で書いた文章はGitHubに置く。無料でPC・スマホ間の同期ができ、AIに「自分の文体」を学習させる材料としても使える。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY16で「自分の文体・思考パターンがAIに渡せていない」ことが、AIに何度も書き直させる原因と判明した。日記・文体のサンプルをGitHubに蓄積しておくことで、AIがそれを参照できるようになる。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">③ その日決めたこと（決定ログ） → Obsidianなど</div>
+        <div class="item-body">
+          「今日はこの方針で進める」「この案は見送る」といった意思決定そのものを、数値や日記とは別の場所に短く記録する。次回AIと話すときに、この決定ログを最初に渡せば会話を再開しやすくなる。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY12で「12日経ってまだ同じ問題にぶつかる」状態が発覚。役割分担（調査・実行・判断）を分けると文脈共有が切れる「記憶の分断」が起きるため、決定だけを集約した記録場所が必要になった。
+        </div>
+      </div>
+    </div>
+
+    <div class="caution-box">
+      <h2>④ 注意事項</h2>
+      <ul>
+        <li><b>データベースは放置すると止まる</b>：Supabaseは1週間操作がないとフリーズ通告が来る（DAY15）。週1回はアクセスする習慣をセットで作る。</li>
+        <li><b>記録は「結果」だけでなく「試したこと」「次に直すこと」もセットで書く</b>：結果だけのログは再現性が低い。何を試して、なぜその結果になったかまで書く。</li>
+        <li><b>手動コピペが発生する前提で割り切る</b>：完全自動の記録同期は最初から目指さない。「手動ペーストは記憶喪失よりはるかにマシ」という考え方で十分（DAY15）。</li>
+        <li><b>記録場所を増やしすぎない</b>：3層（数値・文脈・決定）以上に記録先を増やすと、どこに何を書いたか分からなくなる。まずはこの3つで運用する。</li>
+      </ul>
+    </div>
+
+    <div class="next-bar">
+      <button class="back-btn" onclick="showPanel(3)">← STEP3 環境を整える</button>
+      <button class="next-btn" onclick="showPanel(5)">STEP5 最初の自動化 →</button>
+    </div>
+    <div class="next-note">※ STEP5では「最初に何を自動化すべきか」を扱います</div>
+  </div>
+
+  <!-- ============ PANEL 5（旧PANEL4） ============ -->
+  <div class="panel" id="panel5">
+    <div class="step-title">STEP5　最初の自動化</div>
+    <div class="step-progress">全7ステップ中の5ステップ目</div>
+
+    <div class="intro-box">
+      <b>このステップでは</b>「最初に何を、どの程度自動化するべきか」を紹介する。<br><br>
+      27日間の記録での結論は一つ：<b>「AIで自動化は全然自動じゃない。最初の設定だけアナログ。でも一度動けば全自動」</b>（DAY5）。
+      この前提を持っているかどうかで、自動化に挑戦したときの心の折れやすさが大きく変わる。
+    </div>
+
+    <div class="section">
+      <h2>本文：自動化を始める3つの手順</h2>
+
+      <div class="item">
+        <div class="item-title">① 一番小さい「繰り返し作業」を1つだけ選ぶ</div>
+        <div class="item-body">
+          複数の業務を同時に自動化しようとせず、「毎日・毎週やっている単純な繰り返し」を1つだけ選んで自動化の対象にする。それが終わってから次の自動化に進む。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY5では「X投稿の自動化」という1つのタスクに絞り、Supabase→Make.com→Buffer→Xという最小構成のフローを作った。これが最初の「動く自動化」になった。複数を同時に組もうとすると、どこで失敗したか分からなくなる。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">② 「最初の設定はアナログ」と決めてスケジュールを組む</div>
+        <div class="item-body">
+          自動化ツールの初期設定（連携・変数マッピング・テスト投稿など）には、まとまった作業時間が必要になることを前提に予定を組む。「設定が終われば自動で回る」という完成イメージを最初に持っておく。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> クロコが作成したx_poster.pyがX APIの402エラーで詰まり、Make.com経由Buffer連携への切り替えで変数マッピングを手作業で行って初めて動いた（DAY5）。この「設定の手間」を事前に見積もっておけば、途中で挫折しにくくなる。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">③ 自動化が止まった時の「手動の代替ルート」を用意する</div>
+        <div class="item-body">
+          自動化が失敗・停止した場合に、人間が代わりに行う手順をあらかじめ決めておく。ただし、その手動カバーが「機械的すぎる動き」にならないよう注意する。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY13で、自動投稿の失敗を手動でカバーしようとした結果、「人間っぽくない」と判定されてXアカウントが凍結された。手動の代替ルートは必要だが、自動化と同じパターンで動かすと同じ問題が起きる。
+        </div>
+      </div>
+    </div>
+
+    <div class="caution-box">
+      <h2>④ 注意事項</h2>
+      <ul>
+        <li><b>分業体制を先に決めてから自動化する</b>：DAY6の風雲！決算城では「4コマ→インスタ集客→サイト収益化」という導線と、サイト構築・画像・統合・アップロードの担当を先に分けたことで、自動化の対象が明確になった。</li>
+        <li><b>「収益が出るかどうか」だけを基準にしない</b>：DAY9で生まれたMIKULINKは収益目的ではなく「楽しいから作った」ものだったが、AIとの作業フローを試す良い練習になった。最初の自動化は学習目的でもよい。</li>
+        <li><b>サブエージェント・役割を増やす前に1つの自動化を完走させる</b>：DAY7で33名のサブエージェントと面談・役割設定を行ったが、自動化の土台（DAY5のX投稿フロー）が先にあったからこそ、役割設定が機能した。</li>
+        <li><b>規約・凍結リスクのあるプラットフォームでは慎重に</b>：自動化の対象がSNSなど規約があるサービスの場合、頻度や文面のチェックを自動化フローに含める。</li>
+      </ul>
+    </div>
+
+    <div class="next-bar">
+      <button class="back-btn" onclick="showPanel(4)">← STEP4 記録の置き場所</button>
+      <button class="next-btn" onclick="showPanel(6)">STEP6 運用・継続 →</button>
+    </div>
+    <div class="next-note">※ STEP6では「27日間を超えて続けるための仕組み」を扱います</div>
+  </div>
+
+  <!-- ============ PANEL 6（旧PANEL5） ============ -->
+  <div class="panel" id="panel6">
+    <div class="step-title">STEP6　運用・継続</div>
+    <div class="step-progress">全7ステップ中の6ステップ目</div>
+
+    <div class="intro-box">
+      <b>このステップでは</b>「STEP1〜4で整えた環境を、27日間を超えて続けていくための仕組み」を紹介する。<br><br>
+      27日間でマネタイズはほぼゼロだったが、「45歳のおじさんが、AIをどう使い、どこで詰まり、どう乗り越えたか」という記録そのものが資産になっている（DAY12「うまくいくいかないも含めて経験が商品になる」）。
+      続けるための仕組みは、完璧を目指すことではなく「記録を資産化する」ことを前提に作る。
+    </div>
+
+    <div class="section">
+      <h2>本文：継続するための3つの仕組み</h2>
+
+      <div class="item">
+        <div class="item-title">① 自分の判断パターンをAIに学習させる仕組みを作る</div>
+        <div class="item-body">
+          AIに質問を作らせ、自分が回答し、その回答をデータベースに蓄積していく「クイズ形式」のような仕組みを週1回程度回す。これにより、AIが自分の判断基準を学習し、提案の精度が上がっていく。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY17で「青柳クローン」構想（AIに質問を作らせ自分が回答、Supabaseに蓄積してAIに反映する）が生まれた。これは社内クイズで社員の理解度を測った経験の応用で、経営者として足りない部分を補う教科書にもなる。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">② 「全部成功させる」のではなく「記録を資産化する」前提で続ける</div>
+        <div class="item-body">
+          複数の事業（競馬予想・決算城・メルカリ・その他）を並行して試す場合、どれが成功するかは分からない前提で進める。それぞれの試行でうまくいった点・詰まった点を記録し、それ自体をコンテンツ・教材として扱う。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY20時点で、個別事業（レイヤー1）の成否とは独立して、「AIと一緒に事業を作る過程」自体の記録（レイヤー2）が資産として積み重なる、という二重構造に到達した。「600個作って5個当たればいい」（DAY9）という考え方もこれを支えている。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">③ 定期的に進捗を振り返るタイミングを決める</div>
+        <div class="item-body">
+          3日〜1週間に1回、進捗を🟢（順調）🟡（要注意）🔴（詰まってる）のような簡単な信号で振り返る。月単位（例：30日）でまとめて総括し、構成やターゲットの再設計を行うタイミングも決めておく。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> DAY14で「思いつく→作る」フェーズから「維持する」フェーズへの移行を認識し、月50万円の逆算表など定期的な振り返りが行われるようになった。DAY20では「DAY30前後で1ヶ月分をまとめて総括する」という方針が決まっている。
+        </div>
+      </div>
+    </div>
+
+    <div class="caution-box">
+      <h2>④ 注意事項</h2>
+      <ul>
+        <li><b>使用量（トークン等）のペースを把握する</b>：DAY9では「月の使用量の1/3で80%消費」という高ペースが発覚した。週次・月次で使用量を確認する習慣を持つ。</li>
+        <li><b>ターゲットや特典の形は、振り返りのタイミングでまとめて見直す</b>：DAY20では特典の形を「A4一枚・コンビニ印刷可能なPDF」に変更し、ターゲットも拡張した。こうした大きな変更は、日々の作業の中で都度行うより、振り返りのタイミングにまとめるほうが混乱が少ない。</li>
+        <li><b>新しい構想が出てきても、今の運用を止めない</b>：DAY17以降「AI to the Future」という別構想が生まれたが、既存の日記・記録の蓄積（レイヤー2）はそのまま継続された。新構想は既存の記録の上に積み重ねる。</li>
+        <li><b>「詰まったら方向を変える」記録自体を残す</b>：DAY6で「自動化できないと判断したから別の方向（風雲！決算城）に行った」という判断そのものが、後から見て価値のある記録になった。方向転換の理由を必ず書き残す。</li>
+      </ul>
+    </div>
+
+    <div class="next-bar">
+      <button class="back-btn" onclick="showPanel(5)">← STEP5 最初の自動化</button>
+      <button class="next-btn" onclick="showPanel(7)">STEP7 スマホダッシュボード →</button>
+    </div>
+    <div class="next-note">※ STEP7では「Supabase×GitHubでスマホから見れるダッシュボードを作る方法」を扱います</div>
+  </div>
+
+  <!-- ============ PANEL 7（新規） ============ -->
+  <div class="panel" id="panel7">
+    <div class="step-title">STEP7　Supabase×GitHubでスマホダッシュボードを作る</div>
+    <div class="step-progress">全7ステップ中の7ステップ目（最終）</div>
+
+    <div class="intro-box">
+      <b>このステップでは</b>「STEP4で決めたSupabase（数値の置き場所）とGitHub（記録・公開の場所）を繋ぎ、スマホでいつでも見られるダッシュボードを作る方法」を紹介する。<br><br>
+      この電脳会社のダッシュボード自体が、まさにこの仕組みで作られている。Supabaseに入っているデータを、GitHub Pagesで公開したHTMLが読み取って表示する、という構成だけで「スマホアプリのようなもの」が無料で作れる。
+    </div>
+
+    <div class="section">
+      <h2>本文：ダッシュボードができるまでの3つの手順</h2>
+
+      <div class="item">
+        <div class="item-title">① Supabaseに「見たいデータ」のテーブルを用意する</div>
+        <div class="item-body">
+          Supabaseのプロジェクトで、ダッシュボードに表示したいデータ（売上・在庫・予定・進捗など）のテーブルを作る。すでにSTEP4でSupabaseにデータが入っている場合は、そのテーブルをそのまま使える。<br>
+          「Project Settings → API」から、Project URLと公開用のanonキーを確認しておく。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> 表示したいデータが先に決まっていないと、ダッシュボードの画面構成も決められない。STEP4で「数値はSupabase」という置き場所を決めたのは、このステップのための準備でもある。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">② GitHub PagesでHTMLを公開する</div>
+        <div class="item-body">
+          GitHubにリポジトリを作り、その中にdashboard.htmlを置く。HTML内でSupabaseのJS Client（@supabase/supabase-js）を読み込み、createClient(Project URL, anonキー)でデータを取得して表示するコードを書く。<br>
+          リポジトリの「Settings → Pages」でGitHub Pagesを有効にすると、数分で公開URL（https://ユーザー名.github.io/...）が発行される。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> GitHubは無料でPC・スマホ間の同期ができ、そのまま「公開サーバー」としても使える（STEP4参照）。同じ仕組みを使い回すことで、新しいサービスを覚える必要がない。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">③ スマホのホーム画面に追加して「アプリ化」する</div>
+        <div class="item-body">
+          公開されたURLに、スマホのブラウザ（Safari/Chrome）でアクセスし、「ホーム画面に追加」を選ぶ。アイコンがホーム画面に追加され、タップするだけでダッシュボードが開くようになる。<br>
+          Supabase側のデータが更新されれば、ダッシュボードを開くたびに最新の数値が表示される。
+        </div>
+        <div class="item-why">
+          <b>なぜこの順番か：</b> 「スマホで見れる」を最後の仕上げにすることで、PC側の作業（テーブル設計・HTML作成）に集中できる。見た目の確認は最後にまとめて行う方が手戻りが少ない。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>詳しい設定はこちら</h2>
+      <div class="item">
+        <div class="item-title">スクリーンショットをしながらステップバイステップで進められるプロンプト</div>
+        <div class="item-body">
+          別タブで開く詳細ページに、Supabaseのプロジェクト確認からGitHub Pages公開、スマホでのホーム画面追加までを画面共有しながら進められるプロンプトを用意している。<br>
+          <a href="./ai-setup-guide-details.html#dashboard" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>便利ツール集：複数アカウント運用を加速するツール</h2>
+
+      <div class="item">
+        <div class="item-title">LINE Harness／X Harness／IG Harness（野田修一氏のOSS）</div>
+        <div class="item-body">
+          LINE・X（旧Twitter）・Instagramそれぞれの自動応答・自動投稿をセルフホストできるオープンソース（MITライセンス）。Cloudflare Workers上で動き、無料枠の範囲で運用できる。<br><br>
+          <b>組み合わせでできること：</b><br>
+          ・X HarnessとIG Harnessを同じ仕組みで立てることで、X投稿に連動してInstagram側にも展開するような運用ができる<br>
+          ・IG Harnessで受けたコメント・DMをLINE Harness経由でCEOのLINEに転送し、スマホで確認・返信できる<br>
+          ・STEP1で作った複数のSNSアカウントそれぞれにHarnessを立てることで、1アカウント凍結でも他アカウントが止まらない運用ができる<br>
+          <a href="./ai-setup-guide-details.html#line-harness" target="_blank" style="color:#d4a017;">詳しくはこちら（LINE Harness） →</a><br>
+          <a href="./ai-setup-guide-details.html#x-harness" target="_blank" style="color:#d4a017;">詳しくはこちら（X Harness） →</a><br>
+          <a href="./ai-setup-guide-details.html#ig-harness" target="_blank" style="color:#d4a017;">詳しくはこちら（IG Harness） →</a>
+        </div>
+        <div class="item-why">
+          <b>なぜ使うのか：</b> STEP1で「1ブランド×複数のSNSアカウント」という前提を整理したら、それぞれを手動運用するのは現実的でない。Harness系OSSは自分のCloudflareアカウント上で動くため追加コストがほぼ0円で、複数アカウントの自動化を個別に・安全に立てられる。
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-title">Thunderbird（複数Gmailの一括管理）</div>
+        <div class="item-body">
+          STEP1で増えていく「プロジェクトごとのGmailアカウント」を、Thunderbird1つにまとめて受信トレイを一括チェックできる。無料・IMAP対応・アカウント数の制限なし。<br><br>
+          <b>組み合わせでできること：</b><br>
+          ・各SNSアカウントの登録確認メール・パスワードリセット通知を、Thunderbirdの統合フォルダで一括確認できる<br>
+          ・Harness系OSSのCloudflare/Meta/X Developerアカウント作成時の確認メールも、同じ画面で見落とさず処理できる<br>
+          <a href="./ai-setup-guide-details.html#thunderbird" target="_blank" style="color:#d4a017;">詳しくはこちら →</a>
+        </div>
+        <div class="item-why">
+          <b>なぜ使うのか：</b> アカウントが増えるほど「どのGmailに何の通知が来たか」が分からなくなる。Thunderbirdの統合受信トレイで一元管理しておけば、STEP1〜STEP7全体の運用がスマホ・PC問わず追いやすくなる。
+        </div>
+      </div>
+    </div>
+
+    <div class="caution-box">
+      <h2>④ 注意事項</h2>
+      <ul>
+        <li><b>anonキーは「公開用の読み取りキー」</b>：HTMLに書き込んでも基本的には問題ないが、書き込み（更新・削除）を許可する場合はSupabaseのRLS（行レベルセキュリティ）で必ず制限する。</li>
+        <li><b>config.js等にAPIキーを書く場合はコミットしない</b>：この電脳会社のリポジトリでも、config.jsは.gitignoreで保護している（CLAUDE.md記載のルール）。同じ構成を真似る場合は必ず確認する。</li>
+        <li><b>Supabaseは1週間操作がないとフリーズ通告が来る</b>：STEP4の注意事項と同じ。ダッシュボードを定期的に開くこと自体が、Supabaseを起こす習慣にもなる。</li>
+        <li><b>最初は1つの数値が表示できればOK</b>：完璧なデザインを目指さず、「とりあえず1個のテーブルの中身が表示される」状態を最初の完成形にする。STEP6の「完成度より速度」の考え方と同じ。</li>
+      </ul>
+    </div>
+
+    <div class="next-bar">
+      <button class="back-btn" onclick="showPanel(6)">← STEP6 運用・継続</button>
+      <button class="next-btn" onclick="showPanel(1)">STEP1 全体像に戻る →</button>
+    </div>
+    <div class="next-note">※ ここまでがガイドの全体です。実際に手を動かしながら、必要なステップに何度でも戻ってください</div>
+  </div>
+
+</div>
+
+<script>
+function showPanel(n) {
+  for (let i = 1; i <= 7; i++) {
+    document.getElementById('panel' + i).classList.toggle('active', i === n);
+    document.getElementById('pill' + i).classList.toggle('active', i === n);
+  }
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

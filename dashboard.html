@@ -385,6 +385,21 @@ body { background: var(--bg-primary); color: var(--text-primary); font-family: v
 .content-map-header .label { font-size: 14px; font-weight: 600; color: #fff; }
 .content-map-header .sub { font-size: 11px; color: var(--text-secondary); }
 .content-map-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1px; background: rgba(255,255,255,0.05); }
+
+/* ━━━━━━━━━━━ 最近の制作物 / 履歴 ━━━━━━━━━━━ */
+.recent-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+@media(max-width:900px){ .recent-section { grid-template-columns: 1fr; } }
+.recent-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px 18px; }
+.recent-card .label { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 10px; display: block; }
+.recent-list { display: flex; flex-direction: column; }
+.recent-item { display: flex; flex-direction: column; gap: 4px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.recent-item:last-child { border-bottom: none; }
+.ri-title { color: #fff; font-size: 12px; font-weight: 600; line-height: 1.4; }
+.ri-meta { color: var(--text-secondary); font-size: 11px; }
+.ri-pill { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; margin-right: 6px; }
+.ri-pill-published { background: var(--accent-green); color: #000; }
+.ri-pill-draft { background: rgba(255,255,255,0.12); color: var(--text-secondary); }
+.ri-tag { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; background: rgba(168,85,247,0.18); color: var(--accent-purple); margin-right: 4px; }
 .content-type-cell { background: var(--bg-card); padding: 16px 18px; }
 .ct-name { font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
 .ct-count { font-size: 26px; font-weight: 700; color: #d4a017; font-family: var(--font-num); }
@@ -483,6 +498,7 @@ body { background: var(--bg-primary); color: var(--text-primary); font-family: v
   <a href="./mercari.html" class="gnav-tab gnav-tab-mercari">メルカリ</a>
   <a href="#newsSection" class="gnav-tab gnav-tab-news">今日のニュース</a>
   <a href="./00_ダッシュボード/quiz.html" class="gnav-tab gnav-tab-quiz">CEOクイズ</a>
+  <a href="./00_ダッシュボード/ai-setup-guide.html" class="gnav-tab gnav-tab-quiz">AI導入ガイド</a>
   <span class="gnav-clock" id="navClock">--:--:--</span>
   <button class="gnav-tab gnav-tab-news" onclick="toggleNav()" style="margin-left:4px;display:none" id="gnav-ham">☰</button>
 </nav>
@@ -499,6 +515,7 @@ body { background: var(--bg-primary); color: var(--text-primary); font-family: v
   <a class="nav-item" href="./kassenjo.html">🏯 決算城</a>
   <div class="nav-divider"></div>
   <a class="nav-item" href="./00_ダッシュボード/quiz.html" style="color:var(--accent-green);font-weight:700;">🎯 今日のクイズ</a>
+  <a class="nav-item" href="./00_ダッシュボード/ai-setup-guide.html">🤖 AI導入ガイド</a>
   <a class="nav-item" href="https://jp.mercari.com/user/profile/497518420?status=on_sale" target="_blank">出品一覧 ↗</a>
 </div>
 
@@ -668,6 +685,18 @@ body { background: var(--bg-primary); color: var(--text-primary); font-family: v
     <span class="sub" id="contentMapTs">読み込み中…</span>
   </div>
   <div class="content-map-body" id="contentMapBody"><div class="content-type-cell"><div class="ct-name">読み込み中</div><div class="ct-count">…</div></div></div>
+</div>
+
+<!-- ━━━━━━━━━━━ 最近の制作物 / 履歴 ━━━━━━━━━━━ -->
+<div class="recent-section">
+  <div class="recent-card">
+    <span class="label">📦 最近の制作物</span>
+    <div class="recent-list" id="recentWorkList"><div class="recent-item"><div class="ri-meta">読み込み中…</div></div></div>
+  </div>
+  <div class="recent-card">
+    <span class="label">🕘 運用履歴</span>
+    <div class="recent-list" id="recentHistoryList"><div class="recent-item"><div class="ri-meta">読み込み中…</div></div></div>
+  </div>
 </div>
 
 <!-- ━━━━━━━━━━━ チーム ━━━━━━━━━━━ -->
@@ -989,12 +1018,47 @@ function renderContentMap(noteArticles, novelStories) {
   document.getElementById('contentMapTs').textContent=noteArticles.length+'本 + 自キュン'+nc+'本';
 }
 
+// ━━━━━━━━━━━ 最近の制作物 ━━━━━━━━━━━
+function renderRecentWork(articles, novels) {
+  const items = [
+    ...articles.map(a=>({title:a.title, tag:a.category, status:a.status, created_at:a.created_at})),
+    ...novels.map(n=>({title:n.title, tag:'自キュン', status:n.status, created_at:n.created_at}))
+  ].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,8);
+
+  const el = document.getElementById('recentWorkList');
+  if (!items.length) { el.innerHTML = '<div class="recent-item"><div class="ri-meta">データなし</div></div>'; return; }
+  el.innerHTML = items.map(it=>{
+    const d = new Date(it.created_at).toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'});
+    const pillCls = it.status==='published' ? 'ri-pill-published' : 'ri-pill-draft';
+    const pillLabel = it.status==='published' ? '公開済' : '下書き';
+    return `<div class="recent-item">
+      <div class="ri-title">${it.title}</div>
+      <div class="ri-meta"><span class="ri-pill ${pillCls}">${pillLabel}</span><span class="ri-tag">${it.tag}</span>${d}</div>
+    </div>`;
+  }).join('');
+}
+
+// ━━━━━━━━━━━ 運用履歴 ━━━━━━━━━━━
+function renderHistory(logs) {
+  const el = document.getElementById('recentHistoryList');
+  if (!logs.length) { el.innerHTML = '<div class="recent-item"><div class="ri-meta">データなし</div></div>'; return; }
+  el.innerHTML = logs.map(l=>{
+    const d = new Date(l.created_at).toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'});
+    const tags = (l.tags||[]).slice(0,3).map(t=>`<span class="ri-tag">${t}</span>`).join('');
+    return `<div class="recent-item">
+      <div class="ri-title">${l.summary}</div>
+      <div class="ri-meta">${tags}${d}・${l.actor}</div>
+    </div>`;
+  }).join('');
+}
+
 // ━━━━━━━━━━━ MAIN INIT ━━━━━━━━━━━
 async function init() {
   const now = new Date().toISOString().slice(0,10);
   try {
     const [mercariCount, mercariData, relistRes, castleRes, briefRes, noteRes, novelRes,
-           noteKyunCount, noteFireCount, mercariFinRes] = await Promise.all([
+           noteKyunCount, noteFireCount, mercariFinRes,
+           recentArticlesRes, recentNovelsRes, recentLogsRes] = await Promise.all([
       sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed'),
       sb.from('mercari_items').select('item_no,name,price,recommended_price,cost,shipping').eq('status','listed').order('item_no'),
       sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed').lt('last_relisted_at', new Date(Date.now()-2*24*60*60*1000).toISOString()),
@@ -1004,7 +1068,10 @@ async function init() {
       sb.from('novel_stories').select('status'),
       sb.from('note_articles').select('id',{count:'exact',head:true}).eq('category','自キュン').eq('status','published'),
       sb.from('note_articles').select('id',{count:'exact',head:true}).eq('category','競馬').eq('status','published'),
-      sb.from('mercari_items').select('price,cost,status')
+      sb.from('mercari_items').select('price,cost,status'),
+      sb.from('note_articles').select('title,category,status,created_at').order('created_at',{ascending:false}).limit(6),
+      sb.from('novel_stories').select('title,status,created_at').order('created_at',{ascending:false}).limit(6),
+      sb.from('operation_logs').select('actor,tags,summary,created_at').order('created_at',{ascending:false}).limit(6)
     ]);
 
     const listed = mercariCount.count ?? 0;
@@ -1030,9 +1097,9 @@ async function init() {
     const tileBar = document.getElementById('tileNoteBar');
     if (tileBar) { setTimeout(()=>{ tileBar.style.width = notePct + '%'; }, 100); }
     _set('tileNoteSub', `自キュン ${kyunCount}本・競馬 ${fireCount}本`);
-    const watchVal = parseInt(localStorage.getItem('noteWatchCount') || '1154');
+    const watchVal = parseInt(localStorage.getItem('noteWatchCount') || '1695');
     countUp(document.getElementById('tileWatchNum'), watchVal, 1000, v => v.toLocaleString());
-    _set('noteSkiNum', '20');
+    _set('noteSkiNum', '37');
     _set('noteSalesNum', '¥0');
 
     // ── メルカリ事業カード ──
@@ -1096,6 +1163,10 @@ async function init() {
 
     // note
     renderContentMap(noteRes.data||[], novelRes.data||[]);
+
+    // 最近の制作物 / 履歴
+    renderRecentWork(recentArticlesRes.data||[], recentNovelsRes.data||[]);
+    renderHistory(recentLogsRes.data||[]);
 
     // 自キュンフラグ
     const kyunPending = (novelRes.data||[]).filter(s=>s.status!=='published').length;
