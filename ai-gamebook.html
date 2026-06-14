@@ -312,6 +312,7 @@ const LEVELS = {
   beginner:     { ico: '🌱', name: '初級' },
   intermediate: { ico: '🪴', name: '中級' },
   advanced:     { ico: '🌳', name: '上級' },
+  super:        { ico: '🌟', name: '超級' },
 };
 const TOOLS = {
   claude:   { ico: '🧠', name: 'Claude' },
@@ -323,6 +324,136 @@ const TOOLS = {
 };
 
 const scenes = {
+
+  /* ===================== 00 リテラシークイズ ===================== */
+  quiz_intro: {
+    title: '🔍 まず3つだけ質問します（30秒）',
+    text: 'どのAIから始めると良さそうか、3つの質問で一緒に決めよう。難しい質問はないので、今の自分に近い方を選ぶだけでOK。',
+    choices: [
+      { ico: '▶️', title: 'クイズに答える', sub: '3問・30秒くらい', desc: '今の自分に近い方を選ぶだけで、おすすめのAIと最初の10個がわかる。', source: '', unlock: [], next: 'quiz_q1' },
+      { ico: '⏩', title: 'クイズはスキップする', sub: '自分でツールを選ぶ', desc: 'すでにどっちを使うか決まっている場合はこちら。', source: '', unlock: [], next: 'start' }
+    ]
+  },
+
+  quiz_q1: {
+    title: '質問1/3：AIツール、使ったことある？',
+    text: 'ChatGPT・Claude・Gemini・LINEのAIなど、何でもOK。一番近いものを選んでください。',
+    choices: [
+      { ico: '🆕', title: 'まったく使ったことがない', sub: '今日が初めて', desc: '大丈夫。ここから一緒に進めます。', source: '', unlock: [], next: 'quiz_q2a' },
+      { ico: '👋', title: '少しだけ触ったことがある', sub: '無料のChatGPTやLINEのAIで少し', desc: '触った感覚があるなら話が早い。', source: '', unlock: [], next: 'quiz_q2b' },
+      { ico: '💼', title: '仕事で使っている', sub: '日常的に使っている', desc: '初級は飛ばして、次のレベルから見てみよう。', source: '', unlock: [], next: 'quiz_result_advanced' }
+    ]
+  },
+
+  quiz_q2a: {
+    title: '質問2/3：ふだん使うのはスマホ？パソコン？',
+    text: 'AIを試すときに使う機械を教えてください。',
+    choices: [
+      { ico: '📱', title: 'スマホが中心', sub: 'アプリでサクッと試したい', desc: '', source: '', unlock: [], next: 'quiz_result_chatgpt_free' },
+      { ico: '💻', title: 'パソコンが中心', sub: '会社や家でPCを使うことが多い', desc: '', source: '', unlock: [], next: 'quiz_result_claude_free' }
+    ]
+  },
+
+  quiz_q2b: {
+    title: '質問2/3：得意になりたいのはどっち？',
+    text: '「文章」と「画像」、今ちょっと興味があるのはどっち？',
+    choices: [
+      { ico: '✍️', title: '文章（整える・書く・要約）', sub: 'メール・記事・調べ物など', desc: '', source: '', unlock: [], next: 'quiz_result_claude_free' },
+      { ico: '🖼️', title: '画像（イラスト・バナーなど）', sub: 'SNS用の画像やチラシなど', desc: '', source: '', unlock: [], next: 'quiz_result_chatgpt_free' }
+    ]
+  },
+
+  quiz_result_claude_free: {
+    title: '🧠 あなたにはClaudeが向いてそう',
+    text: 'いきなり課金しなくて大丈夫。まずは無料のClaude（claude.ai）にブラウザからログインして、会話してみる。「ファイル操作」や「自動化」まで頼みたくなったタイミングで、有料プランを考えれば十分。',
+    choices: [
+      { ico: '➡️', title: '無料のClaudeでできること10個を見る', sub: '今のあなたのままで何ができる？', desc: '', source: '出典：AI革命メディア「Claude料金2026」', unlock: ['claude'], next: 'ten_things_claude' }
+    ]
+  },
+
+  quiz_result_chatgpt_free: {
+    title: '🎨 あなたにはChatGPTが向いてそう',
+    text: 'いきなり課金しなくて大丈夫。まずは無料のChatGPT（chatgpt.comまたはアプリ）で触ってみる。画像生成は無料でも月7枚くらい作れる。もっと作りたくなったタイミングで、Plus（月$20くらい）を考えれば十分。',
+    choices: [
+      { ico: '➡️', title: '無料のChatGPTでできること10個を見る', sub: '今のあなたのままで何ができる？', desc: '', source: '出典：AI PICKSマガジン「ChatGPT料金2026」', unlock: ['chatgpt'], next: 'ten_things_chatgpt' }
+    ]
+  },
+
+  quiz_result_advanced: {
+    title: '💼 もう使っているなら、初級はスキップでOK',
+    text: '清書・要約・調べ物・メール文くらいは、もう自然にやっているはず。中級（自分の文体・長文・画像づくり）から見てみるのがおすすめ。',
+    choices: [
+      { ico: '➡️', title: 'できること10個を見る（中級スタート）', sub: '今のあなたのままで何ができる？', desc: '', source: '', unlock: [], next: 'ten_things_advanced' },
+      { ico: '🌱', title: '念のため初級から見る', sub: '見るだけならすぐ終わる', desc: '', source: '', unlock: [], next: 'beginner_hub' }
+    ]
+  },
+
+  /* ===================== 02 選んだものでできること10種類 ===================== */
+  ten_things_claude: {
+    title: '🧠 無料のClaudeでできること10個',
+    note: '🌱初級・🪴中級・🌳上級・🌟超級の順に並んでいる。今日は🌱だけでも十分。',
+    text: `
+      <ol style="padding-left:1.4em; line-height:1.9;">
+        <li>🌱 文章を読みやすく整えてもらう（清書）</li>
+        <li>🌱 長い文章を3行に要約してもらう</li>
+        <li>🌱 分からないことをやさしく説明してもらう</li>
+        <li>🌱 言いにくいメールの下書きを考えてもらう</li>
+        <li>🪴 自分の文体パターンを相手別に作ってもらう</li>
+        <li>🪴 1万字までの長文を分割して書いてもらう</li>
+        <li>🌳 noteの有料記事の構成を作ってもらう</li>
+        <li>🌳 相手別にメールを自動で書き分けてもらう（Gmail連携）</li>
+        <li>🌳 プレゼン資料（パワポ）の構成を作ってもらう</li>
+        <li>🌟 経理・データ分析・動画・SNSなど、他のジャンルと組み合わせる</li>
+      </ol>
+    `,
+    choices: [
+      { ico: '🌱', title: '初級から始める', sub: 'まずは①〜④を試す', desc: '', source: '', unlock: [], next: 'beginner_hub' }
+    ]
+  },
+
+  ten_things_chatgpt: {
+    title: '🎨 無料のChatGPTでできること10個',
+    note: '🌱初級・🪴中級・🌳上級・🌟超級の順に並んでいる。今日は🌱だけでも十分。',
+    text: `
+      <ol style="padding-left:1.4em; line-height:1.9;">
+        <li>🌱 文章を読みやすく整えてもらう（清書）</li>
+        <li>🌱 長い文章を3行に要約してもらう</li>
+        <li>🌱 分からないことをやさしく説明してもらう</li>
+        <li>🌱 言いにくいメールの下書きを考えてもらう</li>
+        <li>🪴 SNS用の画像を1枚作る（風景・季節・時間を指定するだけ）</li>
+        <li>🪴 LP（販売ページ）用の画像を作る</li>
+        <li>🪴 チラシ・サムネイル画像を作る</li>
+        <li>🌳 noteの有料記事に画像を添えて販売構成を作る</li>
+        <li>🌳 プレゼン資料用の画像を作る</li>
+        <li>🌟 動画・SNS運用など、他のジャンルと組み合わせる</li>
+      </ol>
+    `,
+    choices: [
+      { ico: '🌱', title: '初級から始める', sub: 'まずは①〜④を試す', desc: '', source: '', unlock: [], next: 'beginner_hub' }
+    ]
+  },
+
+  ten_things_advanced: {
+    title: '💼 中級スタートでできること10個',
+    note: '🪴中級・🌳上級・🌟超級の順に並んでいる。気になるものから選んでOK。',
+    text: `
+      <ol style="padding-left:1.4em; line-height:1.9;">
+        <li>🪴 自分の文体パターンを相手別に作る</li>
+        <li>🪴 1万字までの長文を分割して書く</li>
+        <li>🪴 SNS用の画像を1枚作る</li>
+        <li>🪴 LP（販売ページ）用の画像を作る</li>
+        <li>🪴 チラシ・サムネイル画像を作る</li>
+        <li>🌳 noteの有料記事の構成を作る</li>
+        <li>🌳 相手別にメールを自動で書き分ける（Gmail連携）</li>
+        <li>🌳 プレゼン資料（パワポ）の構成を作る</li>
+        <li>🌟 動画・経理・データ分析など、10ジャンルから選ぶ</li>
+        <li>🌟 複数ジャンルを組み合わせるアイデアを見る</li>
+      </ol>
+    `,
+    choices: [
+      { ico: '🪴', title: '中級から始める', sub: '5つの中から、伸ばしたいものを選ぶ', desc: '', source: '', unlock: [], next: 'intermediate_hub' }
+    ]
+  },
 
   /* ===================== START ===================== */
   start: {
@@ -1023,6 +1154,7 @@ const scenes = {
 
   super_advanced: {
     title: '🌟 超上級：組み合わせたら何ができる？',
+    level: 'super',
     grid: true,
     infoOnly: true,
     note: 'ここからは「事実」じゃなく「提案」。10ジャンルを掛け合わせると、こういうことができそう、というアイデア集。',
@@ -1038,7 +1170,7 @@ const scenes = {
 };
 
 let history = [];
-let current = 'start';
+let current = 'quiz_intro';
 let unlocked = new Set();
 let levelsDone = new Set();
 let openIndex = null;
@@ -1270,7 +1402,7 @@ function goBack() {
 
 function restart() {
   history = [];
-  current = 'start';
+  current = 'quiz_intro';
   unlocked = new Set();
   levelsDone = new Set();
   openIndex = null;
