@@ -11,12 +11,19 @@
     color: #e8e0d0;
     font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
     line-height: 1.9;
-    font-size: 15px;
     min-height: 100vh;
   }
-  .wrap { max-width: 640px; margin: 0 auto; padding: 0 0 60px; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 0 60px; }
 
-  /* ── ゴールバー（固定表示） ── */
+  /* ── 文字サイズ規定 ──
+     見出し 44pt / 小見出し 28pt / 本文 22pt / 注意 14pt
+     1pt ≈ 1.333px。スマホでも崩れないようclamp()で下限を確保。 */
+  .fs-heading    { font-size: clamp(26px, 7.5vw, 58.7px); font-weight: bold; line-height: 1.5; }
+  .fs-subheading { font-size: clamp(18px, 5.5vw, 37.3px); font-weight: bold; line-height: 1.6; }
+  .fs-body       { font-size: clamp(15px, 4.3vw, 29.3px); line-height: 1.9; }
+  .fs-caution    { font-size: clamp(11px, 3vw, 18.7px); line-height: 1.8; }
+
+  /* ── ゴールバー ── */
   .goal-bar {
     position: sticky;
     top: 0;
@@ -25,51 +32,58 @@
     border-bottom: 1px solid #2a2a2a;
     padding: 12px 18px;
   }
-  .goal-bar .label { font-size: 10px; color: #888; letter-spacing: 2px; margin-bottom: 4px; }
-  .goal-bar .goal { font-size: 14px; color: #d4a017; font-weight: bold; }
+  .goal-bar .label { font-size: clamp(10px, 2.6vw, 14px); color: #888; letter-spacing: 2px; margin-bottom: 4px; }
+  .goal-bar .goal { color: #d4a017; font-weight: bold; }
+  .goal-bar .goal.fs-subheading { font-size: clamp(14px, 4.5vw, 26px); }
 
   /* ── 進捗インジケーター ── */
-  .progress {
+  .levels {
     display: flex;
     justify-content: center;
-    gap: 14px;
-    padding: 16px 12px 4px;
+    gap: 10px;
+    padding: 16px 12px 6px;
   }
-  .progress .slot {
+  .levels .lv {
+    flex: 1;
+    max-width: 140px;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    background: #141414;
+    opacity: 0.4;
+    transition: opacity .3s, border-color .3s;
+  }
+  .levels .lv.on { opacity: 1; border-color: #22c55e; background: #0d1a12; }
+  .levels .lv .ico { font-size: clamp(16px, 4vw, 24px); }
+  .levels .lv .name { font-size: clamp(10px, 2.6vw, 13px); color: #888; margin-top: 2px; }
+  .levels .lv.on .name { color: #22c55e; }
+
+  .tools-row {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px 0;
+    flex-wrap: wrap;
+  }
+  .tools-row .slot {
+    display: flex;
     align-items: center;
     gap: 4px;
-    opacity: 0.25;
-    transition: opacity .3s, transform .3s;
-  }
-  .progress .slot.on {
-    opacity: 1;
-    transform: translateY(-2px);
-  }
-  .progress .slot .ico {
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    background: #141414;
+    font-size: clamp(10px, 2.6vw, 12px);
+    color: #555;
     border: 1px solid #2a2a2a;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
+    border-radius: 20px;
+    padding: 3px 10px;
+    opacity: 0.4;
+    transition: opacity .3s, border-color .3s, color .3s;
   }
-  .progress .slot.on .ico { border-color: #22c55e; background: #0d1a12; }
-  .progress .slot .name { font-size: 9px; color: #888; }
-  .progress .slot.on .name { color: #22c55e; }
+  .tools-row .slot.on { opacity: 1; border-color: #d4a017; color: #d4a017; }
 
   /* ── 本編エリア ── */
   .stage { padding: 24px 18px 0; }
-  .stage-title {
-    font-size: 18px;
-    color: #e8e0d0;
-    font-weight: bold;
-    margin-bottom: 12px;
-    line-height: 1.6;
-  }
+  .stage-title { color: #e8e0d0; margin-bottom: 12px; }
   .stage-text {
-    font-size: 14px;
     color: #ccc;
     background: #0d1117;
     border: 1px solid #2a3a2a;
@@ -78,6 +92,59 @@
     padding: 14px 16px;
     margin-bottom: 22px;
   }
+
+  /* ── 案内・注意 ── */
+  .note-box {
+    background: #0d1117;
+    border: 1px solid #2a3a4a;
+    border-left: 3px solid #3b82f6;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    color: #aac4e0;
+  }
+
+  /* ── 呪文（コピペ用プロンプト） ── */
+  .spell {
+    background: #14110a;
+    border: 1px dashed #d4a017;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .spell .spell-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .spell .spell-label { color: #d4a017; letter-spacing: 1px; }
+  .spell .copy-btn {
+    flex-shrink: 0;
+    background: #1a1200;
+    border: 1px solid #d4a017;
+    color: #d4a017;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: clamp(11px, 2.8vw, 14px);
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .spell .copy-btn.copied { background: #0d1a12; border-color: #22c55e; color: #22c55e; }
+  .spell .spell-body {
+    font-family: 'Consolas', 'Menlo', monospace;
+    font-size: clamp(13px, 3.6vw, 22px);
+    color: #f0d080;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    background: #0a0a0a;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .spell .spell-note { color: #999; margin-top: 8px; }
 
   /* ── 選択カード ── */
   .choices { display: flex; flex-direction: column; gap: 14px; }
@@ -101,16 +168,11 @@
     gap: 10px;
     margin-bottom: 8px;
   }
-  .choice-card .ch-ico { font-size: 24px; flex-shrink: 0; }
-  .choice-card .ch-title { font-size: 15px; font-weight: bold; color: #d4a017; }
-  .choice-card .ch-sub { font-size: 12px; color: #999; margin-bottom: 8px; line-height: 1.7; }
-  .choice-card .ch-desc { font-size: 12.5px; color: #ccc; line-height: 1.9; }
-  .choice-card .ch-source {
-    display: block;
-    margin-top: 8px;
-    font-size: 10px;
-    color: #666;
-  }
+  .choice-card .ch-ico { font-size: clamp(20px, 5vw, 32px); flex-shrink: 0; }
+  .choice-card .ch-title { color: #d4a017; }
+  .choice-card .ch-sub { color: #999; margin-bottom: 8px; }
+  .choice-card .ch-desc { color: #ccc; }
+  .choice-card .ch-source { display: block; margin-top: 8px; color: #666; }
 
   /* ── エンディング ── */
   .end-box {
@@ -120,9 +182,9 @@
     padding: 20px;
     text-align: center;
   }
-  .end-box .big { font-size: 17px; color: #d4a017; font-weight: bold; margin-bottom: 10px; }
-  .end-box .desc { font-size: 13px; color: #ccc; line-height: 1.9; text-align: left; margin-bottom: 14px; }
-  .end-box .time { font-size: 12px; color: #888; }
+  .end-box .big { color: #d4a017; margin-bottom: 10px; }
+  .end-box .desc { color: #ccc; text-align: left; margin-bottom: 14px; }
+  .end-box .time { color: #888; }
 
   /* ── ナビゲーション ── */
   .nav-bar {
@@ -135,7 +197,7 @@
     flex: 1;
     padding: 12px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: clamp(12px, 3.2vw, 16px);
     font-weight: bold;
     font-family: inherit;
     cursor: pointer;
@@ -146,73 +208,29 @@
   .nav-bar button:disabled { opacity: 0.3; cursor: default; }
   .nav-bar button.restart { border-color: #d4a017; color: #d4a017; }
 
-  /* ── 呪文（コピペ用プロンプト） ── */
-  .spell {
-    background: #14110a;
-    border: 1px dashed #d4a017;
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 18px;
-  }
-  .spell .spell-label {
-    font-size: 11px;
-    color: #d4a017;
-    font-weight: bold;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-  .spell .spell-body {
-    font-family: 'Consolas', 'Menlo', monospace;
-    font-size: 12.5px;
-    color: #f0d080;
-    line-height: 1.8;
-    white-space: pre-wrap;
-    background: #0a0a0a;
-    border-radius: 6px;
-    padding: 10px 12px;
-  }
-  .spell .spell-note {
-    font-size: 11px;
-    color: #999;
-    margin-top: 8px;
-    line-height: 1.7;
-  }
-
-  /* ── 案内・注意（小さめの情報ボックス） ── */
-  .note-box {
-    background: #0d1117;
-    border: 1px solid #2a3a4a;
-    border-left: 3px solid #3b82f6;
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin-bottom: 18px;
-    font-size: 12.5px;
-    color: #aac4e0;
-    line-height: 1.8;
-  }
-
   .header { text-align: center; padding: 24px 18px 0; }
-  .header h1 { font-size: 19px; color: #d4a017; letter-spacing: 2px; margin-bottom: 6px; }
-  .header .sub { font-size: 12px; color: #888; line-height: 1.8; }
+  .header h1 { color: #d4a017; letter-spacing: 2px; margin-bottom: 6px; }
+  .header .sub { color: #888; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <div class="header">
-    <h1>🎮 AI自動化ゲームブック</h1>
-    <div class="sub">
-      選んだ道で、使えるツールが増えていく。<br>
-      正解はない。1〜2時間で1つの自動化が完成するくらいのボリュームです。
+    <h1 class="fs-heading">🎮 AI自動化ゲームブック</h1>
+    <div class="sub fs-caution">
+      初級・中級・上級と進むほど、できることが増えていく。<br>
+      上級まで行くと「マネタイズ・自動化」に繋がる設計です。
     </div>
   </div>
 
   <div class="goal-bar">
     <div class="label">🎯 今回のゴール</div>
-    <div class="goal" id="goalText">メールの大事なものだけ、AIが自動で教えてくれる状態にする</div>
+    <div class="goal fs-subheading" id="goalText">清書ログを蓄積して、中級・上級の土台を作る</div>
   </div>
 
-  <div class="progress" id="progress"></div>
+  <div class="levels" id="levels"></div>
+  <div class="tools-row" id="toolsRow"></div>
 
   <div class="stage" id="stage"></div>
 
@@ -224,9 +242,15 @@
 </div>
 
 <script>
+const LEVELS = {
+  beginner:     { ico: '🌱', name: '初級' },
+  intermediate: { ico: '🪴', name: '中級' },
+  advanced:     { ico: '🌳', name: '上級' },
+};
 const TOOLS = {
   claude:   { ico: '🧠', name: 'Claude' },
   chatgpt:  { ico: '🎨', name: 'ChatGPT' },
+  sheet:    { ico: '📊', name: 'スプシ' },
   gmail:    { ico: '📧', name: 'Gmail' },
   github:   { ico: '📚', name: 'GitHub' },
   supabase: { ico: '🗄️', name: 'Supabase' },
@@ -234,10 +258,11 @@ const TOOLS = {
 
 const scenes = {
 
+  /* ===================== START ===================== */
   start: {
     title: 'まずはここから。どっちと組む？',
     text: 'いきなり全部やろうとすると絶対に途中で疲れる。だから最初に1つだけ選ぶ。後でもう片方も使えるようになるので、今は「どっちが今の自分に近いか」だけで決めて大丈夫。',
-    goal: 'メールの大事なものだけ、AIが自動で教えてくれる状態にする',
+    goal: '清書ログを蓄積して、中級・上級の土台を作る',
     choices: [
       {
         ico: '🧠',
@@ -246,7 +271,7 @@ const scenes = {
         desc: '正直に言うと、これが一番「おお、すげえ」を感じやすい。契約した瞬間から、パソコンの中に”もう一人の自分”みたいな相棒が住みつく感じ。文章を書く、ファイルを整理する、調べる、メールを仕分ける…頼めば一緒にやってくれる。月額は$20＝だいたい3,000円前後（為替で変動）。無料版は会話だけ。ファイル操作や自動化まで頼みたいなら課金が前提になる。',
         source: '出典：AI革命メディア「Claude料金2026」',
         unlock: ['claude'],
-        next: 'claude_next'
+        next: 'beginner'
       },
       {
         ico: '🎨',
@@ -255,420 +280,344 @@ const scenes = {
         desc: 'ChatGPT Plusも月額$20＝だいたい3,000円前後。一番の強みは画像生成。無料版だと月7枚くらいだけど、Plusなら月20枚前後作れる。インストール不要、ブラウザだけで完結するから会社のPCでも使いやすい。ただ「ファイルを自動で動かす」「毎日勝手に何かをやらせる」みたいな自動化はクロードより弱い。素材を作る専門家、というイメージ。',
         source: '出典：AI PICKSマガジン「ChatGPT料金2026」',
         unlock: ['chatgpt'],
-        next: 'chatgpt_next'
+        next: 'beginner'
       }
     ]
   },
 
-  claude_next: {
-    title: '🧠 中の人、住み着きました。次は誰と繋ぐ？',
-    text: 'ここからが本番。中の人は優秀だけど、最初は何のデータも持っていない。何と繋ぐかで「できること」が変わる。',
-    choices: [
-      {
-        ico: '📧',
-        title: 'Gmailと繋ぐ',
-        sub: 'メールという「受動的に溜まるもの」を、初めて能動的に扱える状態にする',
-        desc: 'メールって毎日勝手に溜まっていくよね。それを1件ずつ目で見て仕分けるのが一番しんどい。Gmailと繋ぐと「重要な人からのメールだけ教えて」「これは返信案を作って」「見積の話はカレンダーに入れて」が頼めるようになる。設定はクロードの「コネクタ」からGoogleアカウントでログインするだけ。追加料金なし、無料でできる。',
-        source: '出典：Claude公式 コネクタ設定（Gmail/Google Calendar）',
-        unlock: ['gmail'],
-        next: 'claude_gmail_beginner'
-      },
-      {
-        ico: '📚',
-        title: 'GitHubと繋ぐ',
-        sub: '作業の記録や文章を、ネット上の倉庫にしまっておく',
-        desc: 'GitHubと繋ぐと、中の人が作業記録や文章をネット上の倉庫に保存できるようになる。個人で使う分には無料。今回の「メール自動化」では直接使わないけど、後で「ブログを自動更新する」「自分の文体を覚えさせる」という話に繋がっていく。今は「そういう倉庫がある」と知っておくだけでOK。',
-        source: '出典：GitHub公式（個人利用は無料プランで十分）',
-        unlock: ['github'],
-        next: 'claude_github_beginner'
-      }
-    ]
-  },
-
-  /* ===== クロード × Gmail 編 ===== */
-
-  claude_gmail_beginner: {
-    title: '🌱 初級：今日のメールから「重要な人」だけ教えてもらう',
-    goal: 'メールの大事なものだけ、AIが自動で教えてくれる状態にする',
-    text: '実は、ここでやることは1つだけ。「この人たちからのメールだけ教えて」とクロードに頼む。それだけで、200通あっても、見るべき数通が浮き上がってくる。下の呪文の[　]の部分を、実際の名前やメールアドレスに変えて送ってみてください。',
+  /* ===================== 初級 ===================== */
+  beginner: {
+    title: '🌱 初級：清書してもらい、自分の言葉を蓄積する',
+    level: 'beginner',
+    goal: '清書ログを蓄積して、中級の「自分の文体」づくりの材料にする',
+    text: '正直に言うと、AIに書いてもらった文章は最初「なんか違う」と感じることが多い。それでいい。その「違う」を直した差分こそが、これから一番の資産になる。初級でやることは2つだけ。①AIに清書してもらう。②自分で直した部分を、どこかに記録しておく。記録場所はGoogleスプレッドシート（ブラウザだけで使える、会社のPCでもOK）がおすすめ。',
     choices: [
       {
         ico: '🪴',
         title: '中級に進む',
-        sub: '見るだけでいいメールに、返信案を作ってもらう',
-        desc: '重要なメールが見えるようになったら、次は「返信を考える」という作業そのものを減らす段階に進む。',
+        sub: '5つの中から、伸ばしたいものを選ぶ',
+        desc: '清書ログを1〜2回試したら、中級に進んで大丈夫。中級は「文章」と「画像」の5つに分かれている。',
         source: '',
         unlock: [],
-        next: 'claude_gmail_intermediate'
+        next: 'intermediate_hub'
       },
       {
         ico: '🔁',
         title: '今日はここまでにする',
         sub: 'スタートに戻る',
-        desc: '重要なメールが浮き上がって見えるようになったなら、それだけでも今日の収穫としては十分。続きは気が向いたときに。',
+        desc: '清書ログのシートが1個できたなら、それで十分な収穫。続きは気が向いたときに。',
         source: '',
         unlock: [],
         next: 'start'
       }
     ],
-    spell: {
-      label: '🪄 呪文（コピーしてクロードに貼る）',
-      body: '今日届いたメールの中から、[重要な人の名前やメールアドレスを2〜3人分]からのメールだけ教えて。件名と、ざっくりした内容を一覧にして。',
-      note: '[　]の中身だけ自分の状況に変えればOK。Gmailのコネクタが繋がっていれば、そのまま読みにいってくれる。'
-    }
-  },
-
-  claude_gmail_intermediate: {
-    title: '🪴 中級：見るだけでいいメールに、返信案を作ってもらう',
-    note: 'ここは「中級」。初級で「重要な人」を教えてもらった前提で話を進める。もし違うところからここに来てしまった場合は、ブラウザバックしてください。',
-    text: '「見ればわかる」レベルのメールに、いちいち文章を考えるのが地味にしんどい。ここでは、その返信案を先に作ってもらって、自分は確認するだけにする。下の呪文で、さっき教えてもらったメールのうち1件を指定して頼んでみてください。',
-    choices: [
+    spells: [
       {
-        ico: '↩️',
-        title: '初級でこれを設定していない場合',
-        sub: '初級に戻って、重要な人を教える',
-        desc: '中級は初級の続き。まだ「重要な人」を教えていない場合は、いったん初級に戻って呪文を試してから来てください。',
-        source: '',
-        unlock: [],
-        next: 'claude_gmail_beginner'
+        label: '🪄 呪文①（清書を頼む）',
+        body: '次の文章を、読みやすく整えて。意味は変えずに、言い回しだけ自然にして。\n[ここに自分の文章を貼る]',
+        note: '出てきた文章を、自分の言葉でもう一度直す。ここが一番大事。'
       },
       {
-        ico: '🌳',
-        title: '上級に進む',
-        sub: '「見積出して」をカレンダーに自動で入れてもらう',
-        desc: '返信案まで作れるようになったら、最後はメールの中の「やること」を見つけて、カレンダーに登録する段階に進む。',
-        source: '',
-        unlock: [],
-        next: 'claude_gmail_advanced'
-      },
-      {
-        ico: '🏁',
-        title: '今日はここまでにする',
-        sub: 'スタートに戻る',
-        desc: '返信案まで作れるようになったなら、十分すぎるくらいの収穫。上級は次に気が向いたときに。',
-        source: '',
-        unlock: [],
-        next: 'start'
-      }
-    ],
-    spell: {
-      label: '🪄 呪文（コピーしてクロードに貼る）',
-      body: 'さっき教えてくれたメールのうち、[件名や送信者]について、返信の下書きを作って。トーンは丁寧だけど簡潔に。下書きとして保存して、まだ送信しないで。',
-      note: '「下書きとして保存」までが呪文のゴール。送信は必ず自分の目で確認してから。'
-    }
-  },
-
-  claude_gmail_advanced: {
-    title: '🌳 上級：「見積出して」をカレンダーに自動で入れてもらう',
-    note: 'ここは「上級」。中級で返信案を作ってもらった前提で話を進める。もし違うところからここに来てしまった場合は、ブラウザバックしてください。',
-    text: 'メールの中には「いつまでに何かをやる」というToDoが埋まっている。ここでは、それをクロードに見つけてもらって、Googleカレンダーに予定とアラートまで入れてもらう。これができると、メールを開いた瞬間に「あ、これやらなきゃ」を考えなくて済む。',
-    choices: [
-      {
-        ico: '↩️',
-        title: '中級に戻る',
-        sub: '返信案づくりをもう一度試す',
-        desc: '上級は中級の続き。返信案づくりがまだの場合は、いったん中級に戻ってください。',
-        source: '',
-        unlock: [],
-        next: 'claude_gmail_intermediate'
-      },
-      {
-        ico: '🏁',
-        title: 'GOAL達成。スタートに戻る',
-        sub: '重要メール抽出 → 返信案 → ToDo登録、まで完成',
-        desc: 'カレンダーに1件でも登録できたら、今回のゴールは達成。お疲れ様でした。',
-        source: '',
-        unlock: [],
-        next: 'claude_gmail_goal'
-      }
-    ],
-    spell: {
-      label: '🪄 呪文（コピーしてクロードに貼る）',
-      body: '今日のメールの中に「いつまでに何かをする」という依頼があれば、その内容と期限を教えて。そのうえで、Googleカレンダーに予定を作って、期限の前日にアラートを入れて。',
-      note: 'カレンダーへの登録もGoogle Calendarのコネクタがあれば自動でできる。最初は1件だけ試すのがおすすめ。'
-    }
-  },
-
-  claude_gmail_goal: {
-    title: '🎉 ゲームクリア！',
-    end: true,
-    desc: '重要な人からのメールだけ抽出 → 返信案を作る → ToDoをカレンダーに自動登録、までの一連が動く状態になった。これで「重要なものを見落としていないか」の確認時間が確保できる。あとは実際に1週間使ってみて、「重要な人リスト」を調整していくだけ。',
-    time: '所要時間の目安：1〜2時間／必要な課金：Claude Pro（約3,000円/月）のみ'
-  },
-
-  /* ===== クロード × GitHub 編 ===== */
-
-  claude_github_beginner: {
-    title: '🌱 初級：今日の作業ログを1本、GitHubに残す',
-    goal: '自分の作業記録と文体を、AIが自動で蓄積していく状態にする',
-    text: '正直に言うと、日記なんて続けたことがない人がほとんど。だから「書く」ところはクロードに任せる。今日やったことを2〜3行話すだけで、クロードがファイルにまとめてGitHubに保存してくれる。',
-    choices: [
-      {
-        ico: '🪴',
-        title: '中級に進む',
-        sub: '自分の文体を覚えさせる',
-        desc: '記録が1本残せたら、次は「自分っぽい文章」をAIに覚えさせる段階に進む。',
-        source: '',
-        unlock: [],
-        next: 'claude_github_intermediate'
-      },
-      {
-        ico: '🔁',
-        title: '今日はここまでにする',
-        sub: 'スタートに戻る',
-        desc: '記録が1本残せたなら、それだけで十分な収穫。続きは気が向いたときに。',
-        source: '',
-        unlock: [],
-        next: 'start'
-      }
-    ],
-    spell: {
-      label: '🪄 呪文（コピーしてクロードに貼る）',
-      body: '今日やったことを話すので、日付入りの作業ログとしてMarkdownファイルにまとめて、GitHubのリポジトリにpushして。\n今日やったこと：[ここに2〜3行で]',
-      note: '[　]の部分だけ、今日あったことをそのまま話せばOK。整形はクロードがやる。'
-    }
-  },
-
-  claude_github_intermediate: {
-    title: '🪴 中級：自分の文体をクロードに覚えさせる',
-    note: 'ここは「中級」。初級で作業ログを1本残した前提で話を進める。もし違うところからここに来てしまった場合は、ブラウザバックしてください。',
-    text: '出させては直す、の繰り返しがしんどいのは、AIが「自分の話し方」を知らないから。ここでは、過去に自分が書いた文章を読み込ませて、特徴をファイルにまとめてGitHubに保存する。次回以降、このファイルを読んでもらえば、直す回数がぐっと減る。',
-    choices: [
-      {
-        ico: '↩️',
-        title: '初級でこれを設定していない場合',
-        sub: '初級に戻って、作業ログを1本残す',
-        desc: '中級は初級の続き。まだ作業ログを残していない場合は、いったん初級に戻ってください。',
-        source: '',
-        unlock: [],
-        next: 'claude_github_beginner'
-      },
-      {
-        ico: '🌳',
-        title: '上級に進む',
-        sub: 'Supabaseのデータをサイトに自動反映する',
-        desc: '文体メモができたら、最後は「数字が自動でサイトに反映される」という状態を作る段階に進む。',
-        source: '',
-        unlock: [],
-        next: 'claude_github_advanced'
-      },
-      {
-        ico: '🏁',
-        title: '今日はここまでにする',
-        sub: 'スタートに戻る',
-        desc: '文体メモが1本できたなら、十分すぎるくらいの収穫。上級は次に気が向いたときに。',
-        source: '',
-        unlock: [],
-        next: 'start'
-      }
-    ],
-    spell: {
-      label: '🪄 呪文（コピーしてクロードに貼る）',
-      body: '私が過去に書いた文章を貼るので、文体の特徴（よく使う言葉・言い回し・テンション）を分析して、文体メモとしてファイルにまとめて、GitHubに保存して。\n[ここに自分の文章を貼る]',
-      note: 'X投稿・note記事・LINEの文章、何でもOK。3〜5個くらい貼ると精度が上がる。'
-    }
-  },
-
-  claude_github_advanced: {
-    title: '🌳 上級：Supabaseのデータをサイトに自動反映する',
-    note: 'ここは「上級」。中級で文体メモを保存した前提で話を進める。もし違うところからここに来てしまった場合は、ブラウザバックしてください。',
-    text: 'ここまでできると、最後は「数字が自動でサイトに反映される」という状態。Supabaseに置いた数字をクロードが読みにいって、サイトのファイルを書き換えてGitHubにpushする。中の人が、毎回手で数字を打ち直さなくていい状態になる。',
-    choices: [
-      {
-        ico: '↩️',
-        title: '中級に戻る',
-        sub: '文体メモづくりをもう一度試す',
-        desc: '上級は中級の続き。文体メモがまだの場合は、いったん中級に戻ってください。',
-        source: '',
-        unlock: [],
-        next: 'claude_github_intermediate'
-      },
-      {
-        ico: '🏁',
-        title: 'GOAL達成。スタートに戻る',
-        sub: '記録 → 文体 → データ反映、まで完成',
-        desc: 'サイトの数字が1箇所でも自動で書き換わったら、今回のゴールは達成。お疲れ様でした。',
-        source: '',
-        unlock: [],
-        next: 'claude_github_goal'
-      }
-    ],
-    spell: {
-      label: '🪄 呪文（コピーしてクロードに貼る）',
-      body: 'Supabaseの[テーブル名]から最新のデータを読んで、サイトの[ファイル名]にあるその部分だけ書き換えて、GitHubにpushして。',
-      note: '最初はテーブル名・ファイル名がわからなくて当然。「今のSupabaseとサイトの構成を一緒に確認して」と先に聞いてしまってOK。'
-    }
-  },
-
-  claude_github_goal: {
-    title: '🎉 ゲームクリア！',
-    end: true,
-    desc: '作業ログを残す → 自分の文体を覚えさせる → サイトのデータを自動反映、までの一連が動く状態になった。ここまでくると、「説明し直す」時間がどんどん減っていく。あとは実際に使いながら、文体メモを育てていくだけ。',
-    time: '所要時間の目安：1〜2時間／必要な課金：Claude Pro（約3,000円/月）のみ'
-  },
-
-  chatgpt_next: {
-    title: '🎨 基本装備：チャッピー、起動完了',
-    goal: '自キュンのTOP画像と文章を、チャッピーだけで量産できる状態にする',
-    text: '実は、契約しただけでは何も起きない。ここからが本番。初級に進んで、実際に1個作ってみる。最初の1個さえ作れれば、あとは同じことの繰り返しでしかない。',
-    choices: [
-      {
-        ico: '🌱',
-        title: '初級に進む',
-        sub: '自キュンのTOP画像を1枚作ってみる',
-        desc: '「呪文」と呼んでいるコピペ用のプロンプトを使って、実際に1枚作るところまで進める。途中でうまくいかない画面が出たら、そこをスクショして次に進めばOK。覚えることは特にない。',
-        source: '',
-        unlock: [],
-        next: 'chatgpt_beginner'
-      },
-      {
-        ico: '🔁',
-        title: '今日はここまでにする',
-        sub: 'スタートに戻る',
-        desc: 'チャッピーで画像・文章のプロは確保できた。それだけでも一歩進んだということ。続きは気が向いたときにでもどうぞ。',
-        source: '',
-        unlock: [],
-        next: 'start'
+        label: '🪄 呪文②（蓄積シートを作る）',
+        body: 'Googleスプレッドシートに、次の列を持つ表を作りたい。\n日付／元の文章／AIの清書／自分が直した版／メモ\n作り方を手順で教えて。',
+        note: '一度作れば、あとは呪文①のたびにここへ1行ずつ追加していくだけ。'
       }
     ]
   },
 
-  chatgpt_beginner: {
-    title: '🌱 初級：自キュンのTOP画像を1枚作る',
-    text: '正直に言うと、ここで作るのはたった1枚の画像。それだけ。でも「呪文を貼ったら、本当に絵が出てきた」という体験が一番大事で、これができれば中級は驚くほどラクになる。下の呪文をそのままコピーして、チャッピーの入力欄に貼って送るだけ。出てきた画像はスクショしておくと、中級で「これを基準に」と言いやすくなる。',
+  /* ===================== 中級ハブ ===================== */
+  intermediate_hub: {
+    title: '🪴 中級：何を伸ばす？（順番に全部やってもOK）',
+    note: '初級で「清書ログ」の蓄積を始めた前提で話を進める。もし違うところからここに来てしまった場合は、ブラウザバックしてください。',
+    text: '中級は5つに分かれている。Ａ系は「文章」、Ｂ系は「画像」。どれも初級の蓄積が土台になる。気になるものから選んでいい。いくつか終わったら上級へ。',
     choices: [
       {
-        ico: '🎴',
-        title: '呪文を試した → 中級に進む',
-        sub: '同じ世界観でバリエーションを3パターン作る',
-        desc: '1枚できたら、それを土台にして横展開する段階に進む。中級では「同じ雰囲気で季節と時間だけ変える」という呪文を使う。',
+        ico: '🅰️',
+        title: '中級A：文体生成',
+        sub: '蓄積した言葉から、自分らしい文体を相手別に作る',
+        desc: '初級の清書ログを読み込ませて「自分らしい言い回し」のパターンを作る。読者向け・取引先向けなど、相手ごとに複数パターンを持てるようにする。',
         source: '',
         unlock: [],
-        next: 'chatgpt_intermediate'
+        next: 'inter_A'
       },
       {
-        ico: '🔁',
-        title: '今日はここまでにする',
-        sub: 'スタートに戻る',
-        desc: '1枚作れたなら、それで十分な収穫。中級は次に気が向いたときに。',
+        ico: '🅰️➕',
+        title: '中級A-2：長文生成',
+        sub: '500字の壁を超えて、最大1万字書けるようにする',
+        desc: 'AIは1回の出力が1,500〜2,000字くらいで止まりやすい。先に章立てを作らせて、章ごとに引き継ぎながら書いてもらう「分割設計」を覚える。',
         source: '',
         unlock: [],
-        next: 'start'
-      }
-    ],
-    spell: {
-      label: '🪄 呪文（コピーしてチャッピーに貼る）',
-      body: '自キュンのTOP画像を1枚、イラストで作って。\n・風景：駅のホームで電車を見送る後ろ姿\n・季節：秋\n・時間：夕方\n温かい色合いで、SNSのアイキャッチに使える横長サイズで。',
-      note: '風景・季節・時間の3つは自由に変えてOK。最初は何も考えず、このままコピペして試すのが一番早い。'
-    }
-  },
-
-  chatgpt_intermediate: {
-    title: '🪴 中級：同じ世界観で3パターン作る',
-    note: 'ここは「中級」。初級の呪文を1回試した前提で話を進める。もし違うところからここに来てしまった場合は、ブラウザバックしてください。',
-    text: '初級で1枚できていれば、ここからはそれを増やすだけ。下の呪文は、さっき出てきた画像を指しながら「これと同じ雰囲気で、季節と時間だけ変えて」とお願いするもの。1回の指示で3パターン出てくることが多いので、気に入ったものだけ残せばいい。',
-    choices: [
+        next: 'inter_A2'
+      },
       {
-        ico: '↩️',
-        title: '初級でこれを設定していない場合',
-        sub: '初級に戻って、まず1枚作る',
-        desc: '中級は初級の続き。まだ1枚も作っていない場合は、いったん初級に戻って呪文を試してから来てください。',
+        ico: '🅱️',
+        title: '中級B：画像生成（基本）',
+        sub: 'チャッピーで画像を作る基本を覚える',
+        desc: '自キュンのTOP画像やSNS素材の基本形を1枚作る。風景・季節・時間の3つを変えるだけで、いろいろなパターンが作れる。',
         source: '',
         unlock: [],
-        next: 'chatgpt_beginner'
+        next: 'inter_B'
+      },
+      {
+        ico: '🅱️➕',
+        title: '中級B-2：LP用の画像',
+        sub: '販売ページに使える画像を作る',
+        desc: '中級Bと同じ世界観で、タイトル文字を乗せても邪魔にならない、LP（販売ページ）向けの構図を作る。',
+        source: '',
+        unlock: [],
+        next: 'inter_B2'
+      },
+      {
+        ico: '🅱️➕➕',
+        title: '中級B-3：チラシ・サムネイル',
+        sub: 'SNSのアイキャッチ・チラシ用画像を作る',
+        desc: '中級Bと同じ世界観で、色を強め・余白を作った「目を止める」サムネイルを正方形・横長の両方で作る。',
+        source: '',
+        unlock: [],
+        next: 'inter_B3'
       },
       {
         ico: '🌳',
         title: '上級に進む',
-        sub: '文章をいつものテンションに整えてもらう',
-        desc: '画像のバリエーションが作れたら、最後は「文章」もチャッピーに任せる段階に進む。',
+        sub: '中級がいくつか終わったら',
+        desc: '上級は「マネタイズ・自動化」編。中級でやったことの組み合わせでしかないので、ここまで来たら気軽に覗いてみてください。',
         source: '',
         unlock: [],
-        next: 'chatgpt_advanced'
-      },
-      {
-        ico: '🏁',
-        title: '今日はここまでにする（中級で完成）',
-        sub: '3パターンできたら、ここで一区切り',
-        desc: '同じ世界観で3パターン作れたら、自キュンのTOP画像の手持ちが一気に増える。これだけでも今日の収穫としては十分。上級は次に気が向いたときに。',
-        source: '',
-        unlock: [],
-        next: 'chatgpt_goal'
+        next: 'advanced_hub'
       }
-    ],
-    spell: {
-      label: '🪄 呪文（コピーしてチャッピーに貼る）',
-      body: 'さっきの画像と同じ世界観・同じ構図で、季節と時間だけ変えて3パターン作って。\n①季節を冬・時間を朝に\n②季節を夏・時間を深夜に\n③季節は元のまま・時間を昼に\nそれぞれ横長サイズで。',
-      note: '初級で作った画像が画面に残っている状態で、その下にこの呪文を貼るのがコツ。'
-    }
+    ]
   },
 
-  chatgpt_advanced: {
-    title: '🌳 上級：文章をいつものテンションに整えてもらう',
-    note: 'ここは「上級」。中級で画像を3パターン作った前提で話を進める。もし違うところからここに来てしまった場合は、ブラウザバックしてください。',
-    text: '画像ができたら、次は文章。チャッピーに自分の過去の文章を読ませて、「このテンションで書き直して」と頼む。これができると、自キュンの本文づくりがかなり速くなる。',
+  /* ----- 中級A：文体生成 ----- */
+  inter_A: {
+    title: '🪴 中級A：自分の文体を相手別にスキル化する',
+    level: 'intermediate',
+    goal: '相手別の「文体メモ」を複数作って、上級の土台にする',
+    note: '初級の清書ログがある前提で話を進める。まだの場合は初級に戻ってください。',
+    text: '初級で溜めた「元の文章 → AIの清書 → 自分が直した版」を読み込ませると、AIは「この人はこう直す傾向がある」というパターンを見つけられる。これを相手（読者向け・取引先向けなど）ごとに分けて、複数の文体メモを作る。',
     choices: [
-      {
-        ico: '↩️',
-        title: '中級でこれを設定していない場合',
-        sub: '中級に戻って、画像のバリエーションを作る',
-        desc: '上級は中級の続き。画像のバリエーションがまだの場合は、いったん中級に戻ってください。',
-        source: '',
-        unlock: [],
-        next: 'chatgpt_intermediate'
-      },
-      {
-        ico: '🏁',
-        title: 'GOAL達成。スタートに戻る',
-        sub: '画像 → バリエーション → 文章、まで完成',
-        desc: '自分のテンションで文章が1本書けたら、今回のゴールは達成。お疲れ様でした。',
-        source: '',
-        unlock: [],
-        next: 'chatgpt_goal_advanced'
-      }
+      { ico: '🪴', title: '中級ハブに戻る', sub: '他の中級も見る', desc: '文体メモが1個できたら、他の中級も覗いてみる。', source: '', unlock: [], next: 'intermediate_hub' },
+      { ico: '🌳', title: '上級に進む', sub: 'noteやメール自動化に繋げる', desc: '文体メモができたら、上級Ａ（note）・上級Ｂ（メール自動化）で使える。', source: '', unlock: [], next: 'advanced_hub' }
     ],
-    spell: {
-      label: '🪄 呪文（コピーしてチャッピーに貼る）',
-      body: '私の過去の文章をいくつか貼るので、文体・テンションを覚えて。そのあと、別の文章を貼ったら、同じテンションで書き直して。\n[ここに過去の文章を2〜3個貼る]',
-      note: '覚えさせたあとに、下書きの文章を貼って「これを同じテンションで」と続けるのがコツ。'
-    }
+    spells: [
+      {
+        label: '🪄 呪文（文体メモを作る）',
+        body: 'さっきのスプレッドシートの「元の文章」「自分が直した版」の組を5件以上貼るので、私がよく使う言葉・避ける言葉・文の長さの傾向をまとめて。\nそのうえで、[相手・用途]向けの文体メモとしてファイルに保存して。',
+        note: '相手を変えて何度かやると、複数の文体メモができる。例：読者向け／取引先向け／家族向け。'
+      }
+    ]
   },
 
-  chatgpt_goal: {
+  /* ----- 中級A-2：長文生成 ----- */
+  inter_A2: {
+    title: '🪴 中級A-2：1万字まで書けるようにする',
+    level: 'intermediate',
+    goal: '分割設計＋引き継ぎで、長文を最後まで書き切れるようにする',
+    note: '初級の清書ログがある前提で話を進める。まだの場合は初級に戻ってください。',
+    text: 'AIは500〜2,000字くらいで筆が止まりやすい。しかも前に書いた内容を覚えていないことが多い。これを解決するのが「分割設計＋引き継ぎ」。先に全体の構成を作らせて、各ブロックを2,000字以内で書いてもらい、章ごとに区切って繋げていく。',
+    choices: [
+      { ico: '🪴', title: '中級ハブに戻る', sub: '他の中級も見る', desc: '構成案が1個できたら、他の中級も覗いてみる。', source: '', unlock: [], next: 'intermediate_hub' },
+      { ico: '🌳', title: '上級に進む', sub: 'noteやパワポに繋げる', desc: '長文の分割設計は、上級Ａ（note）・上級Ｃ（パワポ）でそのまま使える。', source: '', unlock: [], next: 'advanced_hub' }
+    ],
+    spells: [
+      {
+        label: '🪄 呪文①（全体構成を作る）',
+        body: '[書きたいテーマ]について、合計1万字の記事を書きたい。先に章立て（5〜6章）を作って。各章は2,000字以内になるように。',
+        note: '章立てができたら、1章ずつ「第1章を書いて」と頼んでいく。'
+      },
+      {
+        label: '🪄 呪文②（引き継ぎ）',
+        body: 'これから章ごとに文章を送るので、それぞれ「了解しました」だけ返して。全部送り終わったら、全体を通して文章のつながりを整えて。',
+        note: '出典：ChatGPT長文生成の分割・引き継ぎ手法（2026年・各種実践ガイド）'
+      }
+    ]
+  },
+
+  /* ----- 中級B：画像生成（基本） ----- */
+  inter_B: {
+    title: '🪴 中級B：画像生成の基本',
+    level: 'intermediate',
+    goal: '画像生成の基本形を1枚作って、B-2・B-3の土台にする',
+    note: 'チャッピーをまだ契約していない場合は、下の「チャッピーを契約する」を先に進めてください。',
+    text: '画像は、チャッピーの一番得意な仕事。自キュンのTOP画像やSNS素材の基本形を、ここで1回作ってみる。風景・季節・時間の3つを変えるだけで、いろんなパターンに展開できる。',
+    choices: [
+      { ico: '🎨', title: 'チャッピーをまだ契約していない場合', sub: '先に契約する', desc: '画像生成にはチャッピー（ChatGPT Plus）が必要。契約してから戻ってきてください。', source: '', unlock: [], next: 'setup_chatgpt' },
+      { ico: '🪴', title: '中級ハブに戻る', sub: '他の中級も見る', desc: '画像が1枚できたら、B-2・B-3も覗いてみる。', source: '', unlock: [], next: 'intermediate_hub' },
+      { ico: '🌳', title: '上級に進む', sub: 'パワポに繋げる', desc: '画像の基本ができたら、上級Ｃ（パワポ）で使える。', source: '', unlock: [], next: 'advanced_hub' }
+    ],
+    spells: [
+      {
+        label: '🪄 呪文（基本の画像を作る）',
+        body: '[テーマ]の画像を1枚、イラストで作って。\n・風景：[一文で]\n・季節：春／夏／秋／冬\n・時間：朝／昼／晩／深夜\n横長で、SNSのアイキャッチに使えるサイズで。',
+        note: '風景・季節・時間の3つだけ変えれば、いろんなパターンが作れる。'
+      }
+    ]
+  },
+
+  setup_chatgpt: {
+    title: '🎨 チャッピーを契約する',
+    text: 'ChatGPT Plusは月額$20＝だいたい3,000円前後（為替で変動）。ブラウザだけで使える、インストール不要。画像生成は無料版だと月7枚くらいだけど、Plusなら月20枚前後作れる。',
+    choices: [
+      { ico: '✅', title: '契約した → 中級Bに戻る', sub: '画像生成の基本に進む', desc: '契約が終わったら、中級Bの呪文を試してみてください。', source: '出典：AI PICKSマガジン「ChatGPT料金2026」', unlock: ['chatgpt'], next: 'inter_B' },
+      { ico: '🪴', title: '中級ハブに戻る', sub: '画像系以外を先に', desc: '画像系は後回しにして、文章系（A・A-2）を先に試すのもOK。', source: '', unlock: [], next: 'intermediate_hub' }
+    ]
+  },
+
+  /* ----- 中級B-2：LP用画像 ----- */
+  inter_B2: {
+    title: '🪴 中級B-2：LP用の画像を作る',
+    level: 'intermediate',
+    note: '中級Bの基本ができている前提で話を進める。まだの場合は中級Bに戻ってください。',
+    text: 'LP（販売ページ）には、世界観を伝える大きい画像が必要。中級Bと同じ呪文をベースに、タイトル文字を乗せるスペースを意識した構図を頼む。',
+    choices: [
+      { ico: '↩️', title: '中級Bでこれを設定していない場合', sub: '中級Bに戻る', desc: 'B-2はBの続き。まだ画像を1枚も作っていない場合は、いったん中級Bに戻ってください。', source: '', unlock: [], next: 'inter_B' },
+      { ico: '🪴', title: '中級ハブに戻る', sub: '他の中級も見る', desc: 'LP用画像ができたら、B-3も覗いてみる。', source: '', unlock: [], next: 'intermediate_hub' },
+      { ico: '🌳', title: '上級に進む', sub: 'noteに繋げる', desc: 'LP用画像は、上級Ａ（note）の販売ページにそのまま使える。', source: '', unlock: [], next: 'advanced_hub' }
+    ],
+    spells: [
+      {
+        label: '🪄 呪文（LP用画像）',
+        body: 'さっきと同じ世界観で、LPのトップに使う画像を作って。上部1/3くらいに、タイトル文字を乗せても邪魔にならない、シンプルな背景にして。横長・高解像度で。',
+        note: '文字はあとからこちらで載せる前提。画像側に文字を書き込ませる必要はない。'
+      }
+    ]
+  },
+
+  /* ----- 中級B-3：チラシ・サムネイル ----- */
+  inter_B3: {
+    title: '🪴 中級B-3：チラシ・サムネイル画像を作る',
+    level: 'intermediate',
+    note: '中級Bの基本ができている前提で話を進める。まだの場合は中級Bに戻ってください。',
+    text: 'サムネイルは「目を止める」ことが仕事。中級Bより色を強く、文字が映える余白を作るのがポイント。',
+    choices: [
+      { ico: '↩️', title: '中級Bでこれを設定していない場合', sub: '中級Bに戻る', desc: 'B-3もBの続き。まだ画像を1枚も作っていない場合は、いったん中級Bに戻ってください。', source: '', unlock: [], next: 'inter_B' },
+      { ico: '🪴', title: '中級ハブに戻る', sub: '他の中級も見る', desc: 'サムネイルができたら、他の中級も覗いてみる。', source: '', unlock: [], next: 'intermediate_hub' },
+      { ico: '🌳', title: '上級に進む', sub: 'noteやパワポに繋げる', desc: 'サムネイルは、上級Ａ（note）の告知や上級Ｃ（パワポ）の表紙に使える。', source: '', unlock: [], next: 'advanced_hub' }
+    ],
+    spells: [
+      {
+        label: '🪄 呪文（サムネイル画像）',
+        body: 'さっきと同じ世界観で、SNSのサムネイル用に、色を少し強めにして、左上か右上にタイトルを置けるシンプルな余白を作って。正方形と横長、両方作って。',
+        note: '正方形はInstagram、横長はXやnoteのヘッダー用。'
+      }
+    ]
+  },
+
+  /* ===================== 上級ハブ ===================== */
+  advanced_hub: {
+    title: '🌳 上級：マネタイズに向けて設定する',
+    note: '中級をいくつか終えた前提で話を進める。まだの場合は中級ハブから試してください。',
+    text: '上級は3つ。Ａはnoteで売る、Ｂはメールを相手ごとに自動化する、Ｃはパワポを作る。どれも中級でやったことの「組み合わせ」でしかない。',
+    choices: [
+      { ico: '💰', title: '上級A：noteでマネタイズ', sub: '中級A・A-2を使って有料記事を書く', desc: '文体メモと長文の分割設計を組み合わせて、有料記事の構成・価格・無料/有料の境目を決める。', source: '', unlock: [], next: 'adv_A' },
+      { ico: '✉️', title: '上級B：メール相手ごとの自動化', sub: 'Gmail×文体パターンで相手ごとに書き分ける', desc: '中級Aの「相手別の文体メモ」を、Gmail連携と組み合わせて、相手によってトーンを自動で切り替える。', source: '', unlock: [], next: 'adv_B' },
+      { ico: '📽️', title: '上級C：パワポ生成', sub: '中級A-2・Bを使ってスライドを作る', desc: '長文の分割設計と画像生成を組み合わせて、1スライド1メッセージのプレゼン資料を作る。', source: '', unlock: [], next: 'adv_C' },
+      { ico: '🏁', title: '今回はここまでにする', sub: 'スタートに戻る', desc: '中級まででも十分な収穫。上級は気が向いたときにどうぞ。', source: '', unlock: [], next: 'goal_end' }
+    ]
+  },
+
+  /* ----- 上級A：note ----- */
+  adv_A: {
+    title: '🌳 上級A：noteでマネタイズする',
+    level: 'advanced',
+    note: '中級A（文体）・A-2（長文）ができている前提で話を進める。まだの場合は中級ハブに戻ってください。',
+    text: '中級Aで作った文体メモと、中級A-2の長文生成を組み合わせて、有料記事の構成を作る。値段・タグ・無料/有料の境目もここで決める。',
+    choices: [
+      { ico: '🪴', title: '中級でこれを設定していない場合', sub: '中級ハブに戻る', desc: '文体メモか長文の分割設計、どちらかが済んでいない場合は、先に中級ハブで試してください。', source: '', unlock: [], next: 'intermediate_hub' },
+      { ico: '🌳', title: '上級ハブに戻る', sub: '他の上級も見る', desc: 'noteの構成ができたら、上級B・Cも覗いてみる。', source: '', unlock: [], next: 'advanced_hub' },
+      { ico: '🏁', title: 'GOAL達成。スタートに戻る', sub: 'noteの構成案が1本できたら', desc: '有料記事の構成案が1本できたら、今回のゴールは達成。お疲れ様でした。', source: '', unlock: [], next: 'goal_end' }
+    ],
+    spells: [
+      {
+        label: '🪄 呪文（有料記事の構成案）',
+        body: '[テーマ]についてnoteの有料記事を書きたい。[相手向けの文体メモ]のテンションで、無料パートと有料パートに分けた構成案を作って。価格は[◯◯円]を想定。無料パートの最後に「続きが読みたくなる」一文も考えて。',
+        note: '出典：note×AIマネタイズに関する解説記事各種（2026年）'
+      }
+    ]
+  },
+
+  /* ----- 上級B：メール自動化 ----- */
+  adv_B: {
+    title: '🌳 上級B：メール相手ごとに自動化する',
+    level: 'advanced',
+    note: '中級A（文体）とGmail連携ができている前提で話を進める。Gmail連携がまだの場合は、AI導入ガイドSTEP2を参照してください。',
+    text: '中級Aで作った「相手別の文体メモ」を、Gmail連携と組み合わせる。送る相手によって、トーンを自動で切り替える。',
+    choices: [
+      { ico: '🪴', title: '中級でこれを設定していない場合', sub: '中級ハブに戻る', desc: '相手別の文体メモがまだの場合は、先に中級Aで作ってください。', source: '', unlock: [], next: 'intermediate_hub' },
+      { ico: '🌳', title: '上級ハブに戻る', sub: '他の上級も見る', desc: 'メール自動化ができたら、上級A・Cも覗いてみる。', source: '', unlock: [], next: 'advanced_hub' },
+      { ico: '🏁', title: 'GOAL達成。スタートに戻る', sub: '相手別の返信案が作れたら', desc: '相手によってトーンを変えた返信案が作れたら、今回のゴールは達成。お疲れ様でした。', source: '', unlock: ['gmail'], next: 'goal_end' }
+    ],
+    spells: [
+      {
+        label: '🪄 呪文（相手別の自動振り分け）',
+        body: '[相手の名前やメールアドレス]からのメールには、[相手向けの文体メモ]のトーンで返信案を作って。別の相手[名前]には、[別の文体メモ]のトーンで。下書きとして保存して。',
+        note: 'Gmailコネクタが必要。まだ繋いでいない場合は、AI導入ガイドSTEP2を参照。'
+      }
+    ]
+  },
+
+  /* ----- 上級C：パワポ ----- */
+  adv_C: {
+    title: '🌳 上級C：パワポを自動生成する',
+    level: 'advanced',
+    note: '中級A-2（長文の分割設計）・中級B（画像）ができている前提で話を進める。まだの場合は中級ハブに戻ってください。',
+    text: '中級A-2の構成案づくりと、中級Bの画像をそのままスライドに流し込む。1スライド1メッセージを守らせるのがコツ。',
+    choices: [
+      { ico: '🪴', title: '中級でこれを設定していない場合', sub: '中級ハブに戻る', desc: '構成案か画像、どちらかが済んでいない場合は、先に中級で試してください。', source: '', unlock: [], next: 'intermediate_hub' },
+      { ico: '🌳', title: '上級ハブに戻る', sub: '他の上級も見る', desc: 'スライド構成ができたら、上級A・Bも覗いてみる。', source: '', unlock: [], next: 'advanced_hub' },
+      { ico: '🏁', title: 'GOAL達成。スタートに戻る', sub: 'スライド構成が1本できたら', desc: 'スライド構成が1本できたら、今回のゴールは達成。お疲れ様でした。', source: '', unlock: [], next: 'goal_end' }
+    ],
+    spells: [
+      {
+        label: '🪄 呪文（スライド構成→生成）',
+        body: '[テーマ]について、1スライド1メッセージで、合計[10]枚のスライド構成を作って。各スライドにタイトルと本文（3行以内）を書いて。そのあと、PowerPointで再現できる形式（VBAコードまたはテキストアウトライン）で出力して。',
+        note: '出典：ChatGPTパワポ自動生成の実践ガイド各種（2026年）。出力後は必ず内容を自分で確認する。'
+      }
+    ]
+  },
+
+  /* ===================== GOAL ===================== */
+  goal_end: {
     title: '🎉 ゲームクリア！',
     end: true,
-    desc: '初級で1枚、中級で3パターン。これで自キュンのTOP画像が手元に4枚増えた状態。チャッピーは月20枚前後作れるので、まだ余裕がある。続きは「上級：文章編」でどうぞ。',
-    time: '所要時間の目安：30分〜1時間／必要な課金：ChatGPT Plus（約3,000円/月）のみ'
-  },
-
-  chatgpt_goal_advanced: {
-    title: '🎉 ゲームクリア！（上級まで完走）',
-    end: true,
-    desc: '自キュンのTOP画像を1枚作る → 同じ世界観で3パターン → 自分のテンションで文章を書いてもらう、までの一連が完成。チャッピーだけで、画像と文章の両方が量産できる状態になった。',
-    time: '所要時間の目安：1〜2時間／必要な課金：ChatGPT Plus（約3,000円/月）のみ'
-  },
+    desc: '初級で蓄積した清書ログが、中級で文体・長文・画像のスキルに育ち、上級でnote・メール・パワポという「マネタイズと時短」に繋がった。全部やらなくていい。1つでも「これは自分の毎日に効く」と思えたものがあれば、それが今日の収穫。',
+    time: '所要時間の目安：全部だと2〜3時間。1ブロックなら30分〜1時間。'
+  }
 };
 
 let history = [];
 let current = 'start';
 let unlocked = new Set();
+let levelsDone = new Set();
 
 function render() {
   const scene = scenes[current];
 
-  // ゴール表示（シーンにgoalがあれば更新）
   if (scene.goal) {
     document.getElementById('goalText').textContent = scene.goal;
   }
+  if (scene.level) {
+    levelsDone.add(scene.level);
+  }
 
-  // 進捗インジケーター
-  const progEl = document.getElementById('progress');
-  progEl.innerHTML = '';
+  // レベルバッジ
+  const lvEl = document.getElementById('levels');
+  lvEl.innerHTML = '';
+  Object.entries(LEVELS).forEach(([key, l]) => {
+    const div = document.createElement('div');
+    div.className = 'lv' + (levelsDone.has(key) ? ' on' : '');
+    div.innerHTML = `<div class="ico">${l.ico}</div><div class="name">${l.name}</div>`;
+    lvEl.appendChild(div);
+  });
+
+  // ツールアイコン
+  const toolEl = document.getElementById('toolsRow');
+  toolEl.innerHTML = '';
   Object.entries(TOOLS).forEach(([key, t]) => {
-    const slot = document.createElement('div');
-    slot.className = 'slot' + (unlocked.has(key) ? ' on' : '');
-    slot.innerHTML = `<div class="ico">${t.ico}</div><div class="name">${t.name}</div>`;
-    progEl.appendChild(slot);
+    const div = document.createElement('div');
+    div.className = 'slot' + (unlocked.has(key) ? ' on' : '');
+    div.innerHTML = `${t.ico} ${t.name}`;
+    toolEl.appendChild(div);
   });
 
   // 本編
@@ -676,34 +625,39 @@ function render() {
   if (scene.end) {
     stageEl.innerHTML = `
       <div class="end-box">
-        <div class="big">${scene.title}</div>
-        <div class="desc">${scene.desc}</div>
-        <div class="time">${scene.time}</div>
+        <div class="big fs-subheading">${scene.title}</div>
+        <div class="desc fs-body">${scene.desc}</div>
+        <div class="time fs-caution">${scene.time}</div>
       </div>
     `;
   } else {
-    let html = `<div class="stage-title">${scene.title}</div>`;
+    let html = `<div class="stage-title fs-heading">${scene.title}</div>`;
     if (scene.note) {
-      html += `<div class="note-box">${scene.note}</div>`;
+      html += `<div class="note-box fs-caution">${scene.note}</div>`;
     }
-    html += `<div class="stage-text">${scene.text}</div>`;
-    if (scene.spell) {
-      html += `
-        <div class="spell">
-          <div class="spell-label">${scene.spell.label}</div>
-          <div class="spell-body">${scene.spell.body}</div>
-          <div class="spell-note">${scene.spell.note}</div>
-        </div>
-      `;
+    html += `<div class="stage-text fs-body">${scene.text}</div>`;
+    if (scene.spells) {
+      scene.spells.forEach((s, i) => {
+        html += `
+          <div class="spell">
+            <div class="spell-head">
+              <div class="spell-label fs-subheading">${s.label}</div>
+              <button class="copy-btn" onclick="copySpell(this, '${current}', ${i})">📋 コピー</button>
+            </div>
+            <div class="spell-body">${s.body}</div>
+            <div class="spell-note fs-caution">${s.note}</div>
+          </div>
+        `;
+      });
     }
     html += `<div class="choices">`;
     scene.choices.forEach((c, i) => {
       html += `
         <button class="choice-card" onclick="choose(${i})">
-          <div class="ch-head"><div class="ch-ico">${c.ico}</div><div class="ch-title">${c.title}</div></div>
-          <div class="ch-sub">${c.sub}</div>
-          <div class="ch-desc">${c.desc}</div>
-          ${c.source ? `<span class="ch-source">${c.source}</span>` : ''}
+          <div class="ch-head"><div class="ch-ico">${c.ico}</div><div class="ch-title fs-subheading">${c.title}</div></div>
+          <div class="ch-sub fs-caution">${c.sub}</div>
+          <div class="ch-desc fs-body">${c.desc}</div>
+          ${c.source ? `<span class="ch-source fs-caution">${c.source}</span>` : ''}
         </button>
       `;
     });
@@ -712,6 +666,19 @@ function render() {
   }
 
   document.getElementById('backBtn').disabled = history.length === 0;
+}
+
+function copySpell(btn, sceneId, idx) {
+  const text = scenes[sceneId].spells[idx].body;
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '✅ コピーした';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1800);
+  });
 }
 
 function choose(i) {
@@ -734,6 +701,7 @@ function restart() {
   history = [];
   current = 'start';
   unlocked = new Set();
+  levelsDone = new Set();
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
