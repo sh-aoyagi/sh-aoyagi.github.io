@@ -146,6 +146,51 @@
   .nav-bar button:disabled { opacity: 0.3; cursor: default; }
   .nav-bar button.restart { border-color: #d4a017; color: #d4a017; }
 
+  /* ── 呪文（コピペ用プロンプト） ── */
+  .spell {
+    background: #14110a;
+    border: 1px dashed #d4a017;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .spell .spell-label {
+    font-size: 11px;
+    color: #d4a017;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .spell .spell-body {
+    font-family: 'Consolas', 'Menlo', monospace;
+    font-size: 12.5px;
+    color: #f0d080;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    background: #0a0a0a;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .spell .spell-note {
+    font-size: 11px;
+    color: #999;
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
+  /* ── 案内・注意（小さめの情報ボックス） ── */
+  .note-box {
+    background: #0d1117;
+    border: 1px solid #2a3a4a;
+    border-left: 3px solid #3b82f6;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    font-size: 12.5px;
+    color: #aac4e0;
+    line-height: 1.8;
+  }
+
   .header { text-align: center; padding: 24px 18px 0; }
   .header h1 { font-size: 19px; color: #d4a017; letter-spacing: 2px; margin-bottom: 6px; }
   .header .sub { font-size: 12px; color: #888; line-height: 1.8; }
@@ -291,19 +336,96 @@ const scenes = {
   },
 
   chatgpt_next: {
-    title: '🎨 プロを使役できる状態になりました',
-    text: '今回のゲームは「メール自動化編」。画像づくりのプロはここでは深掘りしない。別ゲーム（画像・LP編）で続きを作る予定。いったんスタートに戻って、クロード編を試してみる？',
+    title: '🎨 基本装備：チャッピー、起動完了',
+    text: '実は、契約しただけでは何も起きない。ここからが本番。初級に進んで、実際に1個作ってみる。最初の1個さえ作れれば、あとは同じことの繰り返しでしかない。',
     choices: [
       {
+        ico: '🌱',
+        title: '初級に進む',
+        sub: '自キュンのTOP画像を1枚作ってみる',
+        desc: '「呪文」と呼んでいるコピペ用のプロンプトを使って、実際に1枚作るところまで進める。途中でうまくいかない画面が出たら、そこをスクショして次に進めばOK。覚えることは特にない。',
+        source: '',
+        unlock: [],
+        next: 'chatgpt_beginner'
+      },
+      {
         ico: '🔁',
-        title: 'スタートに戻る',
-        sub: 'クロード編（メール自動化）を選んでみる',
-        desc: 'チャッピーで画像・文章のプロは確保できた。この続き（画像・LP編）は別のゲームブックで作る予定。今回のゲームを最後まで遊ぶには、スタートに戻って「クロードと契約する」を選んでみてください。',
+        title: '今日はここまでにする',
+        sub: 'スタートに戻る',
+        desc: 'チャッピーで画像・文章のプロは確保できた。それだけでも一歩進んだということ。続きは気が向いたときにでもどうぞ。',
         source: '',
         unlock: [],
         next: 'start'
       }
     ]
+  },
+
+  chatgpt_beginner: {
+    title: '🌱 初級：自キュンのTOP画像を1枚作る',
+    text: '正直に言うと、ここで作るのはたった1枚の画像。それだけ。でも「呪文を貼ったら、本当に絵が出てきた」という体験が一番大事で、これができれば中級は驚くほどラクになる。下の呪文をそのままコピーして、チャッピーの入力欄に貼って送るだけ。出てきた画像はスクショしておくと、中級で「これを基準に」と言いやすくなる。',
+    choices: [
+      {
+        ico: '🎴',
+        title: '呪文を試した → 中級に進む',
+        sub: '同じ世界観でバリエーションを3パターン作る',
+        desc: '1枚できたら、それを土台にして横展開する段階に進む。中級では「同じ雰囲気で季節と時間だけ変える」という呪文を使う。',
+        source: '',
+        unlock: [],
+        next: 'chatgpt_intermediate'
+      },
+      {
+        ico: '🔁',
+        title: '今日はここまでにする',
+        sub: 'スタートに戻る',
+        desc: '1枚作れたなら、それで十分な収穫。中級は次に気が向いたときに。',
+        source: '',
+        unlock: [],
+        next: 'start'
+      }
+    ],
+    spell: {
+      label: '🪄 呪文（コピーしてチャッピーに貼る）',
+      body: '自キュンのTOP画像を1枚、イラストで作って。\n・風景：駅のホームで電車を見送る後ろ姿\n・季節：秋\n・時間：夕方\n温かい色合いで、SNSのアイキャッチに使える横長サイズで。',
+      note: '風景・季節・時間の3つは自由に変えてOK。最初は何も考えず、このままコピペして試すのが一番早い。'
+    }
+  },
+
+  chatgpt_intermediate: {
+    title: '🪴 中級：同じ世界観で3パターン作る',
+    note: 'ここは「中級」。初級の呪文を1回試した前提で話を進める。もし違うところからここに来てしまった場合は、ブラウザバックしてください。',
+    text: '初級で1枚できていれば、ここからはそれを増やすだけ。下の呪文は、さっき出てきた画像を指しながら「これと同じ雰囲気で、季節と時間だけ変えて」とお願いするもの。1回の指示で3パターン出てくることが多いので、気に入ったものだけ残せばいい。',
+    choices: [
+      {
+        ico: '↩️',
+        title: '初級でこれを設定していない場合',
+        sub: '初級に戻って、まず1枚作る',
+        desc: '中級は初級の続き。まだ1枚も作っていない場合は、いったん初級に戻って呪文を試してから来てください。',
+        source: '',
+        unlock: [],
+        next: 'chatgpt_beginner'
+      },
+      {
+        ico: '🏁',
+        title: 'GOAL達成。スタートに戻る',
+        sub: '3パターンできたら、今回はここまで',
+        desc: '同じ世界観で3パターン作れたら、自キュンのTOP画像の手持ちが一気に増える。これで今回のゴールは達成。お疲れ様でした。',
+        source: '',
+        unlock: [],
+        next: 'chatgpt_goal'
+      }
+    ],
+    spell: {
+      label: '🪄 呪文（コピーしてチャッピーに貼る）',
+      body: 'さっきの画像と同じ世界観・同じ構図で、季節と時間だけ変えて3パターン作って。\n①季節を冬・時間を朝に\n②季節を夏・時間を深夜に\n③季節は元のまま・時間を昼に\nそれぞれ横長サイズで。',
+      note: '初級で作った画像が画面に残っている状態で、その下にこの呪文を貼るのがコツ。'
+    }
+  },
+
+  chatgpt_goal: {
+    title: '🎉 ゲームクリア！',
+    end: true,
+    desc: '初級で1枚、中級で3パターン。これで自キュンのTOP画像が手元に4枚増えた状態。チャッピーは月20枚前後作れるので、まだ余裕がある。次は「文章のプロとして使う」編に繋がっていく（その続きは次回作）。',
+    time: '所要時間の目安：30分〜1時間／必要な課金：ChatGPT Plus（約3,000円/月）のみ'
   },
 
   end_complete: {
@@ -364,7 +486,19 @@ function render() {
     `;
   } else {
     let html = `<div class="stage-title">${scene.title}</div>`;
+    if (scene.note) {
+      html += `<div class="note-box">${scene.note}</div>`;
+    }
     html += `<div class="stage-text">${scene.text}</div>`;
+    if (scene.spell) {
+      html += `
+        <div class="spell">
+          <div class="spell-label">${scene.spell.label}</div>
+          <div class="spell-body">${scene.spell.body}</div>
+          <div class="spell-note">${scene.spell.note}</div>
+        </div>
+      `;
+    }
     html += `<div class="choices">`;
     scene.choices.forEach((c, i) => {
       html += `
