@@ -644,7 +644,109 @@ const scenes = {
     title: '🎉 ゲームクリア！',
     end: true,
     desc: '初級で蓄積した清書ログが、中級で文体・長文・画像のスキルに育ち、上級でnote・メール・パワポという「マネタイズと時短」に繋がった。全部やらなくていい。1つでも「これは自分の毎日に効く」と思えたものがあれば、それが今日の収穫。',
-    time: '所要時間の目安：全部だと2〜3時間。1ブロックなら30分〜1時間。'
+    time: '所要時間の目安：全部だと2〜3時間。1ブロックなら30分〜1時間。',
+    choices: [
+      {
+        ico: '🌍',
+        title: '番外編：世界のAI事例集（びっくり10選）',
+        sub: 'やることリストじゃない。眺めるだけでOK',
+        desc: '正直に言うと、ここまでで「もう一通りできちゃった」と思った人向けの番外編。AIって、仕事を早くするだけの道具じゃない。世界ではもっと変な使われ方をしている。',
+        source: '',
+        unlock: [],
+        next: 'world_examples'
+      }
+    ]
+  },
+
+  /* ===================== 番外編：世界のAI事例集 ===================== */
+  world_examples: {
+    title: '🌍 世界のAI事例集（びっくり10選）',
+    grid: true,
+    infoOnly: true,
+    note: 'これは「設定して使う」リストじゃない。AIの可能性の広さを感じるための番外編。気になったら自分でも検索してみて。',
+    text: '正直に言うと、AIを「文章と画像の道具」だと思ってると、いつまでも「自分には関係ない」で終わる。世界では、もっと予想外の使われ方をしている。10個並べてみた。',
+    choices: [
+      {
+        ico: '👃',
+        cat: 'びっくり①',
+        title: '言葉から「香り」を作るAI',
+        sub: '文章を入力すると、香りの成分レシピが出てくる',
+        desc: '東京科学大学・NTTデータ・香味醗酵が、テキストから香り成分のレシピを自動生成するAIを開発。従来は数十時間かかっていた調香の計算が、数十分に短縮された。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '📡',
+        cat: 'びっくり②',
+        title: '香りを「テレポート」させるAI',
+        sub: '香りを分子レベルで分解して、遠くで再現する',
+        desc: '元Google研究者が創業したOsmo社が開発。分光計で香りを分子レベルに分解し、AIが「香りのデータ」に変換、専用プリンターで別の場所に再現する。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '🧘',
+        cat: 'びっくり③',
+        title: '悩み相談に答えるロボット僧侶',
+        sub: '仏教の経典を学習したAIが、合掌しながら相談に応じる',
+        desc: '京都大学が開発した「ブッダロイド」。仏教経典を学習したAIが、合掌・お辞儀をしながら対面で悩み相談に応じる。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '🐕',
+        cat: 'びっくり④',
+        title: '犬の気持ちを翻訳するAI',
+        sub: '留守番中の犬が「今どんな気持ちか」をテキストで教えてくれる',
+        desc: 'RevComm社の「MiiTel DogPod」。留守番中の犬の映像から感情を読み取り、テキスト化する。複数の犬がいても、誰の感情かを分けて表示できる。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '👶',
+        cat: 'びっくり⑤',
+        title: '赤ちゃんの泣き声を翻訳するAI',
+        sub: '「お腹が空いた」「眠い」を泣き声から判定。累計700万人が利用',
+        desc: 'ファーストアセント社の「パパっと育児」。赤ちゃんの泣き声を5つのカテゴリに分類し、80%以上の精度で「なぜ泣いているか」を教えてくれる。累計利用者は700万人。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '💅',
+        cat: 'びっくり⑥',
+        title: '1本100秒で塗るAIネイルプリンター',
+        sub: '爪をスキャンして、自動でネイルアートを描いてくれる',
+        desc: 'Umia社の自動ネイルアートプリンター。爪をスキャンして、AIがデザインを自動で爪に塗布する。1本あたり約100秒で完成する。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '🧱',
+        cat: 'びっくり⑦',
+        title: '手持ちのブロックで何が作れるか教えてくれるAI',
+        sub: 'スマホで写すだけで「これが作れます」と提案してくれる',
+        desc: 'Brickit社のアプリ。スマホのカメラで持っているLEGOブロックをスキャンすると、AIが「今あるブロックで作れる作品」を提案してくれる。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '🛰️',
+        cat: 'びっくり⑧',
+        title: '衛星写真で固定資産税をチェックするAI',
+        sub: '役所の人が現地に行かなくても、建物の変化がわかる',
+        desc: '香川県善通寺市の事例。衛星写真をAIが分析し、土地や家屋の変化を自動で抽出。固定資産税の課税業務を効率化している。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '⛸️',
+        cat: 'びっくり⑨',
+        title: 'オリンピックの審判をするAI',
+        sub: 'フィギュアスケートの回転数・角度をAIが客観的に計測',
+        desc: 'IOC（国際オリンピック委員会）が導入。フィギュアスケートやハーフパイプで、ジャンプの回転数・高さ・角度をAIが客観的に計測し、審判をサポートしている。',
+        source: '出典：MatrixFlow「面白いAI活用事例15選」'
+      },
+      {
+        ico: '🧠',
+        cat: 'びっくり⑩',
+        title: 'パソコンを自分で操作するAI',
+        sub: '指示するだけで、AIが画面を見て勝手にクリック・入力する',
+        desc: 'Claude Sonnet 4.6が備える「コンピュータ操作」機能。人間のように画面を見て、自律的にマウス操作やキー入力を行う。今このゲームブックでやっている「呪文を渡す」段階の、さらに先の世界。',
+        source: '出典：Claude Sonnet 4.6（2026年2月リリース）関連報道各種'
+      }
+    ]
   }
 };
 
@@ -691,20 +793,23 @@ function render() {
 
   // 本編
   const stageEl = document.getElementById('stage');
-  if (scene.end) {
-    stageEl.innerHTML = `
-      <div class="end-box">
-        <div class="big fs-subheading">${scene.title}</div>
-        <div class="desc fs-body">${scene.desc}</div>
-        <div class="time fs-caution">${scene.time}</div>
-      </div>
-    `;
-  } else {
-    let html = `<div class="stage-title fs-heading">${scene.title}</div>`;
-    if (scene.note) {
-      html += `<div class="note-box fs-caution">${scene.note}</div>`;
+  {
+    let html = '';
+    if (scene.end) {
+      html += `
+        <div class="end-box">
+          <div class="big fs-subheading">${scene.title}</div>
+          <div class="desc fs-body">${scene.desc}</div>
+          <div class="time fs-caution">${scene.time}</div>
+        </div>
+      `;
+    } else {
+      html += `<div class="stage-title fs-heading">${scene.title}</div>`;
+      if (scene.note) {
+        html += `<div class="note-box fs-caution">${scene.note}</div>`;
+      }
+      html += `<div class="stage-text fs-body">${scene.text}</div>`;
     }
-    html += `<div class="stage-text fs-body">${scene.text}</div>`;
     if (scene.spells) {
       scene.spells.forEach((s, i) => {
         html += `
@@ -719,7 +824,7 @@ function render() {
         `;
       });
     }
-    if (scene.grid) {
+    if (scene.choices && scene.grid) {
       // アコーディオン式グリッド：見出しだけ並べて、開いた項目だけ詳細表示
       html += `<div class="acc-grid">`;
       scene.choices.forEach((c, i) => {
@@ -739,14 +844,14 @@ function render() {
                 <div class="ch-sub fs-caution">${c.sub}</div>
                 <div class="ch-desc fs-body">${c.desc}</div>
                 ${c.source ? `<span class="ch-source fs-caution">${c.source}</span>` : ''}
-                <button class="acc-go fs-subheading" onclick="choose(${i})">これに進む ▶</button>
+                ${scene.infoOnly ? '' : `<button class="acc-go fs-subheading" onclick="choose(${i})">これに進む ▶</button>`}
               </div>
             ` : ''}
           </div>
         `;
       });
       html += `</div>`;
-    } else {
+    } else if (scene.choices) {
       html += `<div class="choices">`;
       scene.choices.forEach((c, i) => {
         html += `
