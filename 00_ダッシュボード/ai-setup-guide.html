@@ -207,6 +207,106 @@
     .next-bar a, .next-bar span, .next-bar button { width: 100%; text-align: center; }
     .next-note { text-align: center; }
   }
+
+  /* ── 決算城トンマナ：色の帯ワイプ＋パラパラ文字＋フェードイン ── */
+  .wipe-band-wrap {
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .fade-up {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* ── ⓪ 理解度チェック・クイズ ── */
+  .quiz-box { border: 1px solid #d4a017; background: linear-gradient(135deg, #0d1117 0%, #1a1200 100%); }
+  .quiz-start-btn, .quiz-buttons button {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #d4a017;
+    background: #1a1200;
+    color: #d4a017;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 12px;
+  }
+  .quiz-start-btn:hover, .quiz-buttons button:hover { background: #2a1d00; }
+  .quiz-buttons { display: flex; gap: 10px; margin-top: 16px; }
+  .quiz-buttons button { flex: 1; margin-top: 0; }
+  .quiz-progress { font-size: 11px; color: #888; margin-bottom: 8px; }
+  .quiz-bar { height: 4px; background: #2a2a2a; border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+  .quiz-bar-fill { height: 100%; background: #d4a017; transition: width .3s ease; }
+  .quiz-q { font-size: 15px; color: #e8e0d0; line-height: 1.8; min-height: 70px; }
+  .quiz-result-level { font-size: 20px; color: #d4a017; font-weight: bold; margin: 10px 0 6px; }
+  .quiz-result-score { font-size: 12px; color: #888; margin-bottom: 14px; }
+  .quiz-prev { font-size: 12px; color: #22c55e; margin: 10px 0; line-height: 1.8; }
+
+  /* ── 用語辞典フローティング ── */
+  .glossary-btn {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 600;
+    background: #1a1200;
+    border: 1px solid #d4a017;
+    color: #d4a017;
+    border-radius: 50px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,.4);
+    font-family: inherit;
+  }
+  .glossary-btn.pulse { animation: glossary-pulse 1.6s infinite; }
+  @keyframes glossary-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(212,160,23,.5); }
+    50% { box-shadow: 0 0 0 10px rgba(212,160,23,0); }
+  }
+  .glossary-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 700;
+    background: rgba(0,0,0,.7);
+  }
+  .glossary-modal.open { display: flex; align-items: center; justify-content: center; }
+  .glossary-panel {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    max-width: 560px;
+    width: 92%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .glossary-panel h3 { color: #d4a017; font-size: 16px; margin-bottom: 4px; }
+  .glossary-panel .gloss-sub { font-size: 12px; color: #888; margin-bottom: 14px; line-height: 1.8; }
+  .gloss-item { border-bottom: 1px solid #2a2a2a; padding: 10px 0; }
+  .gloss-item .term { font-size: 13px; font-weight: bold; color: #d4a017; margin-bottom: 4px; }
+  .gloss-item .desc { font-size: 12px; color: #ccc; line-height: 1.8; }
+  .glossary-close {
+    display: block;
+    margin-top: 14px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+    background: none;
+    color: #888;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  @media (max-width: 600px) {
+    .glossary-btn { padding: 10px 14px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -279,16 +379,25 @@
     <div class="section">
       <h2>本文：最初に押さえる5つの全体像</h2>
 
-      <div class="item">
-        <div class="item-title">⓪ 🩺 AIと組む前に「理解度チェック（Y/N 20問）」をやる</div>
+      <div class="item quiz-box" id="quizBox">
+        <div class="item-title">⓪ 🩺 理解度チェック（全20問・タップで診断）</div>
         <div class="item-body">
-          いきなりAIに丸投げする前に、これから出てくる言葉について「知ってる(Y)/知らない(N)」を20問、AIに聞いてもらう。<br><br>
-          <b>質問例：</b><br>
-          ・「GitHub」「リポジトリ」「push」「ブランチ」が何か知ってる？<br>
-          ・「Supabase」「タスクスケジューラ」が何のためのものか知ってる？<br>
-          ・今扱っているコンテンツ（記事・出品・スコアなど）の仕組みを説明できる？<br>
-          ・AIに「簡単にして」と言えば、説明の仕方を変えてくれると思う？<br><br>
-          1問ずつ聞いてもらい、わかる範囲で素直にY/Nで答える。Nが多くてもOK。
+          <div id="quizIntro">
+            いきなりAIに丸投げする前に、これから出てくる言葉について「わかる／わからない」を20問チェックする。<br>
+            結果に応じて、このページ右下の📖用語辞典をどのくらい使うといいかが見えてくる。Nが多くてもOK、それが正常。
+            <div id="quizPrevResult"></div>
+            <button class="quiz-start-btn" onclick="startQuiz()">チェックを始める（20問・約1分）→</button>
+          </div>
+          <div id="quizQuestions" style="display:none;">
+            <div class="quiz-progress">第 <span id="qNum">1</span> / 20問</div>
+            <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill" style="width:0%;"></div></div>
+            <div class="quiz-q" id="quizQText"></div>
+            <div class="quiz-buttons">
+              <button onclick="answerQuiz(true)">わかる</button>
+              <button onclick="answerQuiz(false)">わからない</button>
+            </div>
+          </div>
+          <div id="quizResult" style="display:none;"></div>
         </div>
         <div class="item-why">
           実はこれ、CEOにも実際にやってもらった。「なんで毎回難しくするの」という不満が何度も出ていたので、てっきり用語が壁になっていると思っていた。ところが20問やってみると13/20は普通に理解済み。わからなかったのは「main/master」みたいな裏側の言葉だけだった。<br><br>
@@ -986,6 +1095,17 @@
 
 </div>
 
+<!-- 用語辞典フローティング -->
+<button class="glossary-btn" id="glossaryBtn" onclick="toggleGlossary()">📖 用語辞典</button>
+<div class="glossary-modal" id="glossaryModal" onclick="if(event.target===this) toggleGlossary()">
+  <div class="glossary-panel">
+    <h3>📖 用語辞典</h3>
+    <div class="gloss-sub">わからない言葉が出てきたら、ここで確認してください。専門用語をやさしい言葉に言い換えています。</div>
+    <div id="glossaryList"></div>
+    <button class="glossary-close" onclick="toggleGlossary()">閉じる</button>
+  </div>
+</div>
+
 <script>
 function showPanel(n) {
   for (let i = 1; i <= 7; i++) {
@@ -993,7 +1113,244 @@ function showPanel(n) {
     document.getElementById('pill' + i).classList.toggle('active', i === n);
   }
   window.scrollTo(0, 0);
+  playEntranceAnim(document.getElementById('panel' + n));
 }
+
+/* ── 決算城トンマナ：色の帯ワイプ＋パラパラ文字＋フェードイン ── */
+const SCRAMBLE_POOL = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function scrambleText(el) {
+  const target = el.textContent.trim();
+  if (!target) return;
+  el.style.opacity = '1';
+  let frame = 0;
+  const revealPerFrame = 1.2;
+  const totalFrames = Math.ceil(target.length / revealPerFrame) + 8;
+  (function tick() {
+    const done = Math.floor(frame * revealPerFrame);
+    el.textContent = [...target].map((ch, i) => {
+      if (/[\s　。、！？・「」【】（）]/.test(ch)) return ch;
+      if (i < done) return ch;
+      return SCRAMBLE_POOL[Math.floor(Math.random() * SCRAMBLE_POOL.length)];
+    }).join('');
+    frame++;
+    if (frame <= totalFrames) requestAnimationFrame(tick);
+    else el.textContent = target;
+  })();
+}
+
+function runWipe(container, color, onMid) {
+  const band = document.createElement('div');
+  band.style.cssText = `
+    position:absolute; inset:0; z-index:10;
+    background:${color};
+    transform:translateX(-101%);
+    transition:transform 0.38s cubic-bezier(0.7,0,0.3,1);
+    pointer-events:none;
+  `;
+  container.style.position = 'relative';
+  container.style.overflow = 'hidden';
+  container.appendChild(band);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      band.style.transform = 'translateX(0)';
+      setTimeout(() => {
+        if (onMid) onMid();
+        band.style.transform = 'translateX(101%)';
+        setTimeout(() => band.remove(), 420);
+      }, 380);
+    });
+  });
+}
+
+function animateTitle(el, color) {
+  el.style.opacity = '0';
+  const wrap = document.createElement('span');
+  wrap.className = 'wipe-band-wrap';
+  el.parentNode.insertBefore(wrap, el);
+  wrap.appendChild(el);
+  runWipe(wrap, color, () => {
+    el.style.opacity = '1';
+    scrambleText(el);
+  });
+}
+
+function fadeUp(el, delay) {
+  el.classList.add('fade-up');
+  el.style.transition = `opacity 0.55s ${delay}ms ease, transform 0.55s ${delay}ms ease`;
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 30);
+  });
+}
+
+function playEntranceAnim(panelEl) {
+  const title = panelEl.querySelector('.step-title');
+  if (title) animateTitle(title, '#d4a017');
+
+  const rest = panelEl.querySelectorAll('.intro-box, .beginner-cta, .item, .caution-box, .next-bar');
+  rest.forEach((el, i) => fadeUp(el, i * 70));
+}
+
+/* ── ⓪ 理解度チェック・クイズ ── */
+const QUIZ = [
+  { q: '「GitHub」が、文章やファイルを保存して変更履歴を残せる場所だと知っている', level: 1 },
+  { q: '「リポジトリ」が、1つのプロジェクト用のフォルダのことだと知っている', level: 1 },
+  { q: '「Supabase」が、データを表の形で保存しておく場所(データベース)だと知っている', level: 1 },
+  { q: '「API」が、サービス同士がデータをやり取りする窓口のことだと知っている', level: 1 },
+  { q: 'AIに「もっと簡単に説明して」と言えば、説明のレベルを変えてくれると知っている', level: 1 },
+  { q: '「自動化」が、決まったルールに従って作業を自動で行うことだと知っている', level: 1 },
+  { q: '「ダッシュボード」が、数字や進捗をひとめで見れる画面のことだと知っている', level: 1 },
+  { q: '「push」が、自分のパソコンの変更をGitHubに送って反映することだと知っている', level: 2 },
+  { q: '「ブランチ」が、本番に影響を与えずに作業を進めるための分岐だと知っている', level: 2 },
+  { q: '「main」や「master」が、本番として使われる基本のブランチの名前だと知っている', level: 2 },
+  { q: '「Webhook」が、何かが起きたときに自動で知らせる連絡通路だと知っている', level: 2 },
+  { q: '「MCP（コネクタ）」が、AIが外部サービスを直接操作できる接続のことだと知っている', level: 2 },
+  { q: '「トリガー」が、自動化が動き出すきっかけ（例：毎朝7時など）のことだと知っている', level: 2 },
+  { q: '「GAS（Google Apps Script）」が、Googleサービスを自動操作する無料の仕組みだと知っている', level: 2 },
+  { q: '「anonキー」が、外部に公開してよい「読み取り専用」のアクセスキーだと知っている', level: 3 },
+  { q: '「RLS（行レベルセキュリティ）」が、データベースの行ごとにアクセス制限をかける設定だと知っている', level: 3 },
+  { q: '「OAuth」が、パスワードを渡さずに使える範囲だけ許可する仕組みだと知っている', level: 3 },
+  { q: '「環境変数」が、パスワードなどをプログラムに直接書かず別の場所に置く仕組みだと知っている', level: 3 },
+  { q: '「デプロイ」が、作ったものを公開して実際に使える状態にすることだと知っている', level: 3 },
+  { q: '「クエリ」が、データベースに対する検索・操作の命令のことだと知っている', level: 3 },
+];
+
+let quizIdx = 0;
+let quizScore = 0;
+
+function startQuiz() {
+  quizIdx = 0;
+  quizScore = 0;
+  document.getElementById('quizIntro').style.display = 'none';
+  document.getElementById('quizResult').style.display = 'none';
+  document.getElementById('quizQuestions').style.display = 'block';
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  document.getElementById('qNum').textContent = quizIdx + 1;
+  document.getElementById('quizBarFill').style.width = (quizIdx / QUIZ.length * 100) + '%';
+  const qEl = document.getElementById('quizQText');
+  qEl.textContent = QUIZ[quizIdx].q;
+  scrambleText(qEl);
+}
+
+function answerQuiz(yes) {
+  if (yes) quizScore += QUIZ[quizIdx].level;
+  quizIdx++;
+  if (quizIdx < QUIZ.length) {
+    renderQuizQuestion();
+  } else {
+    document.getElementById('quizBarFill').style.width = '100%';
+    showQuizResult();
+  }
+}
+
+function showQuizResult() {
+  document.getElementById('quizQuestions').style.display = 'none';
+  const resultEl = document.getElementById('quizResult');
+  resultEl.style.display = 'block';
+
+  let level, levelName, levelDesc, color;
+  if (quizScore <= 13) {
+    level = 1; levelName = 'レベル1：はじめて'; color = '#d4a017';
+    levelDesc = 'まだ知らない言葉が多い状態。出てきた言葉は右下の📖用語辞典でその場で確認しながら進めるのがおすすめ。';
+  } else if (quizScore <= 26) {
+    level = 2; levelName = 'レベル2：慣れてきた'; color = '#d4a017';
+    levelDesc = '基本の言葉はだいたいわかる状態。気になった言葉だけ📖用語辞典で確認すればOK。';
+  } else {
+    level = 3; levelName = 'レベル3：用語OK'; color = '#22c55e';
+    levelDesc = '専門用語にも抵抗がない状態。説明を読み飛ばして、実際に手を動かす段階に進めます。';
+  }
+
+  const prev = JSON.parse(localStorage.getItem('aiGuideQuizResult') || 'null');
+  let prevHtml = '';
+  if (prev) {
+    const diff = quizScore - prev.score;
+    if (diff > 0) prevHtml = `<div class="quiz-prev">前回(${prev.date})は ${prev.score}点 → 今回は ${quizScore}点。+${diff}点アップ🎉</div>`;
+    else if (diff === 0) prevHtml = `<div class="quiz-prev">前回(${prev.date})と同じ ${quizScore}点でした</div>`;
+    else prevHtml = `<div class="quiz-prev">前回(${prev.date})は ${prev.score}点でした</div>`;
+  }
+
+  resultEl.innerHTML = `
+    <div class="step-title" style="font-size:16px; margin-bottom:2px;">診断結果</div>
+    <div class="quiz-result-level">${levelName}</div>
+    <div class="quiz-result-score">${quizScore} / 39点</div>
+    <div class="item-body">${levelDesc}</div>
+    ${prevHtml}
+    <button class="quiz-start-btn" onclick="startQuiz()">もう一度チェックする ↻</button>
+  `;
+
+  localStorage.setItem('aiGuideQuizResult', JSON.stringify({ score: quizScore, level: level, date: new Date().toLocaleDateString('ja-JP') }));
+  localStorage.setItem('aiGuideLevel', String(level));
+  updateGlossaryPulse();
+
+  animateTitle(resultEl.querySelector('.step-title'), color);
+  fadeUp(resultEl.querySelector('.quiz-result-level'), 80);
+  fadeUp(resultEl.querySelector('.quiz-result-score'), 160);
+  fadeUp(resultEl.querySelector('.item-body'), 240);
+  if (resultEl.querySelector('.quiz-prev')) fadeUp(resultEl.querySelector('.quiz-prev'), 320);
+  fadeUp(resultEl.querySelector('.quiz-start-btn'), 400);
+}
+
+/* ── 📖 用語辞典 ── */
+const GLOSSARY = [
+  { term: 'GitHub', desc: '文章やファイルを保存して、変更の履歴を残せる無料の保管庫。' },
+  { term: 'リポジトリ', desc: 'GitHubの中にある「1つのプロジェクト用のフォルダ」のこと。' },
+  { term: 'push', desc: '自分のパソコンで直した内容を、GitHub側に送って反映すること。' },
+  { term: 'ブランチ', desc: '本番に影響を与えずに作業するための「コピーした作業スペース」。' },
+  { term: 'main / master', desc: '「本番」として使われる、基本のブランチの名前。' },
+  { term: 'Supabase', desc: 'データを表の形で保存しておける、無料で使えるデータベース。' },
+  { term: 'API', desc: '別々のサービス同士が、データをやり取りするための「窓口」。' },
+  { term: 'MCP（コネクタ）', desc: 'AIがGmailやカレンダーなどの外部サービスを直接操作できる接続のしかた。' },
+  { term: 'Webhook', desc: '「何かが起きたら自動で知らせる」ための、サービス間の連絡通路。' },
+  { term: 'GAS（Google Apps Script）', desc: 'Gmail・カレンダー・スプレッドシートを自動で操作できる、Googleの無料プログラム環境。' },
+  { term: 'トリガー', desc: '自動化が「動き出すきっかけ」のこと（例：毎朝7時、メールが届いた時など）。' },
+  { term: 'Make.com / n8n / Zapier', desc: '複数のサービスを線でつなぐように自動化を組み立てられるツール。' },
+  { term: 'OAuth', desc: 'パスワードを渡さずに「この範囲だけ使ってOK」と許可する仕組み。' },
+  { term: 'anonキー', desc: '外部に公開しても問題ない、データを「読むだけ」のアクセスキー。' },
+  { term: 'RLS（行レベルセキュリティ）', desc: 'データベースの中で「誰がどの行を見られるか」を制限する設定。' },
+  { term: '環境変数', desc: 'パスワードや鍵などを、プログラムの中に直接書かずに別の場所に置いておく仕組み。' },
+  { term: 'デプロイ', desc: '作ったものをインターネット上に公開して、実際に使える状態にすること。' },
+  { term: 'クエリ', desc: 'データベースに対する「これを取り出して／変更して」という命令文。' },
+  { term: 'スラッシュコマンド', desc: 'チャット上で「/」から始めて実行する、決まった操作のショートカット。' },
+  { term: 'Webアプリ（doGet/doPost）', desc: 'ブラウザからアクセスして使える、簡易的な自動処理プログラム。' },
+  { term: '自動化フロー', desc: '「Aが起きたらBをする」という一連の処理をつないだもの。' },
+  { term: 'ダッシュボード', desc: '数字や進捗をひとめで見れるように並べた画面。' },
+  { term: '無料枠', desc: 'そのサービスを無料で使える範囲（件数や容量などの上限）のこと。' },
+  { term: 'Cloudflare Workers', desc: '自分のプログラムを無料・低コストでインターネット上に置いて動かせる場所。' },
+];
+
+function buildGlossary() {
+  const list = document.getElementById('glossaryList');
+  list.innerHTML = GLOSSARY.map(g =>
+    `<div class="gloss-item"><div class="term">${g.term}</div><div class="desc">${g.desc}</div></div>`
+  ).join('');
+}
+
+function toggleGlossary() {
+  document.getElementById('glossaryModal').classList.toggle('open');
+}
+
+function updateGlossaryPulse() {
+  const level = localStorage.getItem('aiGuideLevel');
+  document.getElementById('glossaryBtn').classList.toggle('pulse', level === '1');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  playEntranceAnim(document.getElementById('panel1'));
+  buildGlossary();
+  updateGlossaryPulse();
+
+  const prev = JSON.parse(localStorage.getItem('aiGuideQuizResult') || 'null');
+  if (prev) {
+    const el = document.getElementById('quizPrevResult');
+    if (el) el.innerHTML = `<div class="quiz-prev">前回の結果：${prev.date}・${prev.score}点</div>`;
+  }
+});
 </script>
 </body>
 </html>
