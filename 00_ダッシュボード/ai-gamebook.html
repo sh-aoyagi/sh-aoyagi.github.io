@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI自動化ゲームブック｜電脳会社</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #e8e0d0;
+    font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+    line-height: 1.9;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 0 60px; }
+
+  /* ── ゴールバー（固定表示） ── */
+  .goal-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #141414;
+    border-bottom: 1px solid #2a2a2a;
+    padding: 12px 18px;
+  }
+  .goal-bar .label { font-size: 10px; color: #888; letter-spacing: 2px; margin-bottom: 4px; }
+  .goal-bar .goal { font-size: 14px; color: #d4a017; font-weight: bold; }
+
+  /* ── 進捗インジケーター ── */
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    padding: 16px 12px 4px;
+  }
+  .progress .slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.25;
+    transition: opacity .3s, transform .3s;
+  }
+  .progress .slot.on {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+  .progress .slot .ico {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .progress .slot.on .ico { border-color: #22c55e; background: #0d1a12; }
+  .progress .slot .name { font-size: 9px; color: #888; }
+  .progress .slot.on .name { color: #22c55e; }
+
+  /* ── 本編エリア ── */
+  .stage { padding: 24px 18px 0; }
+  .stage-title {
+    font-size: 18px;
+    color: #e8e0d0;
+    font-weight: bold;
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .stage-text {
+    font-size: 14px;
+    color: #ccc;
+    background: #0d1117;
+    border: 1px solid #2a3a2a;
+    border-left: 3px solid #22c55e;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 22px;
+  }
+
+  /* ── 選択カード ── */
+  .choices { display: flex; flex-direction: column; gap: 14px; }
+  .choice-card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color .15s, transform .1s;
+    text-align: left;
+    width: 100%;
+    color: inherit;
+    font-family: inherit;
+  }
+  .choice-card:hover { border-color: #d4a017; }
+  .choice-card:active { transform: scale(0.99); }
+  .choice-card .ch-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .choice-card .ch-ico { font-size: 24px; flex-shrink: 0; }
+  .choice-card .ch-title { font-size: 15px; font-weight: bold; color: #d4a017; }
+  .choice-card .ch-sub { font-size: 12px; color: #999; margin-bottom: 8px; line-height: 1.7; }
+  .choice-card .ch-desc { font-size: 12.5px; color: #ccc; line-height: 1.9; }
+  .choice-card .ch-source {
+    display: block;
+    margin-top: 8px;
+    font-size: 10px;
+    color: #666;
+  }
+
+  /* ── エンディング ── */
+  .end-box {
+    background: #1a1200;
+    border: 1px solid #d4a017;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .end-box .big { font-size: 17px; color: #d4a017; font-weight: bold; margin-bottom: 10px; }
+  .end-box .desc { font-size: 13px; color: #ccc; line-height: 1.9; text-align: left; margin-bottom: 14px; }
+  .end-box .time { font-size: 12px; color: #888; }
+
+  /* ── ナビゲーション ── */
+  .nav-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 24px 18px 0;
+  }
+  .nav-bar button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    border: 1px solid #2a2a2a;
+    background: none;
+    color: #888;
+  }
+  .nav-bar button:disabled { opacity: 0.3; cursor: default; }
+  .nav-bar button.restart { border-color: #d4a017; color: #d4a017; }
+
+  .header { text-align: center; padding: 24px 18px 0; }
+  .header h1 { font-size: 19px; color: #d4a017; letter-spacing: 2px; margin-bottom: 6px; }
+  .header .sub { font-size: 12px; color: #888; line-height: 1.8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>🎮 AI自動化ゲームブック</h1>
+    <div class="sub">
+      選んだ道で、使えるツールが増えていく。<br>
+      正解はない。1〜2時間で1つの自動化が完成するくらいのボリュームです。
+    </div>
+  </div>
+
+  <div class="goal-bar">
+    <div class="label">🎯 今回のゴール</div>
+    <div class="goal" id="goalText">メールの大事なものだけ、AIが自動で教えてくれる状態にする</div>
+  </div>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="nav-bar">
+    <button id="backBtn" onclick="goBack()">← 前のページに戻る</button>
+    <button class="restart" onclick="restart()">最初からやり直す</button>
+  </div>
+
+</div>
+
+<script>
+const TOOLS = {
+  claude:   { ico: '🧠', name: 'Claude' },
+  chatgpt:  { ico: '🎨', name: 'ChatGPT' },
+  gmail:    { ico: '📧', name: 'Gmail' },
+  github:   { ico: '📚', name: 'GitHub' },
+  supabase: { ico: '🗄️', name: 'Supabase' },
+};
+
+const scenes = {
+
+  start: {
+    title: 'まずはここから。どっちと組む？',
+    text: 'いきなり全部やろうとすると絶対に途中で疲れる。だから最初に1つだけ選ぶ。後でもう片方も使えるようになるので、今は「どっちが今の自分に近いか」だけで決めて大丈夫。',
+    goal: 'メールの大事なものだけ、AIが自動で教えてくれる状態にする',
+    choices: [
+      {
+        ico: '🧠',
+        title: 'クロードと契約する',
+        sub: 'それは──「PC」に『中の人』を住ませること',
+        desc: '正直に言うと、これが一番「おお、すげえ」を感じやすい。契約した瞬間から、パソコンの中に”もう一人の自分”みたいな相棒が住みつく感じ。文章を書く、ファイルを整理する、調べる、メールを仕分ける…頼めば一緒にやってくれる。月額は$20＝だいたい3,000円前後（為替で変動）。無料版は会話だけ。ファイル操作や自動化まで頼みたいなら課金が前提になる。',
+        source: '出典：AI革命メディア「Claude料金2026」',
+        unlock: ['claude'],
+        next: 'claude_next'
+      },
+      {
+        ico: '🎨',
+        title: 'チャッピーと契約する',
+        sub: 'それは──「画像」や「文章」のプロを、ブラウザで使役すること',
+        desc: 'ChatGPT Plusも月額$20＝だいたい3,000円前後。一番の強みは画像生成。無料版だと月7枚くらいだけど、Plusなら月20枚前後作れる。インストール不要、ブラウザだけで完結するから会社のPCでも使いやすい。ただ「ファイルを自動で動かす」「毎日勝手に何かをやらせる」みたいな自動化はクロードより弱い。素材を作る専門家、というイメージ。',
+        source: '出典：AI PICKSマガジン「ChatGPT料金2026」',
+        unlock: ['chatgpt'],
+        next: 'chatgpt_next'
+      }
+    ]
+  },
+
+  claude_next: {
+    title: '🧠 中の人、住み着きました。次は誰と繋ぐ？',
+    text: 'ここからが本番。中の人は優秀だけど、最初は何のデータも持っていない。何と繋ぐかで「できること」が変わる。',
+    choices: [
+      {
+        ico: '📧',
+        title: 'Gmailと繋ぐ',
+        sub: 'メールという「受動的に溜まるもの」を、初めて能動的に扱える状態にする',
+        desc: 'メールって毎日勝手に溜まっていくよね。それを1件ずつ目で見て仕分けるのが一番しんどい。Gmailと繋ぐと「重要な人からのメールだけ教えて」「これは返信案を作って」「見積の話はカレンダーに入れて」が頼めるようになる。設定はクロードの「コネクタ」からGoogleアカウントでログインするだけ。追加料金なし、無料でできる。',
+        source: '出典：Claude公式 コネクタ設定（Gmail/Google Calendar）',
+        unlock: ['gmail'],
+        next: 'gmail_next'
+      },
+      {
+        ico: '📚',
+        title: 'GitHubと繋ぐ',
+        sub: '作業の記録や文章を、ネット上の倉庫にしまっておく',
+        desc: 'GitHubと繋ぐと、中の人が作業記録や文章をネット上の倉庫に保存できるようになる。個人で使う分には無料。今回の「メール自動化」では直接使わないけど、後で「ブログを自動更新する」「自分の文体を覚えさせる」という話に繋がっていく。今は「そういう倉庫がある」と知っておくだけでOK。',
+        source: '出典：GitHub公式（個人利用は無料プランで十分）',
+        unlock: ['github'],
+        next: 'github_next'
+      }
+    ]
+  },
+
+  gmail_next: {
+    title: '📧 メールと接続完了。あとは「覚えさせる場所」を作るかどうか',
+    text: 'ここまでで「重要なメールだけ教えて」はもう頼める状態になっている。次は、その判断基準（誰が重要か、どんなToDoか）を覚えさせておくかどうかを決める。',
+    choices: [
+      {
+        ico: '🗄️',
+        title: 'Supabaseに覚えさせる',
+        sub: '「重要な人リスト」や「よくあるToDo」を、育つ場所に置く',
+        desc: 'Supabaseは無料で使えるデータの保管庫（500MB・2プロジェクトまでが無料の範囲）。ここに「重要な人リスト」や「よくあるToDoのパターン」を保存しておくと、中の人が毎回それを見て判断してくれるようになる。一度作れば、使うほど精度が上がっていく仕組み。最初はちょっと難しく感じるけど、ここが「だったらこれもできるんじゃね？」の入口になる。',
+        source: '出典：Supabase公式 料金ページ（Freeプラン）',
+        unlock: ['supabase'],
+        next: 'end_complete'
+      },
+      {
+        ico: '💬',
+        title: 'いまは覚えさせない',
+        sub: '会話のたびに「重要な人は◯◯さんです」と伝えるだけで進める',
+        desc: '設定は何もいらない。今すぐ試せる代わりに、会話が終わるとリストは忘れられるので、毎回伝え直す必要がある。「まずは身軽に、本当に使えそうか試したい」という人はここでいったん止まってOK。Supabaseは後からいつでも追加できるので、損はしない。',
+        source: '',
+        unlock: [],
+        next: 'end_simple'
+      }
+    ]
+  },
+
+  github_next: {
+    title: '📚 記録の倉庫ができました。次はデータも繋ぐ？',
+    text: 'GitHubに記録を残せる状態になった。ここにSupabaseも繋ぐと、ブログやサイトの「今の状況」を自動で表示できるようになる。',
+    choices: [
+      {
+        ico: '🗄️',
+        title: 'Supabaseも繋ぐ',
+        sub: '記録（GitHub）とデータ（Supabase）、両方の土台を作る',
+        desc: 'GitHubに記録を残しつつ、Supabaseに数値データ（実績・在庫など）を保存すると、サイトの「今の状況」を自動で表示できるようになる。無料プラン（500MB・2プロジェクトまで）で十分始められる。今回の「メール自動化」とは別ルートだけど、「サイトを自動更新する」編の土台になる。',
+        source: '出典：Supabase公式 料金ページ（Freeプラン）',
+        unlock: ['supabase'],
+        next: 'end_github_supabase'
+      },
+      {
+        ico: '⏸️',
+        title: 'いまは倉庫だけでOK',
+        sub: 'データ接続はまた今度',
+        desc: '今は記録の倉庫を作っただけで十分。データを繋ぐタイミングは、実際に「サイトを自動更新したい」と思った時でいい。今すぐ無理に繋ぐ必要はない。',
+        source: '',
+        unlock: [],
+        next: 'end_github_later'
+      }
+    ]
+  },
+
+  chatgpt_next: {
+    title: '🎨 プロを使役できる状態になりました',
+    text: '今回のゲームは「メール自動化編」。画像づくりのプロはここでは深掘りしない。別ゲーム（画像・LP編）で続きを作る予定。いったんスタートに戻って、クロード編を試してみる？',
+    choices: [
+      {
+        ico: '🔁',
+        title: 'スタートに戻る',
+        sub: 'クロード編（メール自動化）を選んでみる',
+        desc: 'チャッピーで画像・文章のプロは確保できた。この続き（画像・LP編）は別のゲームブックで作る予定。今回のゲームを最後まで遊ぶには、スタートに戻って「クロードと契約する」を選んでみてください。',
+        source: '',
+        unlock: [],
+        next: 'start'
+      }
+    ]
+  },
+
+  end_complete: {
+    title: '🎉 ゲームクリア！',
+    end: true,
+    desc: 'クロード × Gmail × Supabase で「メールの重要なものだけ自動で教えてもらう」仕組みの土台が完成した。実際の設定作業は1〜2時間くらい。ここまでできれば、次は「ToDoをカレンダーに自動登録する」にも繋がる（その続きは次回作）。',
+    time: '所要時間の目安：1〜2時間／必要な課金：Claude Pro（約3,000円/月）のみ'
+  },
+
+  end_simple: {
+    title: '✅ ここまでで一区切り',
+    end: true,
+    desc: 'クロード × Gmailで「重要なメールだけ教えてもらう」が動く状態になった。Supabaseは後からいつでも追加できるので、今はこれで十分。まずはこの状態で1週間くらい使ってみて、「もっとこうしたい」が出てきたら、また続きを選びにきてください。',
+    time: '所要時間の目安：30分〜1時間／必要な課金：Claude Pro（約3,000円/月）のみ'
+  },
+
+  end_github_supabase: {
+    title: '🎉 別ルートクリア！',
+    end: true,
+    desc: 'GitHub × Supabaseで「記録」と「データ」、両方の土台が整った。次は「サイトを自動更新する」編に繋がっていく（こちらも次回作）。',
+    time: '所要時間の目安：1〜2時間／必要な課金：Claude Pro（約3,000円/月）のみ'
+  },
+
+  end_github_later: {
+    title: '✅ 倉庫づくり完了',
+    end: true,
+    desc: 'GitHubに記録の倉庫ができた。データ接続はまた今度でOK。まずはここで一区切り。',
+    time: '所要時間の目安：30分くらい／必要な課金：Claude Pro（約3,000円/月）のみ'
+  }
+};
+
+let history = [];
+let current = 'start';
+let unlocked = new Set();
+
+function render() {
+  const scene = scenes[current];
+
+  // 進捗インジケーター
+  const progEl = document.getElementById('progress');
+  progEl.innerHTML = '';
+  Object.entries(TOOLS).forEach(([key, t]) => {
+    const slot = document.createElement('div');
+    slot.className = 'slot' + (unlocked.has(key) ? ' on' : '');
+    slot.innerHTML = `<div class="ico">${t.ico}</div><div class="name">${t.name}</div>`;
+    progEl.appendChild(slot);
+  });
+
+  // 本編
+  const stageEl = document.getElementById('stage');
+  if (scene.end) {
+    stageEl.innerHTML = `
+      <div class="end-box">
+        <div class="big">${scene.title}</div>
+        <div class="desc">${scene.desc}</div>
+        <div class="time">${scene.time}</div>
+      </div>
+    `;
+  } else {
+    let html = `<div class="stage-title">${scene.title}</div>`;
+    html += `<div class="stage-text">${scene.text}</div>`;
+    html += `<div class="choices">`;
+    scene.choices.forEach((c, i) => {
+      html += `
+        <button class="choice-card" onclick="choose(${i})">
+          <div class="ch-head"><div class="ch-ico">${c.ico}</div><div class="ch-title">${c.title}</div></div>
+          <div class="ch-sub">${c.sub}</div>
+          <div class="ch-desc">${c.desc}</div>
+          ${c.source ? `<span class="ch-source">${c.source}</span>` : ''}
+        </button>
+      `;
+    });
+    html += `</div>`;
+    stageEl.innerHTML = html;
+  }
+
+  document.getElementById('backBtn').disabled = history.length === 0;
+}
+
+function choose(i) {
+  const choice = scenes[current].choices[i];
+  choice.unlock.forEach(u => unlocked.add(u));
+  history.push(current);
+  current = choice.next;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goBack() {
+  if (history.length === 0) return;
+  current = history.pop();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  history = [];
+  current = 'start';
+  unlocked = new Set();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+</body>
+</html>
