@@ -266,6 +266,17 @@
   .header { text-align: center; padding: 24px 18px 0; }
   .header h1 { color: #d4a017; letter-spacing: 2px; margin-bottom: 6px; }
   .header .sub { color: #888; }
+
+  /* ── 決算城トンマナ：色の帯ワイプ＋フェードイン ── */
+  .wipe-band-wrap {
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .fade-up {
+    opacity: 0;
+    transform: translateY(14px);
+  }
 </style>
 </head>
 <body>
@@ -761,6 +772,84 @@ function toggleAcc(i) {
   render();
 }
 
+/* ── 決算城トンマナ：色の帯ワイプ＋パラパラ文字＋フェードイン ── */
+const SCRAMBLE_POOL = 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function scrambleText(el) {
+  const target = el.textContent.trim();
+  if (!target) return;
+  el.style.opacity = '1';
+  let frame = 0;
+  const revealPerFrame = 1.2;
+  const totalFrames = Math.ceil(target.length / revealPerFrame) + 8;
+  (function tick() {
+    const done = Math.floor(frame * revealPerFrame);
+    el.textContent = [...target].map((ch, i) => {
+      if (/[\s　。、！？・「」【】（）]/.test(ch)) return ch;
+      if (i < done) return ch;
+      return SCRAMBLE_POOL[Math.floor(Math.random() * SCRAMBLE_POOL.length)];
+    }).join('');
+    frame++;
+    if (frame <= totalFrames) requestAnimationFrame(tick);
+    else el.textContent = target;
+  })();
+}
+
+function runWipe(container, color, onMid) {
+  const band = document.createElement('div');
+  band.style.cssText = `
+    position:absolute; inset:0; z-index:10;
+    background:${color};
+    transform:translateX(-101%);
+    transition:transform 0.38s cubic-bezier(0.7,0,0.3,1);
+    pointer-events:none;
+  `;
+  container.style.position = 'relative';
+  container.style.overflow = 'hidden';
+  container.appendChild(band);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      band.style.transform = 'translateX(0)';
+      setTimeout(() => {
+        if (onMid) onMid();
+        band.style.transform = 'translateX(101%)';
+        setTimeout(() => band.remove(), 420);
+      }, 380);
+    });
+  });
+}
+
+function animateTitle(el, color) {
+  el.style.opacity = '0';
+  const wrap = document.createElement('span');
+  wrap.className = 'wipe-band-wrap';
+  el.parentNode.insertBefore(wrap, el);
+  wrap.appendChild(el);
+  runWipe(wrap, color, () => {
+    el.style.opacity = '1';
+    scrambleText(el);
+  });
+}
+
+function fadeUp(el, delay) {
+  el.classList.add('fade-up');
+  el.style.transition = `opacity 0.55s ${delay}ms ease, transform 0.55s ${delay}ms ease`;
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 30);
+  });
+}
+
+function playEntranceAnim(stageEl) {
+  const title = stageEl.querySelector('.stage-title, .end-box .big');
+  if (title) animateTitle(title, '#d4a017');
+
+  const rest = stageEl.querySelectorAll('.note-box, .stage-text, .spell, .end-box .desc, .end-box .time, .choices .choice-card, .acc-grid .acc-item');
+  rest.forEach((el, i) => fadeUp(el, i * 80));
+}
+
 function render() {
   const scene = scenes[current];
 
@@ -866,6 +955,7 @@ function render() {
       html += `</div>`;
     }
     stageEl.innerHTML = html;
+    playEntranceAnim(stageEl);
   }
 
   document.getElementById('backBtn').disabled = history.length === 0;
