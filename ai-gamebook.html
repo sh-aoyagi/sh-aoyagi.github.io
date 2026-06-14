@@ -145,6 +145,32 @@
     padding: 10px 12px;
   }
   .spell .spell-note { color: #999; margin-top: 8px; }
+  .spell .spell-inputs { margin-bottom: 10px; }
+  .spell .spell-input-label {
+    display: block;
+    color: #f0d080;
+    font-size: clamp(11px, 2.8vw, 14px);
+    margin-bottom: 4px;
+  }
+  .spell .spell-input-box {
+    width: 100%;
+    box-sizing: border-box;
+    background: #0a0a0a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #fff;
+    font-family: inherit;
+    font-size: clamp(13px, 3.6vw, 18px);
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    resize: vertical;
+  }
+  .spell .spell-input-box::placeholder { color: #666; }
+  .spell .spell-step {
+    color: #d4a017;
+    font-size: clamp(11px, 2.8vw, 14px);
+    margin-bottom: 6px;
+  }
 
   /* ── アコーディオン式グリッド（中級・上級ハブ） ──
      PCでは2〜3列に並び、開いた項目だけ全幅に広がる。
@@ -321,6 +347,7 @@ const TOOLS = {
   gmail:    { ico: '📧', name: 'Gmail' },
   github:   { ico: '📚', name: 'GitHub' },
   supabase: { ico: '🗄️', name: 'Supabase' },
+  gemini:   { ico: '🔷', name: 'Gemini' },
 };
 
 const scenes = {
@@ -339,33 +366,42 @@ const scenes = {
     title: '質問1/3：AIツール、使ったことある？',
     text: 'ChatGPT・Claude・Gemini・LINEのAIなど、何でもOK。一番近いものを選んでください。',
     choices: [
-      { ico: '🆕', title: 'まったく使ったことがない', sub: '今日が初めて', desc: '大丈夫。ここから一緒に進めます。', source: '', unlock: [], next: 'quiz_q2a' },
-      { ico: '👋', title: '少しだけ触ったことがある', sub: '無料のChatGPTやLINEのAIで少し', desc: '触った感覚があるなら話が早い。', source: '', unlock: [], next: 'quiz_q2b' },
+      { ico: '🆕', title: 'まったく使ったことがない', sub: '今日が初めて', desc: '大丈夫。ここから一緒に進めます。', source: '', unlock: [], next: 'quiz_q2' },
+      { ico: '👋', title: '少しだけ触ったことがある', sub: '無料のChatGPTやLINEのAIで少し', desc: '触った感覚があるなら話が早い。', source: '', unlock: [], next: 'quiz_q2' },
       { ico: '💼', title: '仕事で使っている', sub: '日常的に使っている', desc: '初級は飛ばして、次のレベルから見てみよう。', source: '', unlock: [], next: 'quiz_result_advanced' }
     ]
   },
 
-  quiz_q2a: {
-    title: '質問2/3：ふだん使うのはスマホ？パソコン？',
-    text: 'AIを試すときに使う機械を教えてください。',
+  quiz_q2: {
+    title: '質問2/3：今日やりたいことに近いのは？',
+    text: '「文章」と「画像」、どちらに近いですか？',
     choices: [
-      { ico: '📱', title: 'スマホが中心', sub: 'アプリでサクッと試したい', desc: '', source: '', unlock: [], next: 'quiz_result_chatgpt_free' },
-      { ico: '💻', title: 'パソコンが中心', sub: '会社や家でPCを使うことが多い', desc: '', source: '', unlock: [], next: 'quiz_result_claude_free' }
+      { ico: '✍️', title: '文章（書く・整える・送る・指示文を作る）', sub: 'メール・調べ物・自動化の指示など', desc: '', source: '', unlock: [], next: 'quiz_q_text_purpose' },
+      { ico: '🖼️', title: '画像（イラスト・バナーなど作る）', sub: 'SNS用の画像・素材など', desc: '', source: '', unlock: [], next: 'quiz_q_image_text' }
     ]
   },
 
-  quiz_q2b: {
-    title: '質問2/3：得意になりたいのはどっち？',
-    text: '「文章」と「画像」、今ちょっと興味があるのはどっち？',
+  quiz_q_text_purpose: {
+    title: '質問3/3：その文章は、どっちに近い？',
+    text: '同じ「文章」でも、目的によって向いているAIが変わる。',
     choices: [
-      { ico: '✍️', title: '文章（整える・書く・要約）', sub: 'メール・記事・調べ物など', desc: '', source: '', unlock: [], next: 'quiz_result_claude_free' },
-      { ico: '🖼️', title: '画像（イラスト・バナーなど）', sub: 'SNS用の画像やチラシなど', desc: '', source: '', unlock: [], next: 'quiz_result_chatgpt_free' }
+      { ico: '🛠️', title: '自動化や仕組みづくりのための指示文', sub: 'プロンプト・手順書・作業の自動化など', desc: '', source: '', unlock: [], next: 'quiz_result_claude_free' },
+      { ico: '✉️', title: 'メールや日々のやりとりの文章', sub: '案内文・返信・お願いの文章など', desc: '', source: '', unlock: [], next: 'quiz_result_chatgpt_free' }
+    ]
+  },
+
+  quiz_q_image_text: {
+    title: '質問3/3：その画像に、文字は入る？',
+    text: 'タイトルやキャッチコピーなど、画像の中に文字を入れたいかどうかで分かれる。',
+    choices: [
+      { ico: '🔤', title: '入る（タイトル・コピーなど）', sub: 'SNS投稿・バナーなど', desc: '', source: '', unlock: [], next: 'quiz_result_chatgpt_free' },
+      { ico: '🖼️', title: '入らない（イラスト・写真ベース）', sub: '世界観づくり・背景・素材など', desc: '', source: '', unlock: [], next: 'quiz_result_gemini_free' }
     ]
   },
 
   quiz_result_claude_free: {
     title: '🧠 あなたにはClaudeが向いてそう',
-    text: 'いきなり課金しなくて大丈夫。まずは無料のClaude（claude.ai）にブラウザからログインして、会話してみる。「ファイル操作」や「自動化」まで頼みたくなったタイミングで、有料プランを考えれば十分。',
+    text: 'いきなり課金しなくて大丈夫。まずは無料のClaude（claude.ai）にブラウザからログインして、会話してみる。「仕組みを作る」「自動化する」「ファイルを操作する」のような、ツール・システムづくりに向いている。その先まで頼みたくなったタイミングで、有料プランを考えれば十分。',
     choices: [
       { ico: '➡️', title: '無料のClaudeでできること10個を見る', sub: '今のあなたのままで何ができる？', desc: '', source: '出典：AI革命メディア「Claude料金2026」', unlock: ['claude'], next: 'ten_things_claude' }
     ]
@@ -373,9 +409,17 @@ const scenes = {
 
   quiz_result_chatgpt_free: {
     title: '🎨 あなたにはChatGPTが向いてそう',
-    text: 'いきなり課金しなくて大丈夫。まずは無料のChatGPT（chatgpt.comまたはアプリ）で触ってみる。画像生成は無料でも月7枚くらい作れる。もっと作りたくなったタイミングで、Plus（月$20くらい）を考えれば十分。',
+    text: 'いきなり課金しなくて大丈夫。まずは無料のChatGPT（chatgpt.comまたはアプリ）で触ってみる。メール文や案内文のような「完成品の文章」、タイトルやコピーが入った画像づくりが得意。もっと作りたくなったタイミングで、Plus（月$20くらい）を考えれば十分。',
     choices: [
       { ico: '➡️', title: '無料のChatGPTでできること10個を見る', sub: '今のあなたのままで何ができる？', desc: '', source: '出典：AI PICKSマガジン「ChatGPT料金2026」', unlock: ['chatgpt'], next: 'ten_things_chatgpt' }
+    ]
+  },
+
+  quiz_result_gemini_free: {
+    title: '🔷 あなたにはGeminiが向いてそう',
+    text: 'いきなり課金しなくて大丈夫。まずは無料のGemini（gemini.google.com、Googleアカウントでログイン）で触ってみる。文字を入れないイラスト・写真ベースの画像や、世界観づくりが得意。もっと作りたくなったタイミングで、有料プランを考えれば十分。',
+    choices: [
+      { ico: '➡️', title: '無料のGeminiでできること10個を見る', sub: '今のあなたのままで何ができる？', desc: '', source: '', unlock: ['gemini'], next: 'ten_things_gemini' }
     ]
   },
 
@@ -452,6 +496,28 @@ const scenes = {
     `,
     choices: [
       { ico: '🪴', title: '中級から始める', sub: '5つの中から、伸ばしたいものを選ぶ', desc: '', source: '', unlock: [], next: 'intermediate_hub' }
+    ]
+  },
+
+  ten_things_gemini: {
+    title: '🔷 無料のGeminiでできること10個',
+    note: '🌱初級・🪴中級・🌳上級・🌟超級の順に並んでいる。今日は🌱だけでも十分。',
+    text: `
+      <ol style="padding-left:1.4em; line-height:1.9;">
+        <li>🌱 SNS用のイラストを1枚作る（風景・季節・時間を指定するだけ）</li>
+        <li>🌱 noteのトップ画像を作る</li>
+        <li>🌱 写真風の背景画像を作る</li>
+        <li>🪴 同じ世界観で複数パターンの画像を作る</li>
+        <li>🪴 LP（販売ページ）用の余白を意識した画像を作る</li>
+        <li>🪴 4コマ漫画用の構図イメージを作る</li>
+        <li>🌳 noteシリーズの表紙画像セットを作る</li>
+        <li>🌳 シリーズものの世界観を統一する</li>
+        <li>🌳 プレゼン資料の背景画像を作る</li>
+        <li>🌟 動画・SNS運用など、他のジャンルと組み合わせる</li>
+      </ol>
+    `,
+    choices: [
+      { ico: '🌱', title: '初級から始める', sub: 'まずは①〜④を試す', desc: '', source: '', unlock: [], next: 'beginner_hub' }
     ]
   },
 
@@ -565,7 +631,10 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文①（清書を頼む）',
-        body: '次の文章を、読みやすく整えて。意味は変えずに、言い回しだけ自然にして。\n[ここに自分の文章を貼る]',
+        body: '次の文章を、読みやすく整えて。意味は変えずに、言い回しだけ自然にして。\n{{TEXT}}',
+        inputs: [
+          { key: 'TEXT', label: '清書したい文章', placeholder: '例：明日の会議だけど、もしかしたら少し遅れるかもしれないので、先に始めておいてもらえると助かります', rows: 4 }
+        ],
         note: '出てきた文章を、自分の言葉でもう一度直す。ここが一番大事。'
       },
       {
@@ -589,7 +658,10 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文（3行要約）',
-        body: '次の文章を3行で要約して。一番大事なポイント・決まったこと・次にやることが分かるようにして。\n[ここに長い文章を貼る]',
+        body: '次の文章を3行で要約して。一番大事なポイント・決まったこと・次にやることが分かるようにして。\n{{TEXT}}',
+        inputs: [
+          { key: 'TEXT', label: '要約したい文章（会議メモ・記事・メールなど）', placeholder: 'ここに、要約したい文章を貼ってください', rows: 5 }
+        ],
         note: '「もっと短く」「もっと詳しく」と頼むと、文字数を調整できる。'
       }
     ]
@@ -608,7 +680,10 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文（やさしく説明してもらう）',
-        body: '[分からないこと・調べたいこと]について、初心者向けにやさしく説明して。\n説明の後に、もう少し詳しく知りたい人向けのポイントも3つくらい挙げて。',
+        body: '{{TOPIC}}について、初心者向けにやさしく説明して。\n説明の後に、もう少し詳しく知りたい人向けのポイントも3つくらい挙げて。',
+        inputs: [
+          { key: 'TOPIC', label: '知りたいこと・調べたい言葉', placeholder: '例：NISAって何？', rows: 2 }
+        ],
         note: '返事を読んで「それってどういうこと？」と聞き返すと、どんどん理解が深まる。'
       }
     ]
@@ -627,7 +702,11 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文（メール下書き）',
-        body: '次の内容で、メールの下書きを作って。\n・誰に：[相手]\n・伝えたいこと：[箇条書きで]\n・トーン：ていねい／やわらかめ／フォーマル\n件名も考えて。',
+        body: '次の内容で、メールの下書きを作って。\n・誰に：{{TO}}\n・伝えたいこと：\n{{CONTENT}}\n・トーン：ていねい／やわらかめ／フォーマル\n件名も考えて。',
+        inputs: [
+          { key: 'TO', label: '誰に送る？', placeholder: '例：取引先のBさん', rows: 1 },
+          { key: 'CONTENT', label: '伝えたいこと（箇条書きでOK）', placeholder: '例：\n・来週の打ち合わせを1時間遅らせたい\n・理由は別件が長引いているため', rows: 3 }
+        ],
         note: '出てきた文章を読んで、自分が言いそうな言い方に少し直してから送る。'
       }
     ]
@@ -717,7 +796,10 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文（文体メモを作る）',
-        body: 'さっきのスプレッドシートの「元の文章」「自分が直した版」の組を5件以上貼るので、私がよく使う言葉・避ける言葉・文の長さの傾向をまとめて。\nそのうえで、[相手・用途]向けの文体メモとしてファイルに保存して。',
+        body: 'さっきのスプレッドシートの「元の文章」「自分が直した版」の組を5件以上貼るので、私がよく使う言葉・避ける言葉・文の長さの傾向をまとめて。\nそのうえで、{{TARGET}}向けの文体メモとしてファイルに保存して。\n\n（ここに、5件以上の「元の文章」「自分が直した版」の組を貼ってください）',
+        inputs: [
+          { key: 'TARGET', label: '誰向け・どんな用途の文体？', placeholder: '例：note読者向け', rows: 1 }
+        ],
         note: '相手を変えて何度かやると、複数の文体メモができる。例：読者向け／取引先向け／家族向け。'
       }
     ]
@@ -737,7 +819,10 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文①（全体構成を作る）',
-        body: '[書きたいテーマ]について、合計1万字の記事を書きたい。先に章立て（5〜6章）を作って。各章は2,000字以内になるように。',
+        body: '{{THEME}}について、合計1万字の記事を書きたい。先に章立て（5〜6章）を作って。各章は2,000字以内になるように。',
+        inputs: [
+          { key: 'THEME', label: '書きたいテーマ', placeholder: '例：競馬のFIREスコアの考え方', rows: 1 }
+        ],
         note: '章立てができたら、1章ずつ「第1章を書いて」と頼んでいく。'
       },
       {
@@ -763,7 +848,11 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文（基本の画像を作る）',
-        body: '[テーマ]の画像を1枚、イラストで作って。\n・風景：[一文で]\n・季節：春／夏／秋／冬\n・時間：朝／昼／晩／深夜\n横長で、SNSのアイキャッチに使えるサイズで。',
+        body: '{{THEME}}の画像を1枚、イラストで作って。\n・風景：{{SCENE}}\n・季節：春／夏／秋／冬\n・時間：朝／昼／晩／深夜\n横長で、SNSのアイキャッチに使えるサイズで。',
+        inputs: [
+          { key: 'THEME', label: '画像のテーマ', placeholder: '例：自キュンSeason9のTOP画像', rows: 1 },
+          { key: 'SCENE', label: '風景・情景を一文で', placeholder: '例：夜の駅のホームで電車を待つ後ろ姿', rows: 1 }
+        ],
         note: '風景・季節・時間の3つだけ変えれば、いろんなパターンが作れる。'
       }
     ]
@@ -846,7 +935,12 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文（有料記事の構成案）',
-        body: '[テーマ]についてnoteの有料記事を書きたい。[相手向けの文体メモ]のテンションで、無料パートと有料パートに分けた構成案を作って。価格は[◯◯円]を想定。無料パートの最後に「続きが読みたくなる」一文も考えて。',
+        body: '{{THEME}}についてnoteの有料記事を書きたい。{{STYLE}}のテンションで、無料パートと有料パートに分けた構成案を作って。価格は{{PRICE}}を想定。無料パートの最後に「続きが読みたくなる」一文も考えて。',
+        inputs: [
+          { key: 'THEME', label: '記事のテーマ', placeholder: '例：今週のメインレース予想', rows: 1 },
+          { key: 'STYLE', label: '使う文体メモ（誰向け・どんな用途）', placeholder: '例：note読者向けの文体メモ', rows: 1 },
+          { key: 'PRICE', label: '価格', placeholder: '例：300円', rows: 1 }
+        ],
         note: '出典：note×AIマネタイズに関する解説記事各種（2026年）'
       }
     ]
@@ -866,7 +960,13 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文（相手別の自動振り分け）',
-        body: '[相手の名前やメールアドレス]からのメールには、[相手向けの文体メモ]のトーンで返信案を作って。別の相手[名前]には、[別の文体メモ]のトーンで。下書きとして保存して。',
+        body: '{{TO1}}からのメールには、{{STYLE1}}のトーンで返信案を作って。別の相手{{TO2}}には、{{STYLE2}}のトーンで。下書きとして保存して。',
+        inputs: [
+          { key: 'TO1', label: '相手①の名前やメールアドレス', placeholder: '例：得意先の山田さん（yamada@example.com）', rows: 1 },
+          { key: 'STYLE1', label: '相手①向けの文体メモ', placeholder: '例：取引先向けの文体メモ', rows: 1 },
+          { key: 'TO2', label: '相手②の名前やメールアドレス', placeholder: '例：友人の佐藤さん', rows: 1 },
+          { key: 'STYLE2', label: '相手②向けの文体メモ', placeholder: '例：家族・友人向けの文体メモ', rows: 1 }
+        ],
         note: 'Gmailコネクタが必要。まだ繋いでいない場合は、AI導入ガイドSTEP2を参照。'
       }
     ]
@@ -886,7 +986,11 @@ const scenes = {
     spells: [
       {
         label: '🪄 呪文（スライド構成→生成）',
-        body: '[テーマ]について、1スライド1メッセージで、合計[10]枚のスライド構成を作って。各スライドにタイトルと本文（3行以内）を書いて。そのあと、PowerPointで再現できる形式（VBAコードまたはテキストアウトライン）で出力して。',
+        body: '{{THEME}}について、1スライド1メッセージで、合計{{COUNT}}枚のスライド構成を作って。各スライドにタイトルと本文（3行以内）を書いて。そのあと、PowerPointで再現できる形式（VBAコードまたはテキストアウトライン）で出力して。',
+        inputs: [
+          { key: 'THEME', label: 'スライドのテーマ', placeholder: '例：今月の振り返り', rows: 1 },
+          { key: 'COUNT', label: 'スライド枚数', placeholder: '例：10', rows: 1 }
+        ],
         note: '出典：ChatGPTパワポ自動生成の実践ガイド各種（2026年）。出力後は必ず内容を自分で確認する。'
       }
     ]
@@ -1309,12 +1413,25 @@ function render() {
     }
     if (scene.spells) {
       scene.spells.forEach((s, i) => {
+        let inputsHtml = '';
+        if (s.inputs) {
+          inputsHtml += `<div class="spell-step">①まず下に書き込む → ②コピー → ③AIに貼って送信</div>`;
+          inputsHtml += `<div class="spell-inputs">`;
+          s.inputs.forEach((inp, ii) => {
+            inputsHtml += `
+              <label class="spell-input-label">✏️ ${inp.label}</label>
+              <textarea class="spell-input-box" id="spell-input-${current}-${i}-${ii}" placeholder="${inp.placeholder}" rows="${inp.rows || 2}"></textarea>
+            `;
+          });
+          inputsHtml += `</div>`;
+        }
         html += `
           <div class="spell">
             <div class="spell-head">
               <div class="spell-label fs-subheading">${s.label}</div>
               <button class="copy-btn" onclick="copySpell(this, '${current}', ${i})">📋 コピー</button>
             </div>
+            ${inputsHtml}
             <div class="spell-body">${s.body}</div>
             <div class="spell-note fs-caution">${s.note}</div>
           </div>
@@ -1370,7 +1487,15 @@ function render() {
 }
 
 function copySpell(btn, sceneId, idx) {
-  const text = scenes[sceneId].spells[idx].body;
+  const s = scenes[sceneId].spells[idx];
+  let text = s.body;
+  if (s.inputs) {
+    s.inputs.forEach((inp, ii) => {
+      const el = document.getElementById(`spell-input-${sceneId}-${idx}-${ii}`);
+      const val = (el && el.value.trim()) ? el.value.trim() : `（${inp.label}）`;
+      text = text.split('{{' + inp.key + '}}').join(val);
+    });
+  }
   navigator.clipboard.writeText(text).then(() => {
     const original = btn.textContent;
     btn.textContent = '✅ コピーした';
