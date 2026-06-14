@@ -154,6 +154,59 @@
 
   .panel { display: none; }
   .panel.active { display: block; }
+
+  /* ── 村山さんページへの導線（目立たせる） ── */
+  .beginner-cta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, #0d1117 0%, #0d1a12 100%);
+    border: 1px solid #22c55e;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 28px;
+    text-decoration: none;
+    transition: transform .1s;
+  }
+  .beginner-cta:active { transform: scale(0.98); }
+  .beginner-cta .icon { font-size: 28px; flex-shrink: 0; }
+  .beginner-cta .txt { flex: 1; }
+  .beginner-cta .txt .label { font-size: 11px; color: #22c55e; font-weight: bold; letter-spacing: 1px; margin-bottom: 2px; }
+  .beginner-cta .txt .title { font-size: 14px; color: #e8e0d0; font-weight: bold; }
+  .beginner-cta .txt .desc { font-size: 12px; color: #888; margin-top: 2px; }
+  .beginner-cta .arrow { font-size: 18px; color: #22c55e; flex-shrink: 0; }
+
+  /* ── ツールの役割マップ（視覚カード） ── */
+  .role-map {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 14px 0;
+  }
+  .role-card {
+    background: #0d1117;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 12px 6px;
+    text-align: center;
+  }
+  .role-card .ico { font-size: 24px; margin-bottom: 6px; }
+  .role-card .name { font-size: 11px; font-weight: bold; color: #e8e0d0; margin-bottom: 2px; }
+  .role-card .role { font-size: 10px; color: #888; line-height: 1.5; }
+
+  /* ── モバイル最適化 ── */
+  @media (max-width: 600px) {
+    .page-body { padding: 16px 12px; }
+    .header h1 { font-size: 20px; }
+    .header .sub { font-size: 12px; }
+    .step-pill { padding: 10px 12px; font-size: 11px; }
+    .role-map { grid-template-columns: repeat(3, 1fr); }
+    .role-card:nth-child(4), .role-card:nth-child(5) { grid-column: span 1; }
+    .item { padding: 12px 14px; }
+    .next-bar { flex-direction: column; gap: 10px; align-items: stretch; }
+    .next-bar a, .next-bar span, .next-bar button { width: 100%; text-align: center; }
+    .next-note { text-align: center; }
+  }
 </style>
 </head>
 <body>
@@ -198,18 +251,26 @@
     <div class="step-progress">全7ステップ中の1ステップ目</div>
 
     <div class="intro-box">
-      <b>このステップでは</b>「AIを使って個人開発・自動化を始めるための全体像」と、これから歩く5つのステップを紹介する。<br><br>
-      27日間の記録を振り返ると、最初の数日（DAY2〜DAY4）で一番時間を溶かしたのは「やる気」や「AIの性能」ではなく、<b>"何にどのツールを使うのか"を決めずに手を動かし始めたこと</b>だった。
-      最初に全体図を持っておくだけで、後のステップでの迷いがほぼ消える。<br><br>
-      <b>初めての人へ：</b>このページは少し情報量が多い。何も考えず最初の一歩だけ知りたい場合は
-      <a href="./ai-setup-guide-beginner.html" target="_blank" style="color:#22c55e;">→ はじめの一歩（専門用語なし）</a> から始めるとラク。
+      正直に言うと、最初の数日は何も考えずに突っ走った。「AIすごい」のテンションだけで進めて、DAY2でいきなり詰まる。会社のPCでClaude Codeが動かない。慌てて中古のThinkPadを34,800円で買いに走った。<br><br>
+      ぶっちゃけ、あのバタバタは全部防げた話だった。原因は性能でもやる気でもなく、<b>「どのタスクにどのツールを使うか」を最初に決めていなかった</b>こと、それだけ。<br><br>
+      このステップでやることはそれだけ。5つの全体像を最初に1回ざっくり眺めておく。これだけで、後のステップで迷う時間がほぼゼロになる。
     </div>
+
+    <a href="./ai-setup-guide-beginner.html" target="_blank" class="beginner-cta">
+      <div class="icon">📱</div>
+      <div class="txt">
+        <div class="label">情報量が多いと感じたら</div>
+        <div class="title">はじめの一歩（専門用語なし・スマホ向け）</div>
+        <div class="desc">スマホとGmailだけで始められる、3ステップ版はこちら</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
 
     <div class="section">
       <h2>本文：最初に押さえる5つの全体像</h2>
 
       <div class="item">
-        <div class="item-title">⓪ AIと組む前に「理解度チェック（Y/N 20問）」をやる</div>
+        <div class="item-title">⓪ 🩺 AIと組む前に「理解度チェック（Y/N 20問）」をやる</div>
         <div class="item-body">
           いきなりAIに丸投げする前に、これから出てくる言葉について「知ってる(Y)/知らない(N)」を20問、AIに聞いてもらう。<br><br>
           <b>質問例：</b><br>
@@ -220,55 +281,55 @@
           1問ずつ聞いてもらい、わかる範囲で素直にY/Nで答える。Nが多くてもOK。
         </div>
         <div class="item-why">
-          <b>なぜ最初にやるか：</b> 27日間の運用で「なんで毎回難しくするの」という不満が繰り返し出たが、実際にCEOに20問やってもらうと13/20は理解済みで、わからなかったのは「main/master」のような裏側の言葉だけだった。
-          つまり「わからない」の正体は理解力ではなく、<b>AIが説明の出発点をズラしていること</b>と、<b>直っていない問題が積み重なっていること</b>だった。
-          最初にこのズレを20問で測っておけば、AIは「どこから説明すればいいか」を最初から把握でき、CEOは「説明され続ける」ストレスを避けられる。
+          実はこれ、CEOにも実際にやってもらった。「なんで毎回難しくするの」という不満が何度も出ていたので、てっきり用語が壁になっていると思っていた。ところが20問やってみると13/20は普通に理解済み。わからなかったのは「main/master」みたいな裏側の言葉だけだった。<br><br>
+          つまり「わからない」の正体は理解力じゃない。<b>AIが説明を始める場所がズレていること</b>と、<b>直っていない問題が積み重なっていること</b>、この2つに尽きる。最初に20問でこのズレを測っておけば、AIは「どこから話せばいいか」を最初から知れるし、相手は「また説明され続ける」というストレスから解放される。
         </div>
       </div>
 
       <div class="item">
-        <div class="item-title">① 「何をしたいか」より先に「ツールの役割マップ」を決める</div>
+        <div class="item-title">① 🗺️ 「何をしたいか」より先に「ツールの役割マップ」を決める</div>
         <div class="item-body">
-          AIツールは1つに全部やらせるものではなく、それぞれ得意分野が違う。<br>
-          ・<b>Claude（Claude Code）</b>＝ 思考の整理・実装・戦略相談・記事構成<br>
-          ・<b>ChatGPT</b>＝ 画像生成<br>
-          ・<b>Gemini</b>＝ 画像加工・文字除去<br>
-          ・<b>Supabase</b>＝ 数値・実績・在庫などのデータ保管庫<br>
-          ・<b>GitHub</b>＝ 日記・記録・文体の保存（無料で公開・同期できる）<br>
-          この5つの役割を最初に1枚の図にしておくだけで、「このタスクはどのツール？」で迷う時間がゼロになる。
+          AIツールは1つに全部やらせるものじゃない。それぞれ得意分野が違う。下の5つを最初に1回見ておくだけで、「このタスクはどのツール？」で迷う時間がゼロになる。
+          <div class="role-map">
+            <div class="role-card"><div class="ico">🧠</div><div class="name">Claude</div><div class="role">思考整理<br>実装・構成</div></div>
+            <div class="role-card"><div class="ico">🎨</div><div class="name">ChatGPT</div><div class="role">画像生成</div></div>
+            <div class="role-card"><div class="ico">🪄</div><div class="name">Gemini</div><div class="role">画像加工<br>文字除去</div></div>
+            <div class="role-card"><div class="ico">🗄️</div><div class="name">Supabase</div><div class="role">数値・実績<br>データ保管</div></div>
+            <div class="role-card"><div class="ico">📚</div><div class="name">GitHub</div><div class="role">記録・文体<br>の保存</div></div>
+          </div>
         </div>
         <div class="item-why">
-          <b>なぜこの順番か：</b> DAY14時点でようやく「ChatGPT＝画像、Gemini＝加工、Claude＝HTML組み・戦略、クロコ＝開発ツール」という役割分担が確定したが、それまでの2週間は同じ作業を複数のAIで何度もやり直していた。最初に決めておけば防げたムダ。
+          DAY14になってようやく「ChatGPT＝画像、Gemini＝加工、Claude＝HTML組み・戦略、クロコ＝開発ツール」という役割分担が決まった。でもそれまでの2週間、同じ作業を複数のAIで何度もやり直していた。バカみたいな話だけど、本当にやった。最初に決めておけば防げたムダ、それだけのこと。
         </div>
       </div>
 
       <div class="item">
-        <div class="item-title">② 自分の作業環境（PC・デバイス）を最初に確認する</div>
+        <div class="item-title">② 💻 自分の作業環境（PC・デバイス）を最初に確認する</div>
         <div class="item-body">
           AIツール（特にClaude Code）が動く環境かどうかを、契約・課金の前に確認する。<br>
           会社PCのセキュリティ制限、ブラウザの権限、ローカルにインストールできるかどうかを最初にチェックする。<br><br>
-          <b>さらに重要：ターミナルではなく「VS Code＋Claude Code拡張」で使う。</b><br>
-          ターミナルだけだと、AIに「画面を見せて確認する」ということができない。VS Code拡張なら、スクリーンショットをそのまま貼って「これどうなってる？」と聞ける。
+          <b>もう一つ大事なのが、ターミナルではなく「VS Code＋Claude Code拡張」で使うこと。</b><br>
+          ターミナルだけだと、AIに「画面を見せて確認する」ができない。VS Code拡張なら、スクリーンショットをそのまま貼って「これどうなってる？」と聞ける。
           スクショ→AIが見る→次の一手を返す、というやり取りがそのまま会話で完結する。
         </div>
         <div class="item-why">
-          <b>なぜこの順番か：</b> DAY1でClaude Proに課金した直後のDAY2で「会社PCではClaude Codeが使えない」と判明し、急いで中古PC（ThinkPad X1 Carbon・約34,800円）を探すことになった。課金より先に「動く場所」を確認していれば、この2日間のロスは発生しなかった。<br><br>
-          さらにDAY28で「ターミナルだと無理だったが、VS Codeなら『スクショ→確認→次の指示』が成立する」と判明。これにより「丸投げ→できません→どこができないか分からない」というループ（STEP6で詳述）が大幅に減る。最初からVS Codeで始めていれば、このループに何日も悩まされずに済んだ。
+          DAY1でClaude Proに課金した、その翌日のDAY2で「会社PCではClaude Codeが使えない」と判明。慌てて中古PC（ThinkPad X1 Carbon・約34,800円）を探すことになった。課金の前に「動く場所」を確認していれば、この2日間は丸ごと不要だった。<br><br>
+          で、DAY28になって今度は「ターミナルだと無理だったが、VS Codeなら『スクショ→確認→次の指示』が成立する」と判明。これで「丸投げ→できません→どこができないか分からない」というループ（STEP6で詳述）がかなり減る。最初からVS Codeで始めていれば、このループに何日も悩まされずに済んだ。28日かけて気づくことを、1日目で知れる。
         </div>
       </div>
 
       <div class="item">
-        <div class="item-title">③ 「自分が今どういう状態か」をAIに伝える準備をする</div>
+        <div class="item-title">③ 🧭 「自分が今どういう状態か」をAIに伝える準備をする</div>
         <div class="item-body">
           AIに丸投げする前に、自分の得意・不得意・性格的な傾向（例：単純作業が苦手、決まった指示が苦手など）を一言でまとめておく。これが後のステップで「AIに自分の文体・思考パターンを渡す」ための土台になる。
         </div>
         <div class="item-why">
-          <b>なぜこの順番か：</b> DAY3では「バイブス（その場の勢い）」だけで進めた結果、成果が見えず混乱した。DAY16でようやく「自分の文体・思考パターンがAIに渡せていないことが、出させては直すの繰り返しの根本原因」と気づいたが、これは最初に整理しておけば1週目で気づけたこと。
+          DAY3は「バイブス（その場の勢い）」だけで突き進んだ。成果が見えず、ただ混乱しただけだった。DAY16でようやく「自分の文体・思考パターンをAIに渡せていないことが、出させては直すの繰り返しの根本原因」と気づいたが、これは最初に1回整理しておけば1週目で気づけたこと。
         </div>
       </div>
 
       <div class="item">
-        <div class="item-title">④ SNS（X・Instagram・Threads）の新規アカウント作成とGmailの複数管理</div>
+        <div class="item-title">④ 📲 SNS（X・Instagram・Threads）の新規アカウント作成とGmailの複数管理</div>
         <div class="item-body">
           プロジェクト・ブランドごとにSNSアカウントを作る前提で、Gmailアドレスとブラウザのプロフィールをセットで整理しておく。<br><br>
           <b>簡単な手順：</b><br>
@@ -280,7 +341,7 @@
           <a href="./ai-setup-guide-details.html#sns-accounts" target="_blank" style="color:#d4a017;">詳しい設定はこちら →</a>
         </div>
         <div class="item-why">
-          <b>なぜこの順番か：</b> STEP2・STEP5で複数のSNS・チャットツールをAIと連携させる前提に立つと、「どのアカウントがどのGmail・どのブラウザプロフィールに紐づいているか」が最初に整理されていないと、後から連携設定をやり直すコストが発生する。新規アカウントは作成直後の振る舞いでスパム判定のリスクが変わるため、健全な立ち上げ方を最初に知っておく。
+          STEP2・STEP5では複数のSNS・チャットツールをAIと連携させる前提になる。そのとき「どのアカウントがどのGmail・どのブラウザプロフィールに紐づいているか」が整理されていないと、後から連携設定をやり直すハメになる。新規アカウントは作成直後の振る舞いでスパム判定のリスクも変わるので、健全な立ち上げ方は最初に知っておくほうがいい。
         </div>
       </div>
     </div>
