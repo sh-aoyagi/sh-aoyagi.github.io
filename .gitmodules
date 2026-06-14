@@ -1,0 +1,9 @@
+[submodule "01_決算城"]
+	path = 01_決算城
+	url = https://github.com/sh-aoyagi/kassenjo.git
+[submodule "06_MIKULINK"]
+	path = 06_MIKULINK
+	url = https://github.com/sh-aoyagi/mikulink.git
+[submodule "06_はしご酒"]
+	path = 06_はしご酒
+	url = https://github.com/sh-aoyagi/hashigo.git
