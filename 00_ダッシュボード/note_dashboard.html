@@ -1,1 +1,414 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=https://sh-aoyagi.github.io/dashboard.html"><script>location.href='https://sh-aoyagi.github.io/dashboard.html';</script></head><body>新しいダッシュボードへ移動中…</body></html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自キュン 日次入力 | 電脳会社</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #e8e0d0;
+    font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+  }
+  .page-body { padding: 24px; max-width: 900px; margin: 0 auto; }
+  /* ── グローバルナビ ── */
+  .gnav {
+    background: #141414;
+    border-bottom: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 16px;
+    height: 48px;
+    position: sticky;
+    top: 0;
+    z-index: 500;
+  }
+  .gnav-logo {
+    font-size: 13px; font-weight: bold; color: #d4a017;
+    letter-spacing: 2px; margin-right: 10px; white-space: nowrap; flex-shrink: 0;
+  }
+  .gnav-links { display: flex; gap: 2px; flex: 1; }
+  .gnav-links a {
+    color: #666; text-decoration: none; padding: 6px 12px;
+    border-radius: 6px; font-size: 12px; font-weight: bold;
+    transition: all .15s; white-space: nowrap;
+  }
+  .gnav-links a:hover { background: #1a1a1a; color: #e8e0d0; }
+  .gnav-links a.active { color: #d4a017; background: #1a1200; }
+  .gnav-ham {
+    display: none; background: none; border: 1px solid #2a2a2a;
+    border-radius: 5px; padding: 4px 9px; color: #d4a017;
+    font-size: 16px; cursor: pointer; flex-shrink: 0; margin-left: auto;
+  }
+  @media (max-width: 768px) {
+    .gnav-links { display: none; }
+    .gnav-ham { display: block; }
+  }
+  .header {
+    text-align: center;
+    padding: 24px 0 32px;
+    border-bottom: 1px solid #2a2a2a;
+    margin-bottom: 24px;
+  }
+  .header h1 { font-size: 24px; color: #d4a017; letter-spacing: 3px; margin-bottom: 6px; }
+  .header .sub { color: #666; font-size: 12px; letter-spacing: 1px; }
+  /* ── カード ── */
+  .card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .card-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid #1e1e1e;
+    font-size: 13px; font-weight: bold; color: #d4a017; letter-spacing: 1px;
+  }
+  .card-body { padding: 16px 20px; }
+  /* ── 入力フォーム ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 16px;
+  }
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+  .form-field.full { grid-column: 1 / -1; }
+  .form-field label { font-size: 11px; color: #888; letter-spacing: 1px; }
+  .form-field input {
+    background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 6px;
+    color: #e8e0d0; font-size: 13px; padding: 8px 10px;
+    font-family: inherit;
+  }
+  .form-field input:focus { outline: none; border-color: #d4a017; }
+  .submit-btn {
+    margin-top: 14px; width: 100%; background: #1a1200; border: 1px solid #d4a017;
+    color: #d4a017; font-size: 13px; font-weight: bold; padding: 10px 0;
+    border-radius: 6px; cursor: pointer; transition: all .15s;
+  }
+  .submit-btn:hover { background: #2a1d00; }
+  .form-msg { font-size: 11px; color: #22c55e; margin-top: 8px; min-height: 14px; }
+  /* ── KPIバー ── */
+  .kpi-row2 {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px;
+  }
+  .kpi-card {
+    background: #141414; border: 1px solid #2a2a2a; border-radius: 8px;
+    padding: 18px; text-align: center;
+  }
+  .kpi-card .label { font-size: 12px; color: #888; margin-bottom: 8px; letter-spacing: 1px; }
+  .kpi-card .value { font-size: 24px; font-weight: bold; color: #d4a017; }
+  .kpi-card .sub { font-size: 11px; color: #555; margin-top: 4px; }
+  .progress-bar-wrap { margin: 12px 0 4px; }
+  .progress-label { font-size: 11px; color: #666; margin-bottom: 5px; }
+  .progress-bar { height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #b8860b, #d4a017); border-radius: 3px; transition: width 0.8s ease; }
+  .progress-fill.green-fill { background: linear-gradient(90deg, #166534, #22c55e); }
+  /* ── テーブル ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .data-table th {
+    color: #555; font-weight: normal; padding: 6px 6px; text-align: right;
+    border-bottom: 1px solid #2a2a2a; white-space: nowrap;
+  }
+  .data-table th:first-child, .data-table th:nth-child(2) { text-align: left; }
+  .data-table td { padding: 7px 6px; border-bottom: 1px solid #1a1a1a; }
+  .data-table td:first-child, .data-table td:nth-child(2) { text-align: left; color: #ccc; }
+  .data-table td:nth-child(2) { max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+  .data-table td:not(:first-child):not(:nth-child(2)) { text-align: right; color: #e8e0d0; }
+  .data-table td.memo { color: #888; font-size: 11px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left !important; }
+  .rev { color: #d4a017; font-weight: bold; }
+  .del-btn {
+    background: none; border: 1px solid #333; color: #666; font-size: 10px;
+    padding: 2px 8px; border-radius: 4px; cursor: pointer; transition: all .15s;
+  }
+  .del-btn:hover { border-color: #ef4444; color: #ef4444; }
+  .empty-row { color: #444; text-align: center; padding: 20px 0; font-size: 12px; }
+  .rank-no { display: inline-block; width: 20px; color: #555; }
+  .rank-no.gold { color: #d4a017; font-weight: bold; }
+  .footer { text-align: center; padding: 24px 0; color: #333; font-size: 12px; letter-spacing: 1px; }
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .kpi-row2 { grid-template-columns: 1fr; }
+    .data-table { display: block; overflow-x: auto; white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- グローバルナビ -->
+<nav class="gnav">
+  <span class="gnav-logo">電脳会社</span>
+  <div class="gnav-links">
+    <a href="./dashboard.html">📊 ダッシュ</a>
+    <a href="../note.html">📝 note</a>
+    <a href="../mercari.html">🛍️ メルカリ</a>
+    <a href="../kassenjo.html">🏯 決算城</a>
+    <a href="./note_dashboard.html" class="active">💕 自キュン入力</a>
+  </div>
+</nav>
+
+<div class="page-body">
+  <div class="header">
+    <h1>💕 自キュン 日次入力</h1>
+    <div class="sub">noteの管理画面を見て毎日入力 → 1週間で売れる記事の傾向を探す</div>
+  </div>
+
+  <!-- 入力フォーム -->
+  <div class="card">
+    <div class="card-header">📝 今日の記録を入力</div>
+    <div class="card-body">
+      <form id="entryForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>日付</label>
+            <input type="date" id="fDate" required>
+          </div>
+          <div class="form-field">
+            <label>記事名</label>
+            <input type="text" id="fTitle" list="titleList" placeholder="例：ポケベルに0840を" required>
+            <datalist id="titleList"></datalist>
+          </div>
+          <div class="form-field">
+            <label>ビュー</label>
+            <input type="number" id="fViews" min="0" placeholder="0">
+          </div>
+          <div class="form-field">
+            <label>スキ</label>
+            <input type="number" id="fLikes" min="0" placeholder="0">
+          </div>
+          <div class="form-field">
+            <label>販売数</label>
+            <input type="number" id="fSales" min="0" placeholder="0">
+          </div>
+          <div class="form-field">
+            <label>売上（円）</label>
+            <input type="number" id="fRevenue" min="0" placeholder="0">
+          </div>
+          <div class="form-field full">
+            <label>変更メモ（例：TOP画像変更／タイトル変更／価格変更）</label>
+            <input type="text" id="fMemo" placeholder="任意">
+          </div>
+        </div>
+        <button type="submit" class="submit-btn">登録する</button>
+        <div class="form-msg" id="formMsg"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 今週の進捗 -->
+  <div class="kpi-row2">
+    <div class="kpi-card">
+      <div class="label">今週の売上合計</div>
+      <div class="value" id="weekRevenue">¥0</div>
+      <div class="sub" id="weekRange">--</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">目標 ¥10,000 まで</div>
+      <div class="value" id="weekRemain">¥10,000</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar"><div class="progress-fill green-fill" id="weekProgressFill" style="width:0%;"></div></div>
+      </div>
+      <div class="sub" id="weekProgressLabel">0%</div>
+    </div>
+  </div>
+
+  <!-- 直近7日間の一覧 -->
+  <div class="card">
+    <div class="card-header">📅 直近7日間の入力一覧</div>
+    <div class="card-body">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>日付</th><th>記事名</th><th>ビュー</th><th>スキ</th><th>販売数</th><th>売上</th><th>メモ</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="weekTableBody"></tbody>
+      </table>
+      <div class="empty-row" id="weekEmpty" style="display:none;">まだ入力がありません</div>
+    </div>
+  </div>
+
+  <!-- 記事別売上ランキング -->
+  <div class="card">
+    <div class="card-header">🏆 記事別 売上ランキング（今週）</div>
+    <div class="card-body">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th></th><th>記事名</th><th>売上</th><th>販売数</th><th>ビュー</th><th>スキ</th>
+          </tr>
+        </thead>
+        <tbody id="rankTableBody"></tbody>
+      </table>
+      <div class="empty-row" id="rankEmpty" style="display:none;">まだ入力がありません</div>
+    </div>
+  </div>
+
+  <div class="footer">電脳会社 | 自キュン日次入力（ローカル保存版）</div>
+</div>
+
+<script>
+const STORAGE_KEY = 'kyunDailyLog';
+
+function loadLog() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+function saveLog(log) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(log));
+}
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function fmtYen(n) {
+  return '¥' + Math.round(n).toLocaleString();
+}
+function fmtDateShort(s) {
+  const parts = s.split('-');
+  return parts[1] + '/' + parts[2];
+}
+
+// 直近7日（今日を含む）の日付文字列リスト
+function last7Days() {
+  const days = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    days.push(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+  }
+  return days;
+}
+
+function render() {
+  const log = loadLog();
+  const days = last7Days();
+  const weekEntries = log.filter(e => days.includes(e.date));
+
+  // タイトル候補（datalist）
+  const titleList = document.getElementById('titleList');
+  const titles = Array.from(new Set(log.map(e => e.title)));
+  titleList.innerHTML = titles.map(t => `<option value="${escapeHtml(t)}">`).join('');
+
+  // 週合計
+  const weekRevenueSum = weekEntries.reduce((s, e) => s + (Number(e.revenue) || 0), 0);
+  document.getElementById('weekRevenue').textContent = fmtYen(weekRevenueSum);
+  document.getElementById('weekRange').textContent = fmtDateShort(days[0]) + ' 〜 ' + fmtDateShort(days[6]);
+
+  const remain = Math.max(0, 10000 - weekRevenueSum);
+  const pct = Math.min(100, Math.round(weekRevenueSum / 10000 * 100));
+  document.getElementById('weekRemain').textContent = fmtYen(remain);
+  document.getElementById('weekProgressFill').style.width = pct + '%';
+  document.getElementById('weekProgressLabel').textContent = pct + '% 達成（売上 ' + fmtYen(weekRevenueSum) + ' / 目標 ¥10,000）';
+
+  // 一覧テーブル（新しい順）
+  const sorted = [...weekEntries].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : (b.createdAt||0) - (a.createdAt||0)));
+  const tbody = document.getElementById('weekTableBody');
+  const emptyRow = document.getElementById('weekEmpty');
+  if (sorted.length === 0) {
+    tbody.innerHTML = '';
+    emptyRow.style.display = 'block';
+  } else {
+    emptyRow.style.display = 'none';
+    tbody.innerHTML = sorted.map(e => `
+      <tr>
+        <td>${fmtDateShort(e.date)}</td>
+        <td>${escapeHtml(e.title)}</td>
+        <td>${Number(e.views)||0}</td>
+        <td>${Number(e.likes)||0}</td>
+        <td>${Number(e.sales)||0}</td>
+        <td class="rev">${fmtYen(Number(e.revenue)||0)}</td>
+        <td class="memo">${escapeHtml(e.memo||'')}</td>
+        <td><button class="del-btn" onclick="deleteEntry('${e.id}')">削除</button></td>
+      </tr>
+    `).join('');
+  }
+
+  // 記事別ランキング（今週分を記事名で集計）
+  const rankMap = {};
+  weekEntries.forEach(e => {
+    if (!rankMap[e.title]) rankMap[e.title] = { title: e.title, revenue: 0, sales: 0, views: 0, likes: 0 };
+    rankMap[e.title].revenue += Number(e.revenue) || 0;
+    rankMap[e.title].sales += Number(e.sales) || 0;
+    rankMap[e.title].views += Number(e.views) || 0;
+    rankMap[e.title].likes += Number(e.likes) || 0;
+  });
+  const ranked = Object.values(rankMap).sort((a, b) => b.revenue - a.revenue);
+  const rankBody = document.getElementById('rankTableBody');
+  const rankEmpty = document.getElementById('rankEmpty');
+  if (ranked.length === 0) {
+    rankBody.innerHTML = '';
+    rankEmpty.style.display = 'block';
+  } else {
+    rankEmpty.style.display = 'none';
+    rankBody.innerHTML = ranked.map((r, i) => `
+      <tr>
+        <td><span class="rank-no ${i===0?'gold':''}">${i+1}</span></td>
+        <td>${escapeHtml(r.title)}</td>
+        <td class="rev">${fmtYen(r.revenue)}</td>
+        <td>${r.sales}</td>
+        <td>${r.views}</td>
+        <td>${r.likes}</td>
+      </tr>
+    `).join('');
+  }
+}
+
+function deleteEntry(id) {
+  let log = loadLog();
+  log = log.filter(e => e.id !== id);
+  saveLog(log);
+  render();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('entryForm').addEventListener('submit', function(ev) {
+  ev.preventDefault();
+  const entry = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    date: document.getElementById('fDate').value,
+    title: document.getElementById('fTitle').value.trim(),
+    views: document.getElementById('fViews').value || 0,
+    likes: document.getElementById('fLikes').value || 0,
+    sales: document.getElementById('fSales').value || 0,
+    revenue: document.getElementById('fRevenue').value || 0,
+    memo: document.getElementById('fMemo').value.trim(),
+    createdAt: Date.now()
+  };
+  if (!entry.date || !entry.title) return;
+
+  const log = loadLog();
+  log.push(entry);
+  saveLog(log);
+
+  const msg = document.getElementById('formMsg');
+  msg.textContent = '登録しました（' + entry.date + ' / ' + entry.title + '）';
+  setTimeout(() => { msg.textContent = ''; }, 3000);
+
+  // 日付・メモ以外をクリア（連続入力しやすくする）
+  document.getElementById('fViews').value = '';
+  document.getElementById('fLikes').value = '';
+  document.getElementById('fSales').value = '';
+  document.getElementById('fRevenue').value = '';
+  document.getElementById('fMemo').value = '';
+
+  render();
+});
+
+// 初期化：日付を今日にセット
+document.getElementById('fDate').value = todayStr();
+render();
+</script>
+
+</body>
+</html>
