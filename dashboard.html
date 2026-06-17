@@ -190,6 +190,27 @@ h1 { margin: 10px 0 10px; font-size: clamp(28px, 5vw, 58px); line-height: 1.05; 
 }
 .action-line a:hover, .copyline:hover { border-color: var(--cyan); }
 .copyline code { white-space: normal; color: var(--soft); font-family: inherit; }
+.strategy-board { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; }
+.strategy-stage { display: grid; gap: 10px; }
+.stage-card { display: grid; grid-template-columns: 74px 1fr; gap: 12px; align-items: start; padding: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.stage-day { display: grid; place-items: center; min-height: 62px; border-radius: 7px; background: rgba(255,255,255,.05); color: var(--muted); font-size: 12px; font-weight: 900; text-align: center; }
+.stage-card.active { border-color: rgba(57,217,138,.8); background: color-mix(in srgb, var(--panel) 84%, var(--green) 16%); }
+.stage-card.active .stage-day { background: var(--green); color: #07110d; }
+.stage-card strong { display:block; margin-bottom: 4px; }
+.stage-card span { display:block; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.stage-card.active span { color: var(--soft); }
+.growth-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.growth-card { padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,255,255,.035); }
+.growth-card .label { color: var(--muted); font-size: 11px; font-weight: 900; }
+.growth-card .value { margin-top: 6px; font-size: 18px; font-weight: 900; }
+.growth-card .sub { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.plan-lane { display: grid; gap: 8px; margin-top: 12px; }
+.lane-item { display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,255,255,.035); }
+.lane-item .lane-label { color: var(--green); font-size: 11px; font-weight: 900; }
+.lane-item .lane-text { color: var(--soft); font-size: 12px; line-height: 1.6; }
+.learning-list { display: grid; gap: 8px; margin-top: 12px; }
+.learning-item { display: flex; align-items: flex-start; gap: 9px; color: var(--soft); font-size: 12px; line-height: 1.65; }
+.learning-item i { color: var(--cyan); width: 16px; height: 16px; flex: 0 0 16px; margin-top: 2px; }
 .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .flow-step { position: relative; min-height: 124px; }
 .flow-step .num { color: var(--green); font-weight: 900; font-size: 12px; }
@@ -211,7 +232,7 @@ h1 { margin: 10px 0 10px; font-size: clamp(28px, 5vw, 58px); line-height: 1.05; 
 .brief-item span { color: var(--muted); font-size:12px; line-height:1.65; }
 .footer { color: var(--muted); font-size: 12px; text-align:center; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
 @media (max-width: 980px) {
-  .hero, .grid-3, .grid-2, .flow, .live { grid-template-columns: 1fr; }
+  .hero, .grid-3, .grid-2, .strategy-board, .growth-grid, .flow, .live { grid-template-columns: 1fr; }
   .hero-actions { grid-template-columns: 1fr; }
   .clock { display:none; }
 }
@@ -243,6 +264,7 @@ h1 { margin: 10px 0 10px; font-size: clamp(28px, 5vw, 58px); line-height: 1.05; 
 <nav class="nav">
   <div class="logo"><span class="logo-mark"><i data-lucide="layout-dashboard"></i></span><span>電脳会社</span></div>
   <a class="active" href="./dashboard.html"><i data-lucide="gauge"></i>司令塔</a>
+  <a href="#note-strategy"><i data-lucide="map"></i>note戦略</a>
   <a href="./kyun.html"><i data-lucide="heart"></i>自キュン</a>
   <a href="./keiba.html"><i data-lucide="flame"></i>競馬</a>
   <a href="./kassenjo.html"><i data-lucide="landmark"></i>決算城</a>
@@ -339,6 +361,57 @@ h1 { margin: 10px 0 10px; font-size: clamp(28px, 5vw, 58px); line-height: 1.05; 
         <p>プロンプト検証と自動化の土台。毎朝のトレンド収集、採点、ネタ帳作成を半自動化する候補として追います。</p>
         <div class="tagrow"><span class="tag">自動化</span><span class="tag">無料枠</span><span class="tag pink">検証待ち</span></div>
         <div class="action-line"><a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio <i data-lucide="external-link"></i></a></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="note-strategy">
+    <div class="section-head">
+      <div><h2 class="section-title">noteマーケ戦略ボード</h2><p class="section-sub">「気づいたことをやる」から、「仮説を育てる」へ。今日で3日目、まだ実験の土台を作っている段階です。</p></div>
+    </div>
+    <div class="strategy-board">
+      <div class="card">
+        <h3 class="card-title"><span class="mini"><i data-lucide="route"></i></span>今どこに向かっているか</h3>
+        <p>目的は、noteで偶然当てることではなく、青柳さんが「バズ話題を感情に変換し、公開後の数字から次の仮説を作れる人」になること。自キュンはその訓練場で、AI導入ネタは将来の収益導線です。</p>
+        <div class="growth-grid">
+          <div class="growth-card"><div class="label">現在地</div><div class="value">Day 3 / 7</div><div class="sub">まだ勝敗判断ではなく、型を作る期間</div></div>
+          <div class="growth-card"><div class="label">今の目的</div><div class="value">再現性</div><div class="sub">伸びた理由、伸びない理由を分ける</div></div>
+          <div class="growth-card"><div class="label">次の到達点</div><div class="value">7日分</div><div class="sub">題材・時間・ビュー・スキ・仮説を並べる</div></div>
+        </div>
+        <div class="plan-lane">
+          <div class="lane-item"><span class="lane-label">入口</span><span class="lane-text">Google Trends、恋リア、スポーツ、配信最終回から今日の空気を拾う。</span></div>
+          <div class="lane-item"><span class="lane-label">変換</span><span class="lane-text">話題そのものではなく、選ばれなかった側、同じ時間を見ていた人、消せない通知に変える。</span></div>
+          <div class="lane-item"><span class="lane-label">検証</span><span class="lane-text">ビューが少なければ露出不足。ビューが多くスキが少なければ、タイトルか本文の刺さり方を直す。</span></div>
+        </div>
+      </div>
+      <div class="strategy-stage">
+        <div class="stage-card"><div class="stage-day">Day 1</div><div><strong>観察を始める</strong><span>バズ話題を拾い、自キュン化できるかを見る。正解探しではなく材料集め。</span></div></div>
+        <div class="stage-card"><div class="stage-day">Day 2</div><div><strong>変換の型を試す</strong><span>W杯、恋リア、最終回などを、未練・約束・沈黙に変える。</span></div></div>
+        <div class="stage-card active"><div class="stage-day">Day 3</div><div><strong>戦略を見える化する</strong><span>今日ここ。青柳さんが何を学んでいるか、どこへ向かっているかを画面に出す。</span></div></div>
+        <div class="stage-card"><div class="stage-day">Day 4-5</div><div><strong>数字で切り分ける</strong><span>題材、公開時間、ビュー、スキ率を見て、露出不足と刺さらなさを分ける。</span></div></div>
+        <div class="stage-card"><div class="stage-day">Day 6-7</div><div><strong>勝ちパターン候補を残す</strong><span>次週に使う採用基準、タイトル型、避ける題材を決める。</span></div></div>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-top:12px;">
+      <article class="card">
+        <h3 class="card-title"><span class="mini"><i data-lucide="brain"></i></span>青柳さんが伸ばしている力</h3>
+        <div class="learning-list">
+          <div class="learning-item"><i data-lucide="check-circle-2"></i><span>話題をそのまま消費せず、読者の感情に翻訳する力。</span></div>
+          <div class="learning-item"><i data-lucide="check-circle-2"></i><span>スキ1を失敗と決めず、ビュー不足か刺さり不足かを分ける力。</span></div>
+          <div class="learning-item"><i data-lucide="check-circle-2"></i><span>無料AI導入を「自分の事業で使えるか」に変換する力。</span></div>
+        </div>
+      </article>
+      <article class="card">
+        <h3 class="card-title"><span class="mini"><i data-lucide="target"></i></span>今週のマーケ仮説</h3>
+        <p>恋リア・スポーツ・最終回のような「みんなが同じ時間に見たもの」は、自キュンに向いている。ただし、元ネタ説明ではなく、見終わった後の沈黙・通知・帰り道に寄せた方が刺さる。</p>
+        <div class="tagrow"><span class="tag good">検証中</span><span class="tag">共有体験</span><span class="tag">余韻</span><span class="tag pink">未練</span></div>
+      </article>
+      <article class="card">
+        <h3 class="card-title"><span class="mini"><i data-lucide="clipboard-list"></i></span>毎日記録するもの</h3>
+        <p>題材、元ネタURL、公開時間、ビュー、スキ、スキ率、仮説、次に直すこと。この8つがそろって初めて、青柳さんの経験値になります。</p>
+        <div class="action-line">
+          <div class="copyline"><code>今日のnoteマーケ結果を記録して。題材、公開時間、ビュー、スキ、仮説、次に直すことまで</code><i data-lucide="copy"></i></div>
+        </div>
       </article>
     </div>
   </section>
