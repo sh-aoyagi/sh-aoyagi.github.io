@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>電脳会社 ダッシュボード</title>
+<title>電脳会社 Control Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
@@ -13,537 +15,328 @@ if (typeof SUPABASE_URL === 'undefined') var SUPABASE_URL = 'https://dfnhkljlohl
 if (typeof SUPABASE_ANON_KEY === 'undefined') var SUPABASE_ANON_KEY = 'sb_publishable_wJertOCOfoY43UE_sUS_5w_IDYwCv7S';
 </script>
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #101114;
-  --panel: #17191f;
-  --panel-2: #1f232b;
-  --line: rgba(255,255,255,.1);
-  --line-strong: rgba(255,255,255,.18);
-  --text: #f5f2ea;
-  --muted: #a8adb7;
-  --soft: #d9ded6;
-  --green: #39d98a;
-  --cyan: #52c7df;
-  --pink: #ff6b9a;
-  --amber: #f5b74f;
-  --blue: #6aa7ff;
-  --red: #ff7066;
-  --shadow: 0 18px 60px rgba(0,0,0,.28);
-  --radius: 8px;
+:root{
+  color-scheme: light;
+  --ink:#171717;
+  --ink-2:#343434;
+  --muted:#77736b;
+  --paper:#f6f2e9;
+  --panel:#fffaf0;
+  --line:rgba(23,23,23,.12);
+  --green:#15c47e;
+  --blue:#2f7df6;
+  --coral:#ff6a55;
+  --violet:#7467ff;
+  --gold:#c28a22;
+  --charcoal:#20242b;
+  --soft-green:#dff8ec;
+  --soft-blue:#e5efff;
+  --soft-coral:#ffe8e2;
+  --radius:8px;
+  --shadow:0 20px 70px rgba(28,24,18,.13);
 }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  overflow-x: hidden;
-  background:
-    linear-gradient(180deg, rgba(57,217,138,.05), transparent 280px),
-    radial-gradient(circle at 80% 0%, rgba(82,199,223,.08), transparent 360px),
-    var(--bg);
-  color: var(--text);
-  font-family: 'Noto Sans JP', system-ui, sans-serif;
-  min-height: 100vh;
-  letter-spacing: 0;
+*{box-sizing:border-box}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;background:var(--paper)}
+body{margin:0;color:var(--ink);font-family:'Noto Sans JP',system-ui,sans-serif;background:var(--paper);letter-spacing:0;overflow-x:hidden}
+a{color:inherit}
+.topbar{position:fixed;inset:12px 12px auto;z-index:50;height:52px;display:flex;align-items:center;gap:8px;padding:6px;background:rgba(246,242,233,.78);border:1px solid rgba(23,23,23,.1);border-radius:999px;backdrop-filter:blur(18px);box-shadow:0 12px 50px rgba(40,35,25,.11);overflow-x:auto;scrollbar-width:none}
+.topbar::-webkit-scrollbar{display:none}
+.brand{display:inline-flex;align-items:center;gap:8px;padding:0 10px 0 8px;font-weight:900;white-space:nowrap}
+.brand-mark{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--paper)}
+.nav-pill{height:38px;display:inline-flex;align-items:center;gap:7px;padding:0 13px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:12px;font-weight:900;white-space:nowrap;background:rgba(255,250,240,.65)}
+.nav-pill.primary{background:var(--green);color:#062317;border-color:transparent}
+.nav-pill:hover{border-color:rgba(23,23,23,.3);transform:translateY(-1px)}
+.clock{margin-left:auto;padding:0 12px;color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap}
+.deck{min-height:100svh}
+.screen{min-height:100svh;scroll-snap-align:start;padding:84px 18px 22px;display:grid;align-items:stretch}
+.shell{width:min(1240px,100%);margin:auto;display:grid;gap:14px}
+.hero-grid{grid-template-columns:1.1fr .9fr;grid-template-rows:minmax(230px,.8fr) minmax(250px,1fr);height:calc(100svh - 106px)}
+.tile{position:relative;min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+.tile.pad{padding:22px}
+.hero{grid-row:span 2;background:#111;color:#fff;display:flex;flex-direction:column;justify-content:space-between}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(21,196,126,.28),transparent 36%),linear-gradient(330deg,rgba(255,106,85,.22),transparent 42%);pointer-events:none}
+.hero>*{position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:900;text-transform:uppercase;color:var(--green)}
+h1{margin:14px 0 12px;font-size:clamp(42px,7vw,92px);line-height:.94;letter-spacing:0;max-width:100%;overflow-wrap:anywhere}
+.hero-copy{margin:0;max-width:720px;color:rgba(255,255,255,.78);font-size:15px;line-height:1.8}
+.hero-bottom{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:28px}
+.mini-card{padding:13px;border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);background:rgba(255,255,255,.06)}
+.mini-card b{display:block;font-size:13px;margin-bottom:5px}
+.mini-card span{display:block;color:rgba(255,255,255,.65);font-size:11px;line-height:1.5}
+.status-stack{display:grid;gap:10px}
+.status-tile{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:15px;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}
+.icon{width:42px;height:42px;display:grid;place-items:center;border-radius:var(--radius);background:var(--soft-green);color:#067344}
+.icon.blue{background:var(--soft-blue);color:var(--blue)}
+.icon.coral{background:var(--soft-coral);color:var(--coral)}
+.status-tile small{display:block;color:var(--muted);font-size:11px;font-weight:900}
+.status-tile b{font-size:20px}
+.badge{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:#111;color:#fff;font-size:11px;font-weight:900}
+.question{background:var(--charcoal);color:#fff;display:grid;align-content:space-between}
+.question h2{margin:0;font-size:clamp(25px,4vw,48px);line-height:1.08}
+.answer-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.answer{padding:13px;border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);background:rgba(255,255,255,.06)}
+.answer small{display:block;color:rgba(255,255,255,.55);font-size:11px;font-weight:900;margin-bottom:5px}
+.answer b{font-size:16px}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.section-head h2{margin:0;font-size:clamp(26px,4vw,54px);line-height:1}
+.section-head p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
+.tile-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(118px,1fr);gap:12px;height:calc(100svh - 188px)}
+.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.row-2{grid-row:span 2}
+.tile h3{margin:0 0 8px;font-size:18px;line-height:1.25}
+.tile p{margin:0;color:var(--muted);font-size:13px;line-height:1.65}
+.large-num{font-size:clamp(42px,6vw,70px);font-weight:900;line-height:1}
+.chip-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:999px;background:rgba(23,23,23,.07);font-size:11px;font-weight:900;color:var(--ink-2)}
+.chip.green{background:var(--green);color:#062317}.chip.blue{background:var(--blue);color:#fff}.chip.coral{background:var(--coral);color:#fff}.chip.violet{background:var(--violet);color:#fff}
+.timeline{display:grid;gap:8px;margin-top:10px}
+.step{display:grid;grid-template-columns:48px 1fr;gap:9px;align-items:start}
+.step-num{height:34px;display:grid;place-items:center;border-radius:999px;background:#111;color:#fff;font-size:11px;font-weight:900}
+.step.active .step-num{background:var(--green);color:#062317}
+.step b{display:block;font-size:13px}.step span{display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:2px}
+.source-list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}
+.source{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:54px;padding:10px;border:1px solid var(--line);border-radius:var(--radius);text-decoration:none;background:rgba(255,255,255,.44);font-size:12px;font-weight:900}
+.source span{color:var(--muted);font-size:11px;font-weight:700}
+.command{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;font-size:12px;font-weight:900}
+.command code{font-family:inherit;white-space:normal;color:var(--ink-2)}
+.snap-note{position:absolute;right:14px;bottom:12px;color:rgba(23,23,23,.36);font-size:11px;font-weight:900}
+.dark{background:#111;color:#fff}.dark p,.dark .snap-note{color:rgba(255,255,255,.62)}.dark .chip{background:rgba(255,255,255,.12);color:#fff}
+.accent-green{background:var(--soft-green)}.accent-blue{background:var(--soft-blue)}.accent-coral{background:var(--soft-coral)}
+.bottom-nav{position:fixed;z-index:60;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:7px;padding:6px;background:rgba(17,17,17,.72);backdrop-filter:blur(18px);border-radius:999px}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.38);border:0}.dot.active{width:28px;border-radius:999px;background:var(--green)}
+@media(max-width:980px){
+  html{scroll-snap-type:y proximity}
+  .clock{display:none}
+  .screen{padding:76px 12px 18px}
+  .hero-grid{height:auto;grid-template-columns:1fr;grid-template-rows:auto}
+  .hero{min-height:calc(100svh - 96px)}
+  .hero-bottom{grid-template-columns:1fr}
+  .answer-grid,.source-list{grid-template-columns:1fr}
+  .tile-grid{height:auto;grid-template-columns:1fr;grid-auto-rows:auto}
+  .span-3,.span-4,.span-5,.span-6,.span-7,.span-8,.row-2{grid-column:span 1;grid-row:span 1}
+  .tile.pad{padding:18px}
+  h1{font-size:44px}
+  .status-tile{grid-template-columns:38px 1fr}
+  .status-tile .badge{grid-column:2;justify-self:start}
 }
-a { color: inherit; }
-button, input, textarea { font: inherit; }
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 18px;
-  background: rgba(16,17,20,.92);
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(16px);
-  overflow-x: auto;
-}
-.logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 900;
-  white-space: nowrap;
-  margin-right: 8px;
-}
-.logo-mark {
-  width: 26px;
-  height: 26px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  color: var(--green);
-}
-.nav a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 34px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.nav a.active { color: #07110d; background: var(--green); border-color: var(--green); }
-.nav a:hover { color: var(--text); border-color: var(--line-strong); }
-.clock { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
-.page {
-  width: min(1220px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 24px 0 54px;
-}
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
-  gap: 18px;
-  align-items: stretch;
-  margin-bottom: 18px;
-}
-.panel {
-  min-width: 0;
-  background: color-mix(in srgb, var(--panel) 92%, #fff 8%);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-.hero-main { padding: 24px; min-height: 320px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-.kicker { color: var(--green); font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
-h1 { margin: 10px 0 10px; font-size: clamp(28px, 5vw, 58px); line-height: 1.05; letter-spacing: 0; overflow-wrap: anywhere; }
-.lead { color: var(--soft); font-size: 15px; line-height: 1.85; max-width: 760px; margin: 0; overflow-wrap: anywhere; word-break: auto-phrase; }
-.hero-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; }
-.cmd {
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  gap: 10px;
-  align-items: center;
-  padding: 12px;
-  background: var(--panel-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  text-decoration: none;
-  min-height: 72px;
-}
-.cmd i, .iconbox {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 7px;
-  background: rgba(255,255,255,.06);
-  color: var(--green);
-}
-.cmd strong { display:block; font-size: 13px; margin-bottom: 3px; }
-.cmd span { display:block; color: var(--muted); font-size: 11px; line-height: 1.5; }
-.cmd:hover { border-color: var(--green); transform: translateY(-1px); }
-.status-card { padding: 18px; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
-.status-row { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); min-width: 0; }
-.status-row:last-child { border-bottom: 0; padding-bottom: 0; }
-.status-row .label { color: var(--muted); font-size: 12px; }
-.status-row .value { font-weight: 900; text-align: right; overflow-wrap: anywhere; word-break: break-all; min-width: 0; }
-.value.green { color: var(--green); }
-.value.cyan { color: var(--cyan); }
-.value.amber { color: var(--amber); }
-.section { margin-top: 22px; }
-.section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
-.section-title { margin: 0; font-size: 20px; line-height: 1.3; }
-.section-sub { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; min-width: 0; }
-.card-title { display:flex; align-items:center; gap:8px; margin:0 0 10px; font-size: 15px; }
-.card-title .mini { width: 26px; height: 26px; display:grid; place-items:center; border-radius: 6px; background: rgba(255,255,255,.06); color: var(--cyan); }
-.card p { margin: 0; color: var(--soft); font-size: 13px; line-height: 1.75; }
-.score-list { display: grid; gap: 8px; margin-top: 12px; }
-.score-item { display: grid; grid-template-columns: 92px 1fr auto; align-items: center; gap: 10px; }
-.score-label { color: var(--muted); font-size: 12px; }
-.bar { height: 8px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; }
-.bar span { display:block; height:100%; background: linear-gradient(90deg, var(--green), var(--cyan)); border-radius: 999px; }
-.score-num { color: var(--text); font-size: 12px; font-weight: 900; }
-.tagrow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.tag { display:inline-flex; align-items:center; gap:5px; padding: 5px 8px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:11px; font-weight:700; }
-.tag.good { color: #07110d; background: var(--green); border-color: var(--green); }
-.tag.cyan { color: #071118; background: var(--cyan); border-color: var(--cyan); }
-.tag.pink { color: #18070d; background: var(--pink); border-color: var(--pink); }
-.action-line { display: grid; gap: 8px; margin-top: 12px; }
-.action-line a, .copyline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 11px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: rgba(255,255,255,.035);
-  color: var(--text);
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 700;
-}
-.action-line a:hover, .copyline:hover { border-color: var(--cyan); }
-.copyline code { white-space: normal; color: var(--soft); font-family: inherit; }
-.strategy-board { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; }
-.strategy-stage { display: grid; gap: 10px; }
-.stage-card { display: grid; grid-template-columns: 74px 1fr; gap: 12px; align-items: start; padding: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
-.stage-day { display: grid; place-items: center; min-height: 62px; border-radius: 7px; background: rgba(255,255,255,.05); color: var(--muted); font-size: 12px; font-weight: 900; text-align: center; }
-.stage-card.active { border-color: rgba(57,217,138,.8); background: color-mix(in srgb, var(--panel) 84%, var(--green) 16%); }
-.stage-card.active .stage-day { background: var(--green); color: #07110d; }
-.stage-card strong { display:block; margin-bottom: 4px; }
-.stage-card span { display:block; color: var(--muted); font-size: 12px; line-height: 1.65; }
-.stage-card.active span { color: var(--soft); }
-.growth-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
-.growth-card { padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,255,255,.035); }
-.growth-card .label { color: var(--muted); font-size: 11px; font-weight: 900; }
-.growth-card .value { margin-top: 6px; font-size: 18px; font-weight: 900; }
-.growth-card .sub { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.5; }
-.plan-lane { display: grid; gap: 8px; margin-top: 12px; }
-.lane-item { display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,255,255,.035); }
-.lane-item .lane-label { color: var(--green); font-size: 11px; font-weight: 900; }
-.lane-item .lane-text { color: var(--soft); font-size: 12px; line-height: 1.6; }
-.learning-list { display: grid; gap: 8px; margin-top: 12px; }
-.learning-item { display: flex; align-items: flex-start; gap: 9px; color: var(--soft); font-size: 12px; line-height: 1.65; }
-.learning-item i { color: var(--cyan); width: 16px; height: 16px; flex: 0 0 16px; margin-top: 2px; }
-.flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.flow-step { position: relative; min-height: 124px; }
-.flow-step .num { color: var(--green); font-weight: 900; font-size: 12px; }
-.flow-step strong { display:block; margin: 6px 0; }
-.flow-step span { color: var(--muted); font-size: 12px; line-height: 1.6; }
-.table { width: 100%; border-collapse: collapse; font-size: 12px; overflow: hidden; }
-.table th, .table td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-.table th { color: var(--muted); font-size: 11px; font-weight: 900; }
-.table tr:last-child td { border-bottom: 0; }
-.live { display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
-.metric { padding: 14px; background: var(--panel); border:1px solid var(--line); border-radius: var(--radius); }
-.metric .label { color: var(--muted); font-size: 11px; font-weight: 700; }
-.metric .value { font-size: 24px; font-weight: 900; margin-top: 5px; }
-.metric .sub { color: var(--muted); font-size: 11px; margin-top: 5px; line-height: 1.5; }
-.brief-box { max-height: 420px; overflow: auto; }
-.brief-item { padding: 12px 0; border-bottom: 1px solid var(--line); }
-.brief-item:last-child { border-bottom: 0; }
-.brief-item strong { display:block; font-size:13px; margin-bottom:5px; }
-.brief-item span { color: var(--muted); font-size:12px; line-height:1.65; }
-.footer { color: var(--muted); font-size: 12px; text-align:center; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
-@media (max-width: 980px) {
-  .hero, .grid-3, .grid-2, .strategy-board, .growth-grid, .flow, .live { grid-template-columns: 1fr; }
-  .hero-actions { grid-template-columns: 1fr; }
-  .clock { display:none; }
-}
-@media (max-width: 640px) {
-  .page { width: auto; max-width: none; margin: 0 12px; padding-top: 14px; overflow: hidden; }
-  h1 { font-size: 24px; line-height: 1.18; word-break: break-all; line-break: anywhere; max-width: 100%; }
-  .lead { font-size: 13px; line-height: 1.8; word-break: break-all; line-break: anywhere; max-width: 100%; }
-  .hero, .panel, .card, .cmd, .status-row { max-width: 100%; }
-  .nav { padding: 0 10px; height: 50px; scrollbar-width: none; }
-  .nav::-webkit-scrollbar { display: none; }
-  .nav a { min-height: 32px; padding: 0 10px; }
-  .hero-main { padding: 18px; min-height: 0; }
-  .status-card, .card { padding: 14px; }
-  .section-head { display:block; }
-  .score-item { grid-template-columns: 78px 1fr 34px; }
-  body { width: 100vw; max-width: 100vw; overflow-x: hidden; }
-  .page { max-width: calc(100vw - 24px) !important; }
-  .hero-main, .status-card { width: 100%; max-width: calc(100vw - 24px); }
-  .hero-main > *, .status-card > *, .cmd > *, .card > * { min-width: 0; }
-  h1 { max-width: calc(100vw - 64px); }
-  .lead { max-width: calc(100vw - 64px); }
-  .status-row { display: grid; grid-template-columns: 1fr; align-items: start; gap: 5px; }
-  .status-row .value { font-size: 15px; line-height: 1.35; text-align: left; }
-  .table th:nth-child(3), .table td:nth-child(3) { display:none; }
+@media(max-width:560px){
+  .topbar{inset:8px 8px auto;height:48px}
+  .brand span:last-child{display:none}
+  .nav-pill{height:34px;padding:0 10px}
+  .section-head{display:block}
+  .hero{min-height:auto;gap:24px}
+  .hero-bottom{margin-top:20px}
+  h1{font-size:clamp(36px,10.8vw,42px);line-height:1.04}
+  .hero-copy{font-size:13px;line-height:1.72}
+  .question h2{font-size:30px}
+  .bottom-nav{display:none}
 }
 </style>
 </head>
 <body>
-<nav class="nav">
-  <div class="logo"><span class="logo-mark"><i data-lucide="layout-dashboard"></i></span><span>電脳会社</span></div>
-  <a class="active" href="./dashboard.html"><i data-lucide="gauge"></i>司令塔</a>
-  <a href="#note-strategy"><i data-lucide="map"></i>note戦略</a>
-  <a href="./kyun.html"><i data-lucide="heart"></i>自キュン</a>
-  <a href="./keiba.html"><i data-lucide="flame"></i>競馬</a>
-  <a href="./kassenjo.html"><i data-lucide="landmark"></i>決算城</a>
-  <a href="./mercari.html"><i data-lucide="shopping-bag"></i>メルカリ</a>
-  <a href="./00_ダッシュボード/ai-setup-guide.html"><i data-lucide="bot"></i>AI導入</a>
+<nav class="topbar">
+  <div class="brand"><span class="brand-mark"><i data-lucide="blocks"></i></span><span>電脳会社</span></div>
+  <a class="nav-pill primary" href="#home"><i data-lucide="gauge"></i>Deck</a>
+  <a class="nav-pill" href="#note"><i data-lucide="layout-grid"></i>note</a>
+  <a class="nav-pill" href="#ai"><i data-lucide="sparkles"></i>AI</a>
+  <a class="nav-pill" href="#ops"><i data-lucide="rocket"></i>実行</a>
+  <a class="nav-pill" href="./kyun.html"><i data-lucide="heart"></i>自キュン</a>
+  <a class="nav-pill" href="./mercari.html"><i data-lucide="shopping-bag"></i>メルカリ</a>
   <span class="clock" id="clock">--:--</span>
 </nav>
 
-<main class="page">
-  <section class="hero">
-    <div class="panel hero-main">
-      <div>
-        <div class="kicker">Daily Control Room</div>
-        <h1>今日の空気を、売上へ。</h1>
-        <p class="lead">バズっている出来事を恋愛の感情に変換する。無料AI導入は、今日ひとつだけ試す。ここは迷わず動くための操縦席です。</p>
+<main class="deck">
+  <section class="screen" id="home">
+    <div class="shell hero-grid">
+      <article class="tile hero pad">
+        <div>
+          <div class="eyebrow"><i data-lucide="radar"></i> Control Deck</div>
+          <h1>探す。選ぶ。売る。</h1>
+          <p class="hero-copy">縦長の報告書をやめて、1画面で意思決定するタイル型に変更。今日のnoteマーケ、AI活用、公開更新、売れる確信の材料を同じデッキで扱います。</p>
+        </div>
+        <div class="hero-bottom">
+          <div class="mini-card"><b>今日見る</b><span>バズ題材 / AI導入 / 実行ログ</span></div>
+          <div class="mini-card"><b>今日決める</b><span>出す1本 / 試す1つ / 記録する1行</span></div>
+          <div class="mini-card"><b>今日伸ばす</b><span>感情変換 / 数字の切り分け / 再現性</span></div>
+        </div>
+      </article>
+      <aside class="tile pad status-stack">
+        <div class="status-tile"><span class="icon"><i data-lucide="heart"></i></span><div><small>note戦略</small><b>Day 3 / 7</b></div><span class="badge">実験中</span></div>
+        <div class="status-tile"><span class="icon blue"><i data-lucide="database"></i></span><div><small>サイト更新</small><b>PC不要で閲覧可</b></div><span class="badge">Pages</span></div>
+        <div class="status-tile"><span class="icon coral"><i data-lucide="code-2"></i></span><div><small>Cursor / VS Code</small><b>影響は限定的</b></div><span class="badge">後述</span></div>
+      </aside>
+      <aside class="tile question pad">
+        <div>
+          <div class="eyebrow"><i data-lucide="help-circle"></i> Core question</div>
+          <h2>売れる確信は、才能ではなく検証枚数から作る。</h2>
+        </div>
+        <div class="answer-grid">
+          <div class="answer"><small>答え</small><b>AI活用は本命候補</b></div>
+          <div class="answer"><small>条件</small><b>実行できる教材にする</b></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="screen" id="note">
+    <div class="shell">
+      <div class="section-head">
+        <div><h2>note Marketing Tiles</h2><p>タイトルと本文を並べず、仮説・結果・学びのタイルで見る。</p></div>
       </div>
-      <div class="hero-actions">
-        <a class="cmd" href="#kyun-lab"><span class="iconbox"><i data-lucide="radar"></i></span><span><strong>自キュン当日ネタ帳</strong><span>今日出す1本と予備2本を決める</span></span></a>
-        <a class="cmd" href="#ai-lab"><span class="iconbox"><i data-lucide="wrench"></i></span><span><strong>無料AI導入ネタ</strong><span>青柳さんが真似できるものだけ拾う</span></span></a>
-        <a class="cmd" href="#record"><span class="iconbox"><i data-lucide="notebook-pen"></i></span><span><strong>結果を記録</strong><span>ビュー・スキ・次に直すことを残す</span></span></a>
-      </div>
-    </div>
-    <aside class="panel status-card">
-      <div class="status-row"><span class="label">今日の主戦場</span><span class="value green">自キュン×AI</span></div>
-      <div class="status-row"><span class="label">自キュン判定</span><span class="value cyan">7点採用</span></div>
-      <div class="status-row"><span class="label">AI導入判定</span><span class="value amber">無料/スマホ/1h</span></div>
-      <div class="status-row"><span class="label">公開元</span><span class="value">Pages</span></div>
-      <div class="status-row"><span class="label">最終更新</span><span class="value" id="todayStamp">--</span></div>
-    </aside>
-  </section>
-
-  <section class="section live-section">
-    <div class="section-head">
-      <div><h2 class="section-title">ライブ状況</h2><p class="section-sub">Supabaseにつながれば自動更新。つながらない時も、今日の行動は止めない。</p></div>
-    </div>
-    <div class="live">
-      <div class="metric"><div class="label">note / 自キュン</div><div class="value" id="metricKyun">--</div><div class="sub" id="metricKyunSub">作品数を確認中</div></div>
-      <div class="metric"><div class="label">メルカリ出品中</div><div class="value" id="metricMercari">--</div><div class="sub" id="metricRelist">再出品候補を確認中</div></div>
-      <div class="metric"><div class="label">決算城記事</div><div class="value" id="metricCastle">--</div><div class="sub">100本化に向けた進捗</div></div>
-      <div class="metric"><div class="label">今日のブリーフ</div><div class="value" id="metricBrief">--</div><div class="sub" id="metricBriefSub">収集状況を確認中</div></div>
-    </div>
-  </section>
-
-  <section class="section" id="kyun-lab">
-    <div class="section-head">
-      <div><h2 class="section-title">自キュン当日ネタ帳</h2><p class="section-sub">話題そのものではなく、その後ろにある感情を拾う。</p></div>
-    </div>
-    <div class="grid-3">
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="trophy"></i></span>採用候補の見方</h3>
-        <p>スポーツ早朝観戦、恋リア最終回、卒業・引退・解散、ライブ直後、炎上後の沈黙。熱量と鮮度があり、恋愛の余白に変換できるものを優先します。</p>
-        <div class="score-list">
-          <div class="score-item"><span class="score-label">熱量</span><div class="bar"><span style="width:90%"></span></div><span class="score-num">3</span></div>
-          <div class="score-item"><span class="score-label">鮮度</span><div class="bar"><span style="width:80%"></span></div><span class="score-num">2</span></div>
-          <div class="score-item"><span class="score-label">感情変換</span><div class="bar"><span style="width:90%"></span></div><span class="score-num">3</span></div>
-          <div class="score-item"><span class="score-label">連作化</span><div class="bar"><span style="width:60%"></span></div><span class="score-num">1</span></div>
-        </div>
-      </article>
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="sparkles"></i></span>今日の変換テンプレ</h3>
-        <p>W杯なら「朝5時に同じ画面を見ていた二人」。恋リアなら「選ばれなかった側の夜」。トレンドは入口で、売るのは未練・約束・通知・帰り道です。</p>
-        <div class="tagrow"><span class="tag good">朝</span><span class="tag">深夜</span><span class="tag pink">未読</span><span class="tag cyan">最終回</span><span class="tag">再会</span></div>
-      </article>
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="send"></i></span>Codexへ投げる一言</h3>
-        <div class="action-line">
-          <div class="copyline"><code>自キュンの当日ネタ帳を作って。バズ判定つきで、今日出す1本と予備2本を保存して</code><i data-lucide="copy"></i></div>
-          <a href="https://trends.google.com/trending?geo=JP" target="_blank" rel="noopener">Google Trendsを開く <i data-lucide="external-link"></i></a>
-          <a href="https://search.yahoo.co.jp/realtime" target="_blank" rel="noopener">Yahoo!リアルタイム検索 <i data-lucide="external-link"></i></a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section class="section" id="ai-lab">
-    <div class="section-head">
-      <div><h2 class="section-title">AIマネタイズ研究所</h2><p class="section-sub">派手な成功談より、今日無料で試せて青柳さんの事業に刺さるものを優先。</p></div>
-    </div>
-    <div class="grid-3">
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="network"></i></span>The Harness</h3>
-        <p>既存の有料SaaSを、無料OSSと手順書で置き換える発想。IG HarnessはInstagramのコメントからDM配布、LINE誘導までの導線候補です。</p>
-        <div class="tagrow"><span class="tag good">最優先調査</span><span class="tag">Instagram</span><span class="tag">LINE導線</span></div>
-        <div class="action-line"><a href="https://github.com/Shudesu/ig-harness-oss" target="_blank" rel="noopener">IG Harness GitHub <i data-lucide="external-link"></i></a></div>
-      </article>
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="book-open"></i></span>NotebookLM</h3>
-        <p>ニュース、公式ドキュメント、競合記事を入れて「青柳さんでも真似できるポイント」に変換する。手順書やnote記事の下書きに向いています。</p>
-        <div class="tagrow"><span class="tag cyan">スマホ可</span><span class="tag">調査</span><span class="tag">教材化</span></div>
-        <div class="action-line"><a href="https://notebooklm.google/" target="_blank" rel="noopener">NotebookLM <i data-lucide="external-link"></i></a></div>
-      </article>
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="blocks"></i></span>AI Studio / n8n</h3>
-        <p>プロンプト検証と自動化の土台。毎朝のトレンド収集、採点、ネタ帳作成を半自動化する候補として追います。</p>
-        <div class="tagrow"><span class="tag">自動化</span><span class="tag">無料枠</span><span class="tag pink">検証待ち</span></div>
-        <div class="action-line"><a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio <i data-lucide="external-link"></i></a></div>
-      </article>
-    </div>
-  </section>
-
-  <section class="section" id="note-strategy">
-    <div class="section-head">
-      <div><h2 class="section-title">noteマーケ戦略ボード</h2><p class="section-sub">「気づいたことをやる」から、「仮説を育てる」へ。今日で3日目、まだ実験の土台を作っている段階です。</p></div>
-    </div>
-    <div class="strategy-board">
-      <div class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="route"></i></span>今どこに向かっているか</h3>
-        <p>目的は、noteで偶然当てることではなく、青柳さんが「バズ話題を感情に変換し、公開後の数字から次の仮説を作れる人」になること。自キュンはその訓練場で、AI導入ネタは将来の収益導線です。</p>
-        <div class="growth-grid">
-          <div class="growth-card"><div class="label">現在地</div><div class="value">Day 3 / 7</div><div class="sub">まだ勝敗判断ではなく、型を作る期間</div></div>
-          <div class="growth-card"><div class="label">今の目的</div><div class="value">再現性</div><div class="sub">伸びた理由、伸びない理由を分ける</div></div>
-          <div class="growth-card"><div class="label">次の到達点</div><div class="value">7日分</div><div class="sub">題材・時間・ビュー・スキ・仮説を並べる</div></div>
-        </div>
-        <div class="plan-lane">
-          <div class="lane-item"><span class="lane-label">入口</span><span class="lane-text">Google Trends、恋リア、スポーツ、配信最終回から今日の空気を拾う。</span></div>
-          <div class="lane-item"><span class="lane-label">変換</span><span class="lane-text">話題そのものではなく、選ばれなかった側、同じ時間を見ていた人、消せない通知に変える。</span></div>
-          <div class="lane-item"><span class="lane-label">検証</span><span class="lane-text">ビューが少なければ露出不足。ビューが多くスキが少なければ、タイトルか本文の刺さり方を直す。</span></div>
-        </div>
-      </div>
-      <div class="strategy-stage">
-        <div class="stage-card"><div class="stage-day">Day 1</div><div><strong>観察を始める</strong><span>バズ話題を拾い、自キュン化できるかを見る。正解探しではなく材料集め。</span></div></div>
-        <div class="stage-card"><div class="stage-day">Day 2</div><div><strong>変換の型を試す</strong><span>W杯、恋リア、最終回などを、未練・約束・沈黙に変える。</span></div></div>
-        <div class="stage-card active"><div class="stage-day">Day 3</div><div><strong>戦略を見える化する</strong><span>今日ここ。青柳さんが何を学んでいるか、どこへ向かっているかを画面に出す。</span></div></div>
-        <div class="stage-card"><div class="stage-day">Day 4-5</div><div><strong>数字で切り分ける</strong><span>題材、公開時間、ビュー、スキ率を見て、露出不足と刺さらなさを分ける。</span></div></div>
-        <div class="stage-card"><div class="stage-day">Day 6-7</div><div><strong>勝ちパターン候補を残す</strong><span>次週に使う採用基準、タイトル型、避ける題材を決める。</span></div></div>
-      </div>
-    </div>
-    <div class="grid-3" style="margin-top:12px;">
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="brain"></i></span>青柳さんが伸ばしている力</h3>
-        <div class="learning-list">
-          <div class="learning-item"><i data-lucide="check-circle-2"></i><span>話題をそのまま消費せず、読者の感情に翻訳する力。</span></div>
-          <div class="learning-item"><i data-lucide="check-circle-2"></i><span>スキ1を失敗と決めず、ビュー不足か刺さり不足かを分ける力。</span></div>
-          <div class="learning-item"><i data-lucide="check-circle-2"></i><span>無料AI導入を「自分の事業で使えるか」に変換する力。</span></div>
-        </div>
-      </article>
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="target"></i></span>今週のマーケ仮説</h3>
-        <p>恋リア・スポーツ・最終回のような「みんなが同じ時間に見たもの」は、自キュンに向いている。ただし、元ネタ説明ではなく、見終わった後の沈黙・通知・帰り道に寄せた方が刺さる。</p>
-        <div class="tagrow"><span class="tag good">検証中</span><span class="tag">共有体験</span><span class="tag">余韻</span><span class="tag pink">未練</span></div>
-      </article>
-      <article class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="clipboard-list"></i></span>毎日記録するもの</h3>
-        <p>題材、元ネタURL、公開時間、ビュー、スキ、スキ率、仮説、次に直すこと。この8つがそろって初めて、青柳さんの経験値になります。</p>
-        <div class="action-line">
-          <div class="copyline"><code>今日のnoteマーケ結果を記録して。題材、公開時間、ビュー、スキ、仮説、次に直すことまで</code><i data-lucide="copy"></i></div>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-head">
-      <div><h2 class="section-title">毎日の流れ</h2><p class="section-sub">作る、試す、記録する。これを7日分ためて再現性を見る。</p></div>
-    </div>
-    <div class="flow">
-      <div class="card flow-step"><div class="num">01</div><strong>トレンド収集</strong><span>Google Trends、Yahoo!リアルタイム、配信予定、スポーツ日程を見る。</span></div>
-      <div class="card flow-step"><div class="num">02</div><strong>感情へ変換</strong><span>話題をそのまま書かず、未練・約束・沈黙・再会に変える。</span></div>
-      <div class="card flow-step"><div class="num">03</div><strong>AI導入を1つ試す</strong><span>無料で真似できるものだけ、最小ステップに落とす。</span></div>
-      <div class="card flow-step"><div class="num">04</div><strong>結果を記録</strong><span>ビュー、スキ、仮説、次に直すことを運用ログに残す。</span></div>
-    </div>
-  </section>
-
-  <section class="section" id="record">
-    <div class="section-head">
-      <div><h2 class="section-title">今日見る表</h2><p class="section-sub">採用基準と、やらないことを固定して迷いを減らす。</p></div>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <table class="table">
-          <thead><tr><th>候補</th><th>採用条件</th><th>見送り条件</th></tr></thead>
-          <tbody>
-            <tr><td>自キュン</td><td>7点以上。話題後の感情が強い。</td><td>ニュース説明で終わる。</td></tr>
-            <tr><td>AI導入</td><td>無料、スマホ可、1時間で試せる。</td><td>登録が重い。本番リスクが高い。</td></tr>
-            <tr><td>決算城</td><td>4コマからCTAへ流せる。</td><td>数字確認ができない。</td></tr>
-            <tr><td>メルカリ</td><td>価格根拠と反応ログがある。</td><td>相場未確認。</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card">
-        <h3 class="card-title"><span class="mini"><i data-lucide="clipboard-check"></i></span>保存する記録</h3>
-        <p>自キュンは「題材、公開時間、ビュー、スキ、仮説」。AI導入は「名前、URL、無料範囲、青柳さんの用途、次の一手」。この2つを別レーンで蓄積します。</p>
-        <div class="action-line">
-          <div class="copyline"><code>昨日の自キュン結果を記録して。ビュー、スキ、仮説、次に直すことまで</code><i data-lucide="copy"></i></div>
-          <div class="copyline"><code>今日の無料AI導入ネタを1つ探して。青柳さんが真似できる手順にして保存して</code><i data-lucide="copy"></i></div>
-        </div>
+      <div class="tile-grid">
+        <article class="tile pad span-5 row-2 accent-green">
+          <h3>現在地</h3>
+          <div class="large-num">Day 3</div>
+          <p>まだ売れた/売れないの最終判断ではなく、何が刺さるかを測る土台作り。</p>
+          <div class="chip-row"><span class="chip green">7日検証</span><span class="chip">仮説作成</span><span class="chip">感情変換</span></div>
+          <span class="snap-note">scroll 02 / 04</span>
+        </article>
+        <article class="tile pad span-7 dark">
+          <h3>今週の仮説</h3>
+          <p>恋リア、スポーツ、最終回など「同じ時間にみんなが見たもの」は自キュン化しやすい。元ネタ説明ではなく、見終わった後の沈黙・通知・帰り道に寄せる。</p>
+        </article>
+        <article class="tile pad span-4">
+          <h3>見る数字</h3>
+          <p>ビューが少ないなら露出不足。ビューが多くスキが少ないならタイトルか本文の刺さり不足。</p>
+          <div class="chip-row"><span class="chip blue">ビュー</span><span class="chip coral">スキ率</span></div>
+        </article>
+        <article class="tile pad span-3">
+          <h3>今日の命令</h3>
+          <div class="command"><code>今日のnoteマーケ結果を記録して</code><i data-lucide="copy"></i></div>
+        </article>
+        <article class="tile pad span-5 accent-blue">
+          <h3>100本作るなら</h3>
+          <p>自キュン代替の本命は「AI活用を実際に導入する100本」。ニュース紹介ではなく、青柳さんが試した手順・失敗・画面・結果を売る。</p>
+        </article>
+        <article class="tile pad span-7">
+          <h3>成長が見える記録</h3>
+          <div class="timeline">
+            <div class="step active"><span class="step-num">1</span><div><b>題材</b><span>何の空気を拾ったか</span></div></div>
+            <div class="step"><span class="step-num">2</span><div><b>変換</b><span>どの感情に置き換えたか</span></div></div>
+            <div class="step"><span class="step-num">3</span><div><b>結果</b><span>公開時間 / ビュー / スキ / スキ率</span></div></div>
+            <div class="step"><span class="step-num">4</span><div><b>次</b><span>露出不足か刺さり不足か</span></div></div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="section-head">
-      <div><h2 class="section-title">最新ブリーフ</h2><p class="section-sub">今日のニュース収集がある時だけ表示。未収集なら「更新して」で作る。</p></div>
+  <section class="screen" id="ai">
+    <div class="shell">
+      <div class="section-head">
+        <div><h2>AI Opportunity Radar</h2><p>英語の公式情報を、実行できる日本語タスクへ変換する。</p></div>
+      </div>
+      <div class="tile-grid">
+        <article class="tile pad span-4 row-2 dark">
+          <h3>GPT公式から拾う</h3>
+          <p>Apps SDK、Agents SDK、Tools、Codex、ChatGPT UI。見るべきなのは「何ができるか」ではなく「青柳さんが今日まねできる最小手順」。</p>
+          <div class="source-list">
+            <a class="source" href="https://developers.openai.com/apps-sdk" target="_blank" rel="noopener">Apps SDK <span>ChatGPT拡張</span></a>
+            <a class="source" href="https://developers.openai.com/api/docs/guides/tools" target="_blank" rel="noopener">Tools <span>外部操作</span></a>
+          </div>
+        </article>
+        <article class="tile pad span-4 accent-coral">
+          <h3>GitHubから拾う</h3>
+          <p>GitHub Actionsは、PCを開かずに定期処理・更新・ビルドを走らせる候補。ローカルPC依存を減らす鍵。</p>
+          <a class="source" href="https://docs.github.com/en/actions" target="_blank" rel="noopener">GitHub Actions <span>自動実行</span></a>
+        </article>
+        <article class="tile pad span-4 accent-blue">
+          <h3>Hugging Faceから拾う</h3>
+          <p>Hubはモデル、データセット、Spacesを探す場所。売るなら「使えるものを翻訳して、手順化した記事」。</p>
+          <a class="source" href="https://huggingface.co/docs/hub/index" target="_blank" rel="noopener">Hugging Face Hub <span>発掘</span></a>
+        </article>
+        <article class="tile pad span-8">
+          <h3>AI活用100本の型</h3>
+          <div class="timeline">
+            <div class="step active"><span class="step-num">A</span><div><b>発見</b><span>公式・GitHub・HFから無料/低コストの導入例を拾う</span></div></div>
+            <div class="step"><span class="step-num">B</span><div><b>翻訳</b><span>英語やコードを、非エンジニア向けの日本語手順にする</span></div></div>
+            <div class="step"><span class="step-num">C</span><div><b>実行</b><span>青柳さんのPC/スマホ/事業で本当に試す</span></div></div>
+            <div class="step"><span class="step-num">D</span><div><b>販売</b><span>失敗込みの再現手順をnote・教材・導入支援へ接続する</span></div></div>
+          </div>
+        </article>
+        <article class="tile pad span-4 dark">
+          <h3>売れる確信の作り方</h3>
+          <p>確信は先に出ない。無料記事で反応を取り、有料は「実行済みテンプレ」「チェックリスト」「失敗回避」に寄せる。</p>
+          <div class="chip-row"><span class="chip">実行済み</span><span class="chip">再現性</span><span class="chip">時短</span></div>
+        </article>
+      </div>
     </div>
-    <div class="card brief-box" id="briefBox"><p>読み込み中...</p></div>
   </section>
 
-  <section class="section">
-    <div class="section-head">
-      <div><h2 class="section-title">各事業への入口</h2><p class="section-sub">細かい作業は専用ページへ。ここでは今日の判断だけに集中。</p></div>
-    </div>
-    <div class="grid-3">
-      <article class="card"><h3 class="card-title"><span class="mini"><i data-lucide="heart"></i></span>自動キュン売機</h3><p>当日ネタ帳、三部作、note公開、結果記録。</p><div class="action-line"><a href="./kyun.html">自キュンへ <i data-lucide="arrow-right"></i></a></div></article>
-      <article class="card"><h3 class="card-title"><span class="mini"><i data-lucide="flame"></i></span>FIREスコア競馬</h3><p>水曜予想、木金土の無料記事、日曜の結果検証。</p><div class="action-line"><a href="./keiba.html">競馬へ <i data-lucide="arrow-right"></i></a></div></article>
-      <article class="card"><h3 class="card-title"><span class="mini"><i data-lucide="shopping-bag"></i></span>メルカリ</h3><p>価格確認、再出品、写真改善、反応ログ。</p><div class="action-line"><a href="./mercari.html">メルカリへ <i data-lucide="arrow-right"></i></a></div></article>
+  <section class="screen" id="ops">
+    <div class="shell">
+      <div class="section-head">
+        <div><h2>Operation Answers</h2><p>更新・Cursor・VS Code・次の商品方針を一画面で。</p></div>
+      </div>
+      <div class="tile-grid">
+        <article class="tile pad span-6 accent-green">
+          <h3>このPCを開き続ける必要は？</h3>
+          <p>見るだけなら不要。GitHub Pagesは公開後、PCが閉じていても表示されます。必要なのは「更新作業をこのPCで自動実行する場合」だけです。</p>
+          <div class="chip-row"><span class="chip green">閲覧: PC不要</span><span class="chip">ローカル自動更新: PC必要</span></div>
+        </article>
+        <article class="tile pad span-6">
+          <h3>PC不要にする道</h3>
+          <p>GitHub Actions、Supabase、Make/n8n、外部サーバーへ移す。次の現実解は「GitHub Actionsで定時収集→HTML/JSON更新」。</p>
+          <a class="source" href="https://docs.github.com/en/actions" target="_blank" rel="noopener">GitHub Actionsを見る <span>PC依存を減らす</span></a>
+        </article>
+        <article class="tile pad span-4 dark">
+          <h3>Cursorをイーロンが買った？</h3>
+          <p>報道・二次情報はあるが、Cursor公式の一次発表は確認できていません。VS Codeを使う青柳さんへの直近影響は小さめ。</p>
+          <div class="chip-row"><span class="chip">要一次確認</span><span class="chip">VS Codeは継続可</span></div>
+        </article>
+        <article class="tile pad span-4 accent-coral">
+          <h3>VS Codeの私に関係ある？</h3>
+          <p>関係あるのは「AIエディタ競争が速くなる」こと。今すぐ乗り換えより、Codex/VS Codeで成果物を出す方が優先。</p>
+        </article>
+        <article class="tile pad span-4 accent-blue">
+          <h3>次の商品候補</h3>
+          <p>自キュンの代替はAI活用。売り物は「AIニュース」ではなく「できた手順」と「青柳さんでも再現できた証拠」。</p>
+        </article>
+        <article class="tile pad span-8">
+          <h3>今日からの3コマンド</h3>
+          <div class="timeline">
+            <div class="step active"><span class="step-num">1</span><div><b>note結果</b><span>今日のnoteマーケ結果を記録して</span></div></div>
+            <div class="step"><span class="step-num">2</span><div><b>AI発掘</b><span>今日の無料AI導入ネタを1つ、実行手順で保存して</span></div></div>
+            <div class="step"><span class="step-num">3</span><div><b>PC不要化</b><span>GitHub Actionsでダッシュボード更新をPC不要にする設計を作って</span></div></div>
+          </div>
+        </article>
+        <article class="tile pad span-4 dark">
+          <h3>確信の置き場所</h3>
+          <p>売れる確信は「100本作る前」ではなく「10本の反応比較」で作る。まず10本を同じ型で出す。</p>
+        </article>
+      </div>
     </div>
   </section>
-
-  <div class="footer">電脳会社 ダッシュボード ／ 青柳さんの毎朝の操縦席</div>
 </main>
 
+<div class="bottom-nav" aria-hidden="true">
+  <a class="dot active" href="#home"></a>
+  <a class="dot" href="#note"></a>
+  <a class="dot" href="#ai"></a>
+  <a class="dot" href="#ops"></a>
+</div>
+
 <script>
-function $(id){ return document.getElementById(id); }
-function setText(id, value){ const el=$(id); if(el) el.textContent = value; }
-function yen(n){ return '¥' + Number(n || 0).toLocaleString('ja-JP'); }
-function fmtDate(d){ return new Date(d).toLocaleDateString('ja-JP', { month:'numeric', day:'numeric' }); }
-function updateClock(){
-  const n = new Date();
-  setText('clock', n.toLocaleTimeString('ja-JP', { hour:'2-digit', minute:'2-digit' }));
-  setText('todayStamp', n.toLocaleDateString('ja-JP', { year:'numeric', month:'2-digit', day:'2-digit', weekday:'short' }));
+function setText(id,value){const el=document.getElementById(id);if(el)el.textContent=value}
+function updateClock(){setText('clock',new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}))}
+updateClock();setInterval(updateClock,30000);
+async function hydrate(){
+  if(!window.supabase||!SUPABASE_URL||!SUPABASE_ANON_KEY)return;
+  const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  try{
+    const [novels,articles,mercari]=await Promise.all([
+      sb.from('novel_stories').select('id',{count:'exact',head:true}),
+      sb.from('note_articles').select('id',{count:'exact',head:true}),
+      sb.from('mercari_items').select('id',{count:'exact',head:true}).eq('status','listed')
+    ]);
+    document.querySelectorAll('.large-num').forEach((el,i)=>{if(i===0&&novels.count)el.textContent='Day 3'});
+    const status=document.querySelector('.status-tile:nth-child(1) b');
+    if(status&&articles.count!==null)status.textContent='note '+articles.count;
+    const merc=document.querySelector('.status-tile:nth-child(2) b');
+    if(merc&&mercari.count!==null)merc.textContent='出品 '+mercari.count;
+  }catch(e){console.warn(e)}
 }
-updateClock(); setInterval(updateClock, 30000);
-
-async function loadDashboard(){
-  if (!window.supabase || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    setText('metricBrief', '未接続');
-    $('briefBox').innerHTML = '<p>Supabaseに接続できませんでした。今日の判断は上の運用レーンで進められます。</p>';
-    return;
-  }
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const old = new Date(Date.now() - 2*24*60*60*1000).toISOString();
-  const [novels, noteKyun, mercari, relist, castle, brief] = await Promise.all([
-    sb.from('novel_stories').select('id,status,created_at', { count:'exact' }),
-    sb.from('note_articles').select('id', { count:'exact', head:true }).eq('category','自キュン').eq('status','published'),
-    sb.from('mercari_items').select('id', { count:'exact', head:true }).eq('status','listed'),
-    sb.from('mercari_items').select('id', { count:'exact', head:true }).eq('status','listed').lt('last_relisted_at', old),
-    sb.from('castle_articles').select('id', { count:'exact', head:true }).not('body','is',null),
-    sb.from('meeting_notes').select('id,date,title,content,created_at').eq('category','daily_intelligence_brief').order('date',{ascending:false}).limit(1).maybeSingle()
-  ]);
-
-  const novelCount = novels.count ?? (novels.data || []).length ?? 0;
-  const publishedKyun = noteKyun.count ?? 0;
-  setText('metricKyun', String(novelCount + publishedKyun));
-  setText('metricKyunSub', `novel ${novelCount} / note公開 ${publishedKyun}`);
-  setText('metricMercari', String(mercari.count ?? '--'));
-  setText('metricRelist', `再出品候補 ${relist.count ?? 0}`);
-  setText('metricCastle', String(castle.count ?? '--'));
-
-  if (brief.data) {
-    setText('metricBrief', fmtDate(brief.data.date || brief.data.created_at));
-    setText('metricBriefSub', brief.data.title || 'daily intelligence brief');
-    const content = brief.data.content || '';
-    const items = content.split('\n').filter(line => line.match(/^【No\./)).slice(0, 8);
-    $('briefBox').innerHTML = `<h3 class="card-title"><span class="mini"><i data-lucide="radio"></i></span>${escapeHtml(brief.data.title || '今日のブリーフ')}</h3>` +
-      (items.length ? items.map(line => `<div class="brief-item"><strong>${escapeHtml(line.replace(/^【No\.(\d+)】/, 'No.$1 '))}</strong><span>詳細は「更新して」で保存されたブリーフを確認。</span></div>`).join('') : `<p>${escapeHtml(content.slice(0, 500))}</p>`);
-  } else {
-    setText('metricBrief', '未収集');
-    setText('metricBriefSub', '17:00以降は更新してで収集');
-    $('briefBox').innerHTML = '<p>今日のブリーフはまだ見つかりません。必要な時は「更新して」で収集します。</p>';
-  }
-  if (window.lucide) lucide.createIcons();
-}
-function escapeHtml(s){ return String(s || '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
-loadDashboard().catch(err => {
-  console.warn(err);
-  setText('metricBrief', '確認不可');
-  $('briefBox').innerHTML = '<p>データ取得でエラーが出ました。ページ本体は表示されています。</p>';
-});
-if (window.lucide) lucide.createIcons();
+hydrate();
+if(window.lucide)lucide.createIcons({strokeWidth:2.1});
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
